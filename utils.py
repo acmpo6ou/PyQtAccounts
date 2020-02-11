@@ -480,6 +480,7 @@ class DbWindow(QMainWindow):
         self.setWindowIcon(QIcon('img/account.png'))
         self.name = name
         self.windows = windows
+        self.ask = True
 
         self.db = db
         self.password = password
@@ -516,10 +517,14 @@ class DbWindow(QMainWindow):
         self.show()
 
     def closeEvent(self, event):
-        action = QMessageBox.question(self, 'Увага!',
-            'Ви певні що хочете вийти?\n'
-            'Усі не збережені зміни буде втрачено!\n'
-            'Натисніть Ctrl+S аби зберегти зміни.')
+        if self.ask:
+            action = QMessageBox.question(self, 'Увага!',
+                'Ви певні що хочете вийти?\n'
+                'Усі не збережені зміни буде втрачено!\n'
+                'Натисніть Ctrl+S аби зберегти зміни.')
+        else:
+            action = QMessageBox.Yes
+
         if action == QMessageBox.Yes:
             self.windows.remove(self)
         else:

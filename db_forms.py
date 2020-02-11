@@ -149,6 +149,7 @@ class EditDbForm(CreateForm):
                 self.model.removeRow(item.row())
             self.model.sort(0)
             self.clear()
+            self.db.ask = False
             self.db.close()
 
             if not getDbList():

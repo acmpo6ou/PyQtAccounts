@@ -74,10 +74,20 @@ def main():
     window.dbs = dbs
 
     def onClose(event):
+        # Do not show the close confirmation popup if there is no opened
+        # databases.
+        if len(windows) == 1:
+            event.accept()
+            return
+
         action = QMessageBox.question(window, 'Увага!', 'Ви певні що хочете '
                                                       'вийти?')
         if action == QMessageBox.No:
             event.ignore()
+        else:
+            for win in windows:
+                win.ask = False
+                win.close()
 
     menuBar = AppMenuBar(window)
     window.setMenuBar(menuBar)
