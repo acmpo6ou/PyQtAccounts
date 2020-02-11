@@ -557,12 +557,15 @@ class About(QDialog):
         encrypted databases.
         The interface of PyQtAccounts is common and easy to use.
         PyQtAccounts is completely free and open source project (see our license).
+        Also here you can see PyQtAccounts source code <a 
+        href='https://github.com/Acmpo6ou/PyQtAccounts'>GitHub</a>
         <span style='color: #37FF91;'>According to our privacy policy you must know 
         that we do not saving or sharing any private data such as your 
         account passwords or databases.
         </span>
         </pre>'''
         self.aboutLabel = QLabel(self.about)
+        self.aboutLabel.setOpenExternalLinks(True)
 
         self.license = \
         '''<pre>
