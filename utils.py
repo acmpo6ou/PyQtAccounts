@@ -558,7 +558,8 @@ class About(QDialog):
         The interface of PyQtAccounts is common and easy to use.
         PyQtAccounts is completely free and open source project (see our license).
         Also here you can see PyQtAccounts source code <a 
-        href='https://github.com/Acmpo6ou/PyQtAccounts'>GitHub</a>
+        href='https://github.com/Acmpo6ou/PyQtAccounts' 
+        style='color: #3791ff;'>GitHub</a>
         <span style='color: #37FF91;'>According to our privacy policy you must know 
         that we do not saving or sharing any private data such as your 
         account passwords or databases.
