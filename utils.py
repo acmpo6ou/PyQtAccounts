@@ -550,7 +550,7 @@ class About(QDialog):
         '''<pre>
         
         
-        Version 1.0.0
+        Version 1.0.2
         <b>PyQtAccounts</b> — is simple account database manager made 
         using Python 3 and PyQt5.
         You can easily manage your accounts and store them safely in 
