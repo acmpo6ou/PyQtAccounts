@@ -28,7 +28,7 @@ def main():
     window.resize(1000, 500)
 
     window.name = ''
-    window.setWindowIcon(QIcon('img/icon.svg'))
+    window.setWindowIcon(QIcon('../img/icon.svg'))
     windows = [window]
 
     helpTip = HelpTip(HELP_TIP_DB)

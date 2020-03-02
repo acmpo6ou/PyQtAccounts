@@ -142,8 +142,8 @@ class EditDbForm(CreateForm):
                              buttons=QMessageBox.No | QMessageBox.Yes,
                              defaultButton=QMessageBox.No)
         if action == QMessageBox.Yes:
-            os.remove('src/{}.db'.format(name))
-            os.remove('src/{}.bin'.format(name))
+            os.remove('../src/{}.db'.format(name))
+            os.remove('../src/{}.bin'.format(name))
 
             for item in self.model.findItems(name):
                 self.model.removeRow(item.row())
@@ -159,8 +159,8 @@ class EditDbForm(CreateForm):
         name = validName(self.nameInput.text())
         password = self.passField.passInput.text().encode()
 
-        os.remove('src/{}.db'.format(self.old_name))
-        os.remove('src/{}.bin'.format(self.old_name))
+        os.remove('../src/{}.db'.format(self.old_name))
+        os.remove('../src/{}.bin'.format(self.old_name))
 
         newDatabase(name, password)
         self.clear()

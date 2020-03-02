@@ -31,8 +31,8 @@ def generateSalt(saltfile):
         file.write(salt)
 
 def openDatabase(dbname, password):
-    dbfile = 'src/' + dbname + '.db'
-    saltfile = 'src/' + dbname + '.bin'
+    dbfile = '../src/' + dbname + '.db'
+    saltfile = '../src/' + dbname + '.bin'
     with open(saltfile, 'rb') as file:
         salt = file.read()
     kdf = PBKDF2HMAC(
@@ -54,8 +54,8 @@ def openDatabase(dbname, password):
     return db
 
 def encryptDatabase(dbname, db, password):
-    dbfile = 'src/' + dbname + '.db'
-    saltfile = 'src/' + dbname + '.bin'
+    dbfile = '../src/' + dbname + '.db'
+    saltfile = '../src/' + dbname + '.bin'
 
     with open(saltfile, 'rb') as file:
         salt = file.read()
@@ -74,7 +74,7 @@ def encryptDatabase(dbname, db, password):
         db.write(token)
 
 def newDatabase(dbname, password):
-    saltfile = 'src/' + dbname + '.bin'
+    saltfile = '../src/' + dbname + '.bin'
     db = {}
     generateSalt(saltfile)
     encryptDatabase(dbname, db, password)
