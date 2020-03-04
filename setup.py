@@ -22,7 +22,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
 reqs_list = ['git', 'pip3']
-reqs_pip = ['cryptography', 'GitPython']
+reqs_pip = ['cryptography', 'git'] # git is GitPython module
 
 class Reqs:
     def __init__(self):
@@ -31,7 +31,7 @@ class Reqs:
         self.installed = []
 
         for req in reqs_list:
-            if os.system(req):
+            if os.system('which ' + req):
                 self.cant_install.append(req)
             else:
                 self.installed.append(req)
@@ -44,17 +44,50 @@ class Reqs:
             else:
                 self.installed.append(req)
 
-class ReqsList(QTextEdit):
+class ReqsList(QListView):
     def __init__(self, reqs):
-        QTextEdit.__init__(self)
-        self.setReadOnly(True)
+        QListView.__init__(self)
+
+        installed = QIcon('img/installed.svg')
+        not_installed = QIcon('img/not_installed.svg')
+        self.model = QStandardItemModel()
+        self.setEditTriggers(QAbstractItemView.NoEditTriggers)
+
+        for req in reqs.installed:
+            item = QStandardItem(installed, req)
+            self.model.appendRow(item)
+
+        for req in reqs.to_install:
+            item = QStandardItem(not_installed, req)
+            self.model.appendRow(item)
+
+        for req in reqs.cant_install:
+            item = QStandardItem(not_installed, req)
+            self.model.appendRow(item)
+
+        self.setModel(self.model)
 
 class ReqsTips(QTextEdit):
     def __init__(self, reqs):
         QTextEdit.__init__(self)
         self.setReadOnly(True)
-        self.setTextColor(QColor('#37FF91'))
         self.setText('Всі залежності встановленно!')
+
+        tips = '<p style="color: #37FF91;">Всі залежності встановленно!</p>'
+        if reqs.cant_install:
+            tips += '''Бедь-ласка встановіть пакети <i><b>{0}</b></i> 
+            самостійно. 
+            Для їх встановлення потрібні адміністратора. Введіть в терміналі таку команду:
+            <b>sudo apt install {0}</b>'''.format([req for req in
+                                                   reqs.cant_install])
+
+        if reqs.to_install:
+            tips += '''Пакети {1} ми можемо встановити для вас, для цього 
+            натисніть кнопку "Встановити". Але спершу не забудьте перевірити 
+            наявність пакету <i><b>pip3</b></i>!'''.format([req for req in
+                                                             reqs.to_install])
+
+        self.setText(tips)
 
 class Errors(QTextEdit):
     def __init__(self):
@@ -72,7 +105,8 @@ class InstallationWizard(QWizard):
     def __init__(self, parent=None):
         super(InstallationWizard, self).__init__(parent)
         self.addPage(WelcomePage(self))
-        self.addPage(RequairmentsPage(self))
+        self.addPage(RequirementsPage(self))
+        self.addPage(InitPage(self))
         self.setWindowTitle("PyQtAccounts - Installation Wizard")
         self.resize(640,480)
 
@@ -90,9 +124,20 @@ class WelcomePage(QWizardPage):
         layout.addWidget(self.text)
         self.setLayout(layout)
 
-class RequairmentsPage(QWizardPage):
+class PipInstall(QObject):
+    result = pyqtSignal(int, str)
+    def __init__(self, reqs):
+        QObject.__init__(self)
+        self.reqs = reqs
+
+    def run(self):
+        for req in self.reqs.to_install:
+            res = os.system('pip3 install ' + req.replace('git', 'GitPython'))
+            self.result.emit(res, req)
+
+class RequirementsPage(QWizardPage):
     def __init__(self, parent=None):
-        super(RequairmentsPage, self).__init__(parent)
+        super(RequirementsPage, self).__init__(parent)
         self.title = Title('Залежності')
         self.text = QLabel('<pre>PyQtAccounts вимагає наявності\n'
                            'певних пакетів. Ось перелік тих які\n'
@@ -102,8 +147,20 @@ class RequairmentsPage(QWizardPage):
         self.reqsList = ReqsList(reqs)
         self.reqsTips = ReqsTips(reqs)
         self.errors = Errors()
+
+        installation = QHBoxLayout()
+        self.installLabel = QLabel('Інсталяція...')
+        self.installProgress = QProgressBar()
+        installation.addWidget(self.installLabel)
+        installation.addWidget(self.installProgress)
+        self.installLabel.hide()
+        self.installProgress.hide()
+        self.progress = 0
+
         self.installButton = QPushButton("Встановити")
         self.installButton.clicked.connect(self.install)
+        if not len(reqs.to_install):
+            self.installButton.setEnabled(False)
 
         layout = QVBoxLayout()
         layout.addWidget(self.title)
@@ -111,15 +168,45 @@ class RequairmentsPage(QWizardPage):
         layout.addWidget(self.reqsList)
         layout.addWidget(self.reqsTips)
         layout.addWidget(self.errors)
+        layout.addLayout(installation)
         layout.addWidget(self.installButton)
         self.setLayout(layout)
 
     def install(self, event):
-        for req in self.reqs.to_install:
-            res = os.system('pip3 install ' + req)
-            if res:
-                text = self.errors.text()
-                self.errors.setText(text + 'Не вдалося встановити ' + req)
+        self.errors.setText('')
+
+        if not 'pip3' in self.reqs.installed:
+            self.errors.setText('Встановіть пакет pip3!')
+            return
+
+        self.thread = QThread()
+        self.install = PipInstall(self.reqs)
+        self.install.moveToThread(self.thread)
+        self.install.result.connect(self.install_progress)
+        self.thread.started.connect(self.install.run)
+        self.thread.start()
+
+    def install_progress(self, res, req):
+        self.progress += 100 / len(self.reqs.to_install)
+        self.installProgress.setValue(self.progress)
+
+        if res:
+            text = self.errors.toPlainText()
+            self.errors.setText(text + 'Не вдалося встановити ' + req + '\n')
+            self.errors.show()
+            return
+
+        if self.progress >= 100:
+            self.installLabel.setText('<p style="color: ;">Встановлено!</p>')
+
+class InitPage(QWizardPage):
+    def __init__(self, parent=None):
+        super(InitPage, self).__init__(parent)
+        self.title = Title('Ініціалізація')
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.title)
+        self.setLayout(layout)
 
 if __name__ == '__main__':
     import sys
