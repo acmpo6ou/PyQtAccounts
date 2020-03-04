@@ -78,14 +78,15 @@ class ReqsTips(QTextEdit):
             tips += '''Бедь-ласка встановіть пакети <i><b>{0}</b></i> 
             самостійно. 
             Для їх встановлення потрібні адміністратора. Введіть в терміналі таку команду:
-            <b>sudo apt install {0}</b>'''.format([req for req in
-                                                   reqs.cant_install])
+            <b>sudo apt install {0}</b>'''.format(' '.join([req for req in
+                                                   reqs.cant_install]))
 
         if reqs.to_install:
-            tips += '''Пакети {1} ми можемо встановити для вас, для цього 
+            tips += '''Пакети {} ми можемо встановити для вас, для цього 
             натисніть кнопку "Встановити". Але спершу не забудьте перевірити 
-            наявність пакету <i><b>pip3</b></i>!'''.format([req for req in
-                                                             reqs.to_install])
+            наявність пакету <i><b>pip3</b></i>!'''.format(', '.join([req for
+                                                                      req in
+                                                             reqs.to_install]))
 
         self.setText(tips)
 
