@@ -40,9 +40,9 @@ class Reqs:
             try:
                 __import__(req)
             except ImportError:
-                self.to_install.append(req)
+                self.to_install.append(req.replace('git', 'GitPython'))
             else:
-                self.installed.append(req)
+                self.installed.append(req.replace('git', 'GitPython'))
 
 class ReqsList(QListView):
     def __init__(self, reqs):
@@ -58,6 +58,7 @@ class ReqsList(QListView):
             self.model.appendRow(item)
 
         for req in reqs.to_install:
+            item = QStandardItem(not_installed, req)
             item = QStandardItem(not_installed, req)
             self.model.appendRow(item)
 
@@ -136,7 +137,7 @@ class PipInstall(QObject):
 
     def run(self):
         for req in self.reqs.to_install:
-            res = os.system('pip3 install ' + req.replace('git', 'GitPython'))
+            res = os.system('pip3 install ' + req)
             self.result.emit(res, req)
 
 class RequirementsPage(QWizardPage):
@@ -178,17 +179,22 @@ class RequirementsPage(QWizardPage):
 
     def install(self, event):
         self.errors.setText('')
+        self.errors.hide()
 
         if not 'pip3' in self.reqs.installed:
+            self.errors.show()
             self.errors.setText('Встановіть пакет pip3!')
             return
 
+        self.installButton.setEnabled(False)
         self.thread = QThread()
         self.install = PipInstall(self.reqs)
         self.install.moveToThread(self.thread)
         self.install.result.connect(self.install_progress)
         self.thread.started.connect(self.install.run)
         self.thread.start()
+        self.installLabel.show()
+        self.installProgress.show()
 
     def install_progress(self, res, req):
         self.progress += 100 / len(self.reqs.to_install)
@@ -207,9 +213,31 @@ class InitPage(QWizardPage):
     def __init__(self, parent=None):
         super(InitPage, self).__init__(parent)
         self.title = Title('Ініціалізація')
+        self.errors = Errors()
+        self.progress = QProgressBar()
+
+        desktopIcon = QHBoxLayout()
+        self.desktopCheckbox = QCheckBox()
+        self.desktopCheckbox.setChecked(True)
+        desktopLabel = QLabel('додати ярлик запуску на робочий сліл')
+        desktopIcon.addWidget(self.desktopCheckbox)
+        desktopIcon.addWidget(desktopLabel)
+
+        menuIcon = QHBoxLayout()
+        self.menuCheckbox = QCheckBox()
+        self.menuCheckbox.setChecked(True)
+        menuLabel = QLabel('додати пункт запуску в меню')
+        menuIcon.addWidget(self.menuCheckbox)
+        menuIcon.addWidget(menuLabel)
+
+        icons = QVBoxLayout()
+        icons.addLayout(desktopIcon)
+        icons.addLayout(menuIcon)
 
         layout = QVBoxLayout()
         layout.addWidget(self.title)
+        layout.addWidget(self.progress)
+        layout.addLayout(icons)
         self.setLayout(layout)
 
 if __name__ == '__main__':
