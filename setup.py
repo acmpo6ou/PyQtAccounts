@@ -71,9 +71,12 @@ class ReqsTips(QTextEdit):
     def __init__(self, reqs):
         QTextEdit.__init__(self)
         self.setReadOnly(True)
-        self.setText('Всі залежності встановленно!')
 
-        tips = '<p style="color: #37FF91;">Всі залежності встановленно!</p>'
+        if not (reqs.cant_install or reqs.to_install):
+            tips = '<p style="color: #37FF91;">Всі залежності встановленно!</p>'
+        else:
+            tips = ''
+
         if reqs.cant_install:
             tips += '''Бедь-ласка встановіть пакети <i><b>{0}</b></i> 
             самостійно. 
