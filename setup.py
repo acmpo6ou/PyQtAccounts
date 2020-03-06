@@ -59,7 +59,6 @@ class ReqsList(QListView):
 
         for req in reqs.to_install:
             item = QStandardItem(not_installed, req)
-            item = QStandardItem(not_installed, req)
             self.model.appendRow(item)
 
         for req in reqs.cant_install:
@@ -79,20 +78,21 @@ class ReqsTips(QTextEdit):
             tips = ''
 
         if reqs.cant_install:
-            tips += '''Бедь-ласка встановіть пакети <i><b>{0}</b></i> 
-            самостійно. 
-            Для їх встановлення потрібні адміністратора. Введіть в терміналі таку команду:
-            <b>sudo apt install {0}</b>'''.format(' '.join([req for req in
-                                                   reqs.cant_install]))
+            tips += '''<p>Будь-ласка встановіть пакети <i><b>{0}</b></i> 
+            самостійно.</p>
+            <p>Для їх встановлення потрібні права адміністратора.</p>
+            <p>Введіть в терміналі таку команду:</p>
+            <p><b>sudo apt install {0}</b></p>'''.format(
+                ' '.join([req for req in reqs.cant_install]))
 
         if reqs.to_install:
-            tips += '''Пакети {} ми можемо встановити для вас, для цього 
-            натисніть кнопку "Встановити". Але спершу не забудьте перевірити 
-            наявність пакету <i><b>pip3</b></i>!'''.format(', '.join([req for
-                                                                      req in
-                                                             reqs.to_install]))
+            tips += '''<p>Пакети <i><b>{}</b></i> ми можемо встановити для вас, для цього 
+            натисніть кнопку "Встановити".</p>
+            <p>Але спершу не забудьте перевірити наявність пакету 
+            <i><b>pip3</b></i>!</p>'''.format(
+                ', '.join([req for req in reqs.to_install]))
 
-        self.setText(tips)
+        self.setHtml(tips)
 
 class Errors(QTextEdit):
     def __init__(self):
@@ -198,7 +198,6 @@ class RequirementsPage(QWizardPage):
 
     def install_progress(self, res, req):
         self.progress += 100 / len(self.reqs.to_install)
-        self.installProgress.setValue(self.progress)
 
         if res:
             text = self.errors.toPlainText()
@@ -206,8 +205,39 @@ class RequirementsPage(QWizardPage):
             self.errors.show()
             return
 
+        self.installProgress.setValue(self.progress)
+
+        reqs = Reqs()
+        self.layout().removeWidget(self.reqsList)
+        self.reqsList = ReqsList(reqs)
+        self.layout().insertWidget(2, self.reqsList)
+
         if self.progress >= 100:
-            self.installLabel.setText('<p style="color: ;">Встановлено!</p>')
+            self.installLabel.setText('<p style="color: #37FF91;">Встановлено!</p>')
+            self.reqsTips.hide()
+
+        self.completeChanged.emit()
+
+    def isComplete(self):
+        reqs = Reqs()
+        if not (reqs.cant_install or reqs.to_install):
+            return True
+        else:
+            return False
+
+class Initialize(QObject):
+    result = pyqtSignal(int)
+    def __init__(self):
+        QObject.__init__(self)
+
+    def run(self):
+        import git
+        try:
+            git.Git(".").clone("https://github.com/Acmpo6ou/PyQtAccounts")
+        except:
+            self.result.emit(1)
+        else:
+            self.result.emit(0)
 
 class InitPage(QWizardPage):
     def __init__(self, parent=None):
@@ -239,6 +269,40 @@ class InitPage(QWizardPage):
         layout.addWidget(self.progress)
         layout.addLayout(icons)
         self.setLayout(layout)
+
+    def isComplete(self):
+        if self.progress.value() == 100:
+            return True
+        else:
+            return False
+
+    def initializePage(self):
+        if self.progress.value() != 100:
+            self.thread = QThread()
+            self.init = Initialize()
+            self.init.moveToThread(self.thread)
+            self.init.result.connect(self.init_progress)
+            self.thread.started.connect(self.init.run)
+            self.thread.start()
+
+    def init_progress(self, res):
+        self.errors.hide()
+        self.errors.setText('')
+
+        if res:
+            self.errors.show()
+            self.errors.setText('Помилка ініціалізації! Перевірте наявність '
+                                "мережевого з'єднання.")
+        else:
+            self.progress.setValue(100)
+            self.completeChanged.emit()
+
+class FinishPage(QWizardPage):
+    def __init__(self, parent=None):
+        super(InitPage, self).__init__(parent)
+
+        self.title = Title('Finish')
+        self.text = QLabel('Успішно установлено PyQtAccounts!')
 
 if __name__ == '__main__':
     import sys
