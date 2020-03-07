@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
 import os
+import stat
 import git
 
 from PyQt5.QtWidgets import *
@@ -110,10 +111,16 @@ class Title(QLabel):
 class InstallationWizard(QWizard):
     def __init__(self, parent=None):
         super(InstallationWizard, self).__init__(parent)
+
         self.addPage(WelcomePage(self))
         self.addPage(RequirementsPage(self))
-        self.addPage(InitPage(self))
-        self.addPage(FinishPage(self))
+
+        self.initPage = InitPage(self)
+        self.addPage(self.initPage)
+        finishPage = FinishPage(self)
+        finishPage._parent = self
+        self.addPage(finishPage)
+
         self.setWindowTitle("PyQtAccounts - Installation Wizard")
         self.resize(600, 600)
 
@@ -295,6 +302,9 @@ class InitPage(QWizardPage):
             return False
 
     def initializePage(self):
+        if '.git' in os.listdir('.'):
+            self.progress.setValue(100)
+
         if self.progress.value() != 100:
             self.thread = QThread()
             self.init = Initialize()
@@ -316,12 +326,41 @@ class InitPage(QWizardPage):
     def init_progress(self, progress):
         self.progress.setValue(progress)
 
+        if progress >= 100:
+            self.completeChanged.emit()
+
+def create_shortcut(path):
+    cwd = os.getcwd()
+
+    shortcut = open(path, 'w')
+    os.chmod(path, stat.S_IEXEC) # owner can exec file
+
+    data = open('templates/desktop.desktop').read()
+    shortcut.write(data.format(cwd))
+
 class FinishPage(QWizardPage):
     def __init__(self, parent=None):
         super(FinishPage, self).__init__(parent)
 
         self.title = Title('Finish')
         self.text = QLabel('Успішно установлено PyQtAccounts!')
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.title)
+        layout.addWidget(self.text)
+        self.setLayout(layout)
+
+    def initializePage(self):
+        initPage = self._parent.initPage
+        username = os.getlogin()
+
+        if initPage.desktopCheckbox.isChecked():
+            path = '/home/{}/Desktop/PyQtAccounts.desktop'.format(username)
+            create_shortcut(path)
+
+        if initPage.menuCheckbox.isChecked():
+            path = '/home/{}/.local/share/applications/PyQtAccounts.desktop'.format(username)
+            create_shortcut(path)
 
 if __name__ == '__main__':
     import sys
