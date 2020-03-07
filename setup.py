@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
 import os
+import git
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
@@ -225,15 +226,30 @@ class RequirementsPage(QWizardPage):
         else:
             return False
 
+class Progress(git.remote.RemoteProgress):
+    def __init__(self, progress):
+        git.remote.RemoteProgress.__init__(self)
+        self.progress = progress
+
+    def update(self, op_code, cur_count, max_count=None, message=''):
+        progress = cur_count * 100 / max_count
+        self.progress.emit(progress)
+
 class Initialize(QObject):
     result = pyqtSignal(int)
+    progress = pyqtSignal(int)
     def __init__(self):
         QObject.__init__(self)
 
     def run(self):
-        import git
         try:
-            git.Git(".").clone("https://github.com/Acmpo6ou/PyQtAccounts")
+            repo = git.Repo.init('.')
+            # clear directory without deleting .git folder
+            os.system("find . -mindepth 1 ! -regex '^./\.git\(/.*\)?' -delete")
+            origin = repo.create_remote('origin',
+                               'https://github.com/Acmpo6ou/PyQtAccounts')
+            origin.fetch(progress=Progress(self.progress))
+            origin.pull(origin.refs[0].remote_head)
         except:
             self.result.emit(1)
         else:
@@ -268,6 +284,7 @@ class InitPage(QWizardPage):
         layout.addWidget(self.title)
         layout.addWidget(self.progress)
         layout.addLayout(icons)
+        layout.addWidget(self.errors)
         self.setLayout(layout)
 
     def isComplete(self):
@@ -281,11 +298,12 @@ class InitPage(QWizardPage):
             self.thread = QThread()
             self.init = Initialize()
             self.init.moveToThread(self.thread)
-            self.init.result.connect(self.init_progress)
+            self.init.result.connect(self.check_result)
+            self.init.progress.connect(self.init_progress)
             self.thread.started.connect(self.init.run)
             self.thread.start()
 
-    def init_progress(self, res):
+    def check_result(self, res):
         self.errors.hide()
         self.errors.setText('')
 
@@ -293,9 +311,9 @@ class InitPage(QWizardPage):
             self.errors.show()
             self.errors.setText('Помилка ініціалізації! Перевірте наявність '
                                 "мережевого з'єднання.")
-        else:
-            self.progress.setValue(100)
-            self.completeChanged.emit()
+
+    def init_progress(self, progress):
+        self.progress.setValue(progress)
 
 class FinishPage(QWizardPage):
     def __init__(self, parent=None):
