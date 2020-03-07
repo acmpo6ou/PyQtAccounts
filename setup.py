@@ -113,8 +113,9 @@ class InstallationWizard(QWizard):
         self.addPage(WelcomePage(self))
         self.addPage(RequirementsPage(self))
         self.addPage(InitPage(self))
+        self.addPage(FinishPage(self))
         self.setWindowTitle("PyQtAccounts - Installation Wizard")
-        self.resize(640,480)
+        self.resize(600, 600)
 
 class WelcomePage(QWizardPage):
     def __init__(self, parent=None):
@@ -317,7 +318,7 @@ class InitPage(QWizardPage):
 
 class FinishPage(QWizardPage):
     def __init__(self, parent=None):
-        super(InitPage, self).__init__(parent)
+        super(FinishPage, self).__init__(parent)
 
         self.title = Title('Finish')
         self.text = QLabel('Успішно установлено PyQtAccounts!')
