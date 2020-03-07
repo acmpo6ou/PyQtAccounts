@@ -1,8 +1,8 @@
 [Desktop Entry]
 Name=PyQtAccounts
-Exec=/home/{}/PyQtAccounts/run.sh
+Exec={}/run.sh
 Comment=Simple account database manager.
 Terminal=false
-Icon=/home/{}/PyQtAccounts/img/icon.svg
+Icon={}/img/icon.svg
 Type=Application
 Name[en_US]=desktop
