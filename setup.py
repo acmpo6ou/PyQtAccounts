@@ -18,13 +18,15 @@
 import os
 import stat
 import git
+import sys
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
 reqs_list = ['git', 'pip3']
-reqs_pip = ['cryptography', 'git'] # git is GitPython module
+reqs_pip = ['cryptography', 'git']  # git is GitPython module
+
 
 class Reqs:
     def __init__(self):
@@ -45,6 +47,7 @@ class Reqs:
                 self.to_install.append(req.replace('git', 'GitPython'))
             else:
                 self.installed.append(req.replace('git', 'GitPython'))
+
 
 class ReqsList(QListView):
     def __init__(self, reqs):
@@ -68,6 +71,7 @@ class ReqsList(QListView):
             self.model.appendRow(item)
 
         self.setModel(self.model)
+
 
 class ReqsTips(QTextEdit):
     def __init__(self, reqs):
@@ -96,6 +100,7 @@ class ReqsTips(QTextEdit):
 
         self.setHtml(tips)
 
+
 class Errors(QTextEdit):
     def __init__(self):
         QTextEdit.__init__(self)
@@ -103,10 +108,12 @@ class Errors(QTextEdit):
         self.hide()
         self.setTextColor(QColor('#f26666'))
 
+
 class Title(QLabel):
     def __init__(self, text=''):
         QLabel.__init__(self, '<h4>{}</h4>'.format(text))
         self.setAlignment(Qt.AlignHCenter)
+
 
 class InstallationWizard(QWizard):
     def __init__(self, parent=None):
@@ -124,6 +131,7 @@ class InstallationWizard(QWizard):
         self.setWindowTitle("PyQtAccounts - Installation Wizard")
         self.resize(600, 600)
 
+
 class WelcomePage(QWizardPage):
     def __init__(self, parent=None):
         super(WelcomePage, self).__init__(parent)
@@ -138,8 +146,10 @@ class WelcomePage(QWizardPage):
         layout.addWidget(self.text)
         self.setLayout(layout)
 
+
 class PipInstall(QObject):
     result = pyqtSignal(int, str)
+
     def __init__(self, reqs):
         QObject.__init__(self)
         self.reqs = reqs
@@ -148,6 +158,7 @@ class PipInstall(QObject):
         for req in self.reqs.to_install:
             res = os.system('pip3 install ' + req)
             self.result.emit(res, req)
+
 
 class RequirementsPage(QWizardPage):
     def __init__(self, parent=None):
@@ -234,6 +245,7 @@ class RequirementsPage(QWizardPage):
         else:
             return False
 
+
 class Progress(git.remote.RemoteProgress):
     def __init__(self, progress):
         git.remote.RemoteProgress.__init__(self)
@@ -243,9 +255,11 @@ class Progress(git.remote.RemoteProgress):
         progress = cur_count * 100 / max_count
         self.progress.emit(progress)
 
+
 class Initialize(QObject):
     result = pyqtSignal(int)
     progress = pyqtSignal(int)
+
     def __init__(self):
         QObject.__init__(self)
 
@@ -255,13 +269,14 @@ class Initialize(QObject):
             # clear directory without deleting .git folder
             os.system("find . -mindepth 1 ! -regex '^./\.git\(/.*\)?' -delete")
             origin = repo.create_remote('origin',
-                               'https://github.com/Acmpo6ou/PyQtAccounts')
+                                        'https://github.com/Acmpo6ou/PyQtAccounts')
             origin.fetch(progress=Progress(self.progress))
             origin.pull(origin.refs[0].remote_head)
         except:
             self.result.emit(1)
         else:
             self.result.emit(0)
+
 
 class InitPage(QWizardPage):
     def __init__(self, parent=None):
@@ -329,14 +344,24 @@ class InitPage(QWizardPage):
         if progress >= 100:
             self.completeChanged.emit()
 
+
 def create_shortcut(path):
     cwd = os.getcwd()
 
-    shortcut = open(path, 'w')
-    os.chmod(path, stat.S_IEXEC) # owner can exec file
+    try:
+        shortcut = open(path, 'w')
+    except PermissionError:
+        '''
+        Desktop files have no permissions to read, write or execute.
+        So we create file and then give those permissions to it.
+        '''
+        os.chmod(path, 0o755)  # owner have all permissions to file
+        shortcut = open(path, 'w')
 
-    data = open('templates/desktop.desktop').read()
+    data = open('templates/PyQtAccounts.desktop').read()
     shortcut.write(data.format(cwd))
+    shortcut.close()
+    os.chmod(path, 0o755)  # we need to do it again because execute permission may be not assigned
 
 class FinishPage(QWizardPage):
     def __init__(self, parent=None):
@@ -362,8 +387,13 @@ class FinishPage(QWizardPage):
             path = '/home/{}/.local/share/applications/PyQtAccounts.desktop'.format(username)
             create_shortcut(path)
 
+        cwd = os.getcwd()
+        run = open('run.sh').read()
+        run = run.replace('cd ./core', 'cd {}/core'.format(cwd))
+        with open('run.sh', 'w') as runfile:
+            runfile.write(run)
+
 if __name__ == '__main__':
-    import sys
     app = QApplication(sys.argv)
     wizard = InstallationWizard()
     wizard.show()
