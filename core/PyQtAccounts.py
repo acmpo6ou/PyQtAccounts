@@ -108,6 +108,13 @@ class ErrorWindow(QMessageBox):
 
 app = QApplication(sys.argv)
 
+app.setStyleSheet('''
+*{
+    font-family: Ubuntu, Ubuntu Mono;
+    font-size: 24px;
+}
+''')
+
 try:
     from db_forms import *
     from account_forms import *

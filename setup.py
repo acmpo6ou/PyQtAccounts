@@ -392,6 +392,13 @@ class FinishPage(QWizardPage):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
+    app.setStyleSheet('''
+    *{
+        font-family: Ubuntu, Ubuntu Mono;
+        font-size: 24px;
+    }
+    ''')
+    app.setWindowIcon(QIcon('img/icon.svg'))
     wizard = InstallationWizard()
     wizard.show()
     sys.exit(app.exec_())
