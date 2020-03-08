@@ -16,5 +16,5 @@
 # You should have received a copy of the GNU General Public License
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
 
-cd /home/python/Documents/PyTools/PyQtAccounts/core
+cd ./core
 python3 ./PyQtAccounts.py
