@@ -23,7 +23,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
 reqs_list = ['git', 'pip3']
-reqs_pip = ['cryptography', 'git', 'pyshortcuts']  # git is GitPython module
+reqs_pip = ['setuptools', 'cryptography', 'git', 'pyshortcuts']  # git is gitpython module
 
 
 class Reqs:
@@ -34,7 +34,7 @@ class Reqs:
 
         for req in reqs_list:
             if os.system('which ' + req):
-                self.cant_install.append(req)
+                self.cant_install.append(req.replace('pip3', 'python3-pip'))
             else:
                 self.installed.append(req)
 
@@ -42,9 +42,9 @@ class Reqs:
             try:
                 __import__(req)
             except ImportError:
-                self.to_install.append(req.replace('git', 'GitPython'))
+                self.to_install.append(req.replace('git', 'gitpython'))
             else:
-                self.installed.append(req.replace('git', 'GitPython'))
+                self.installed.append(req.replace('git', 'gitpython'))
 
 
 class ReqsList(QListView):
@@ -286,7 +286,7 @@ class InitPage(QWizardPage):
         desktopIcon = QHBoxLayout()
         self.desktopCheckbox = QCheckBox()
         self.desktopCheckbox.setChecked(True)
-        desktopLabel = QLabel('додати ярлик запуску на робочий сліл')
+        desktopLabel = QLabel('додати ярлик запуску на робочий стіл')
         desktopIcon.addWidget(self.desktopCheckbox)
         desktopIcon.addWidget(desktopLabel)
 
