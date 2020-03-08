@@ -16,8 +16,6 @@
 # You should have received a copy of the GNU General Public License
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
 import os
-import stat
-import git
 import sys
 
 from PyQt5.QtWidgets import *
@@ -25,7 +23,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
 reqs_list = ['git', 'pip3']
-reqs_pip = ['cryptography', 'git']  # git is GitPython module
+reqs_pip = ['cryptography', 'git', 'pyshortcuts']  # git is GitPython module
 
 
 class Reqs:
@@ -245,17 +243,6 @@ class RequirementsPage(QWizardPage):
         else:
             return False
 
-
-class Progress(git.remote.RemoteProgress):
-    def __init__(self, progress):
-        git.remote.RemoteProgress.__init__(self)
-        self.progress = progress
-
-    def update(self, op_code, cur_count, max_count=None, message=''):
-        progress = cur_count * 100 / max_count
-        self.progress.emit(progress)
-
-
 class Initialize(QObject):
     result = pyqtSignal(int)
     progress = pyqtSignal(int)
@@ -264,6 +251,17 @@ class Initialize(QObject):
         QObject.__init__(self)
 
     def run(self):
+        import git
+
+        class Progress(git.remote.RemoteProgress):
+            def __init__(self, progress):
+                git.remote.RemoteProgress.__init__(self)
+                self.progress = progress
+
+            def update(self, op_code, cur_count, max_count=None, message=''):
+                progress = cur_count * 100 / max_count
+                self.progress.emit(progress)
+
         try:
             repo = git.Repo.init('.')
             # clear directory without deleting .git folder
@@ -344,25 +342,6 @@ class InitPage(QWizardPage):
         if progress >= 100:
             self.completeChanged.emit()
 
-
-def create_shortcut(path):
-    cwd = os.getcwd()
-
-    try:
-        shortcut = open(path, 'w')
-    except PermissionError:
-        '''
-        Desktop files have no permissions to read, write or execute.
-        So we create file and then give those permissions to it.
-        '''
-        os.chmod(path, 0o755)  # owner have all permissions to file
-        shortcut = open(path, 'w')
-
-    data = open('templates/PyQtAccounts.desktop').read()
-    shortcut.write(data.format(cwd))
-    shortcut.close()
-    os.chmod(path, 0o755)  # we need to do it again because execute permission may be not assigned
-
 class FinishPage(QWizardPage):
     def __init__(self, parent=None):
         super(FinishPage, self).__init__(parent)
@@ -377,17 +356,35 @@ class FinishPage(QWizardPage):
 
     def initializePage(self):
         initPage = self._parent.initPage
-        username = os.getlogin()
-
-        if initPage.desktopCheckbox.isChecked():
-            path = '/home/{}/Desktop/PyQtAccounts.desktop'.format(username)
-            create_shortcut(path)
-
-        if initPage.menuCheckbox.isChecked():
-            path = '/home/{}/.local/share/applications/PyQtAccounts.desktop'.format(username)
-            create_shortcut(path)
-
         cwd = os.getcwd()
+        desktop = initPage.desktopCheckbox.isChecked()
+        startmenu = initPage.menuCheckbox.isChecked()
+        from pyshortcuts import make_shortcut
+
+        if desktop or startmenu:
+            make_shortcut(
+                name='PyQtAccounts',
+                script=cwd + '/run.sh',
+                description='Simple account database manager.',
+                icon=cwd+'/img/icon.svg',
+                terminal=False,
+                desktop=desktop,
+                startmenu=startmenu,
+                executable='/bin/bash'
+            )
+
+            # fixing .ico icon issue
+            home = os.getenv('HOME')
+            if desktop:
+                desktop = open(home+'/Desktop/PyQtAccounts.desktop').read()
+                with open(home+'/Desktop/PyQtAccounts.desktop', 'w') as file:
+                    file.write(desktop.replace('.ico', ''))
+
+            if startmenu:
+                menu = open(home+'/Desktop/PyQtAccounts.desktop').read()
+                with open(home+'/.local/share/applications/PyQtAccounts.desktop', 'w') as file:
+                    file.write(menu.replace('.ico', ''))
+
         run = open('run.sh').read()
         run = run.replace('cd ./core', 'cd {}/core'.format(cwd))
         with open('run.sh', 'w') as runfile:
