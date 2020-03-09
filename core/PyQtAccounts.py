@@ -128,7 +128,6 @@ app = QApplication(sys.argv)
 
 app.setStyleSheet('''
 *{
-    font-family: Ubuntu, Ubuntu Mono;
     font-size: 24px;
 }
 ''')
