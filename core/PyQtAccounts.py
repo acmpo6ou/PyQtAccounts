@@ -95,6 +95,16 @@ def main():
 
     window.setCentralWidget(splitter)
     window.show()
+
+    if not '.git' in os.listdir('../'):
+        WarningWindow('''
+        <h3>Програму не ініціалізовано!</h3>
+        <p>В папці програми повинен бути файл <b><i>setup.py</i></b>.</p>
+        <p>Запустіть його і пройдіть всі кроки інсталяції.</p>
+        <p>Ініціалізація потрібна, аби система оновлення PyQtAccounts працювала.</p>
+        <p>Система оновлення автоматично перевіряє, завантажує і встановлює оновлення.</p>
+        ''')
+
     sys.exit(app.exec_())
 
 class ErrorWindow(QMessageBox):
@@ -103,6 +113,14 @@ class ErrorWindow(QMessageBox):
         self.setWindowTitle('Помилка!')
         self.setIcon(super().Critical)
         self.setDetailedText(str(err))
+        self.setText(text)
+        self.exec()
+
+class WarningWindow(QMessageBox):
+    def __init__(self, text, parent=None):
+        super().__init__()
+        self.setWindowTitle('Увага!')
+        self.setIcon(super().Warning)
         self.setText(text)
         self.exec()
 
