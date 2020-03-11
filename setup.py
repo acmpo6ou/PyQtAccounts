@@ -247,8 +247,9 @@ class Initialize(QObject):
     result = pyqtSignal(int)
     progress = pyqtSignal(int)
 
-    def __init__(self):
+    def __init__(self, folder):
         QObject.__init__(self)
+        self.folder = folder + '/PyQtAccounts'
 
     def run(self):
         import git
@@ -263,13 +264,8 @@ class Initialize(QObject):
                 self.progress.emit(progress)
 
         try:
-            repo = git.Repo.init('.')
-            # clear directory without deleting .git folder
-            os.system("find . -mindepth 1 ! -regex '^./\.git\(/.*\)?' -delete")
-            origin = repo.create_remote('origin',
-                                        'https://github.com/Acmpo6ou/PyQtAccounts')
-            origin.fetch(progress=Progress(self.progress))
-            origin.pull(origin.refs[0].remote_head)
+            git.Repo.clone_from('https://github.com/Acmpo6ou/PyQtAccounts', self.folder,
+                                progress=Progress(self.progress))
         except:
             self.result.emit(1)
         else:
@@ -279,9 +275,21 @@ class Initialize(QObject):
 class InitPage(QWizardPage):
     def __init__(self, parent=None):
         super(InitPage, self).__init__(parent)
+        self.folder = os.getenv('HOME')
         self.title = Title('Ініціалізація')
         self.errors = Errors()
         self.progress = QProgressBar()
+
+        self.initLabel = QLabel('Виберіть папку в яку ви хочете встановити PyQtAccounts:')
+        self.browseButton = QPushButton('Browse...')
+        self.browseButton.clicked.connect(self.browse)
+        self.browseLabel = QLabel(self.folder)
+
+        browseLayout = QHBoxLayout()
+        browseLayout.addWidget(self.browseButton)
+        browseLayout.addWidget(self.browseLabel)
+        self.initButton = QPushButton('Ініціалізувати')
+        self.initButton.clicked.connect(self.init)
 
         desktopIcon = QHBoxLayout()
         self.desktopCheckbox = QCheckBox()
@@ -303,10 +311,20 @@ class InitPage(QWizardPage):
 
         layout = QVBoxLayout()
         layout.addWidget(self.title)
+        layout.addWidget(self.initLabel)
+        layout.addLayout(browseLayout)
         layout.addWidget(self.progress)
+        layout.addWidget(self.initButton)
         layout.addLayout(icons)
         layout.addWidget(self.errors)
         self.setLayout(layout)
+
+    def browse(self):
+        folder = QFileDialog.getExistingDirectory(wizard, 'Installation directory',
+                                                  self.folder, QFileDialog.ShowDirsOnly)
+        if folder:
+            self.folder = folder
+            self.browseLabel.setText(folder)
 
     def isComplete(self):
         if self.progress.value() == 100:
@@ -314,13 +332,13 @@ class InitPage(QWizardPage):
         else:
             return False
 
-    def initializePage(self):
-        if '.git' in os.listdir('.'):
+    def init(self):
+        if 'PyQtAccounts' in os.listdir(self.folder):
             self.progress.setValue(100)
 
         if self.progress.value() != 100:
             self.thread = QThread()
-            self.init = Initialize()
+            self.init = Initialize(self.folder)
             self.init.moveToThread(self.thread)
             self.init.result.connect(self.check_result)
             self.init.progress.connect(self.init_progress)
@@ -333,8 +351,9 @@ class InitPage(QWizardPage):
 
         if res:
             self.errors.show()
-            self.errors.setText('Помилка ініціалізації! Перевірте наявність '
-                                "мережевого з'єднання.")
+            self.errors.setText('Помилка ініціалізації!\n'
+                                "Відсутнє мережеве з'єднання, або відмовлено у доступі на "
+                                "запис у папку інсталяції.")
 
     def init_progress(self, progress):
         self.progress.setValue(progress)
