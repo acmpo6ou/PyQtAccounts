@@ -20,6 +20,8 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
+from utils import Title
+
 
 def time_for_updates():
     settings = QSettings('PyTools', 'PyQtAccounts')
@@ -36,3 +38,42 @@ def time_for_updates():
             return True
         else:
             return False
+
+def getChangeLog(repo):
+    commits = repo.iter_commits('master..origin/master')
+    res = []
+    for commit in commits:
+        res.append(commit.message)
+    return res
+
+class UpdatesAvailable(QWidget):
+    def __init__(self, repo):
+        super().__init__()
+        self.show()
+        self.setWindowTitle('Доступно нове оновлення')
+        self.title = Title('Доступно нове оновлення')
+        tip = "Доступно нове оновлення PyQtAccounts.\n" \
+              "Після оновлення програма перезапуститься.\n" \
+              "Переконайтеся що ви зберігли всі зміни до ваших баз данних перед оновленням.\n"
+        self.text = QLabel(tip)
+        changelog = '<h4>Що нового:</h4><ul>'
+        for change in getChangeLog(repo):
+            changelog += '<li>{}</li>\n'.format(change)
+        changelog += '</ul>'
+        self.changelogLabel = QLabel(changelog)
+
+        self.laterButton = QPushButton('Пізніше')
+        self.updateButton = QPushButton('Оновити')
+        self.laterButton.clicked.connect(self.hide)
+        self.updateButton.clicked.connect(self.applyUpdate)
+
+        buttonsLayout = QHBoxLayout()
+        buttonsLayout.addWidget(self.laterButton)
+        buttonsLayout.addWidget(self.updateButton)
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.title)
+        layout.addWidget(self.text)
+        layout.addWidget(self.changelogLabel)
+        layout.addLayout(buttonsLayout)
+        self.setLayout(layout)

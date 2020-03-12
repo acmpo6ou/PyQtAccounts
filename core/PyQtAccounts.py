@@ -108,7 +108,7 @@ def main():
     if time_for_updates():
         repo = git.Repo('../')
         if repo.iter_commits('master..origin/master'):
-            win = UpdatesAvailable()
+            win = UpdatesAvailable(repo)
 
     sys.exit(app.exec_())
 
@@ -142,6 +142,7 @@ try:
     from account_forms import *
     from utils import *
     import git
+    from updates import *
 
     main()
 except ImportError as err:
