@@ -92,6 +92,7 @@ class WarningTip(HelpTip):
 
 class Title(QLabel):
     def __init__(self, text=''):
+        text = '<b>{}</b>'.format(text)
         QLabel.__init__(self, text)
         self.setAlignment(Qt.AlignHCenter)
 

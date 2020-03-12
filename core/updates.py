@@ -20,7 +20,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
-from utils import Title
+import utils
 
 
 def time_for_updates():
@@ -46,12 +46,58 @@ def getChangeLog(repo):
         res.append(commit.message)
     return res
 
+class Updating(QObject):
+    progress = pyqtSignal(int)
+    res = pyqtSignal(int)
+
+    import git
+    class Progress(git.remote.RemoteProgress):
+        def __init__(self, progress):
+            git.remote.RemoteProgress.__init__(self)
+            self.progress = progress
+
+        def update(self, op_code, cur_count, max_count=None, message=''):
+            progress = cur_count * 100 / max_count
+            self.progress.emit(progress)
+
+    def run(self):
+        repo = git.Repo('../')
+        repo.fetch(progress=Progress(self.progress))
+        repo.pull()
+
+class UpdatingWindow(QWidget):
+    def __init__(self, parent):
+        super().__init__(parent=parent)
+        self.setWindowTitle('Оновлення')
+        self.progress = QProgressBar()
+        self.errors = utils.Errors()
+
+        self.thread = QThread()
+        self.updating = Updating()
+        self.updating.moveToThread(self.thread)
+        self.updating.result.connect(self.result)
+        self.updating.progress.connect(self.update_progress)
+        self.thread.started.connect(self.updating.run)
+        self.thread.start()
+
+    def update_progress(self, progress):
+        self.progress.setValue(progress)
+
+    def result(self, res):
+        self.errors.setText('')
+        if res:
+            self.errors.setText('Помилка підключення! Перевірте мережеве з\'єднання.')
+            self.errors.show()
+        else:
+            self.hide()
+            QMessageBox.information('Оновлення', 'Успішно оновлено!')
+
 class UpdatesAvailable(QWidget):
-    def __init__(self, repo):
-        super().__init__()
+    def __init__(self, repo, parent):
+        super().__init__(parent=parent)
         self.show()
         self.setWindowTitle('Доступно нове оновлення')
-        self.title = Title('Доступно нове оновлення')
+        self.title = utils.Title('Доступно нове оновлення')
         tip = "Доступно нове оновлення PyQtAccounts.\n" \
               "Після оновлення програма перезапуститься.\n" \
               "Переконайтеся що ви зберігли всі зміни до ваших баз данних перед оновленням.\n"
@@ -77,3 +123,7 @@ class UpdatesAvailable(QWidget):
         layout.addWidget(self.changelogLabel)
         layout.addLayout(buttonsLayout)
         self.setLayout(layout)
+
+    def applyUpdate(self):
+        self.hide()
+        updating = UpdatingWindow(self.parent())
