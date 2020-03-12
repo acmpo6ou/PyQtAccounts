@@ -105,6 +105,11 @@ def main():
         <p>Система оновлення автоматично перевіряє, завантажує і встановлює оновлення.</p>
         ''')
 
+    if time_for_updates():
+        repo = git.Repo('../')
+        if repo.iter_commits('master..origin/master'):
+            win = UpdatesAvailable()
+
     sys.exit(app.exec_())
 
 class ErrorWindow(QMessageBox):
@@ -136,6 +141,7 @@ try:
     from db_forms import *
     from account_forms import *
     from utils import *
+    import git
 
     main()
 except ImportError as err:
