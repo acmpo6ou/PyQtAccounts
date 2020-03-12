@@ -38,6 +38,21 @@ def getDbList():
 def getAkiList(db):
     return [acc for acc in db]
 
+def time_for_updates():
+    settings = QSettings('PyTools', 'PyQtAccounts')
+    frequency = settings.value('updates/frequency', 'always')
+
+    if frequency == 'always':
+        return True
+    else:
+        last_checked = settings.value('updates/last', None)
+        current = QDate.currentDate()
+
+        if not last_checked or last_checked.addDays(frequency.toInt()) <= current:
+            settings.setValue('updates/last', current)
+            return True
+        else:
+            return False
 
 def hide(*args):
     for arg in args:
