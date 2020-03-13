@@ -22,6 +22,8 @@ from PyQt5.QtCore import *
 import sys
 import os
 
+DEBUG = True
+
 def main():
     window = QMainWindow()
     window.setWindowTitle("PyQtAccounts - PyQt5")
@@ -107,9 +109,14 @@ def main():
 
     if time_for_updates():
         repo = git.Repo('../')
-        if list(repo.iter_commits('master..origin/master')):
+
+        if DEBUG:
+            changes = list(repo.iter_commits('dev..origin/dev'))
+        else:
+            changes = list(repo.iter_commits('master..origin/master'))
+
+        if changes:
             win = UpdatesAvailable(window)
-    win = UpdatesAvailable(window)
 
     sys.exit(app.exec_())
 
