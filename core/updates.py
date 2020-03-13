@@ -20,6 +20,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
+import git
 import utils
 
 
@@ -39,6 +40,7 @@ def time_for_updates():
         else:
             return False
 
+
 def getChangeLog(repo):
     commits = repo.iter_commits('master..origin/master')
     res = []
@@ -50,7 +52,6 @@ class Updating(QObject):
     progress = pyqtSignal(int)
     res = pyqtSignal(int)
 
-    import git
     class Progress(git.remote.RemoteProgress):
         def __init__(self, progress):
             git.remote.RemoteProgress.__init__(self)
@@ -67,7 +68,8 @@ class Updating(QObject):
 
 class UpdatingWindow(QWidget):
     def __init__(self, parent):
-        super().__init__(parent=parent)
+        print('here')
+        QWidget.__init__(self, parent=parent)
         self.setWindowTitle('Оновлення')
         self.progress = QProgressBar()
         self.errors = utils.Errors()
@@ -93,8 +95,9 @@ class UpdatingWindow(QWidget):
             QMessageBox.information('Оновлення', 'Успішно оновлено!')
 
 class UpdatesAvailable(QWidget):
-    def __init__(self, repo, parent):
-        super().__init__(parent=parent)
+    def __init__(self, parent):
+        QWidget.__init__(self, parent=parent)
+        repo = git.Repo('../')
         self.show()
         self.setWindowTitle('Доступно нове оновлення')
         self.title = utils.Title('Доступно нове оновлення')
