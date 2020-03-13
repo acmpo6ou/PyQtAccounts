@@ -22,7 +22,7 @@ from PyQt5.QtCore import *
 
 import git
 import utils
-
+from const import *
 
 def time_for_updates():
     settings = QSettings('PyTools', 'PyQtAccounts')
@@ -42,7 +42,10 @@ def time_for_updates():
 
 
 def getChangeLog(repo):
-    commits = repo.iter_commits('master..origin/master')
+    if DEBUG:
+        commits = repo.iter_commits('dev..origin/dev')
+    else:
+        commits = repo.iter_commits('master..origin/master')
     res = []
     for commit in commits:
         res.append(commit.message)

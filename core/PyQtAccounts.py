@@ -21,8 +21,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 import sys
 import os
-
-DEBUG = True
+from const import *
 
 def main():
     window = QMainWindow()
@@ -109,6 +108,7 @@ def main():
 
     if time_for_updates():
         repo = git.Repo('../')
+        repo.git.fetch()
 
         if DEBUG:
             changes = list(repo.iter_commits('dev..origin/dev'))
@@ -116,6 +116,7 @@ def main():
             changes = list(repo.iter_commits('master..origin/master'))
 
         if changes:
+            print('updating...')
             win = UpdatesAvailable(window)
 
     sys.exit(app.exec_())
