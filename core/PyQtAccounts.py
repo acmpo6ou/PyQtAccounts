@@ -108,7 +108,7 @@ def main():
     if time_for_updates():
         repo = git.Repo('../')
         if repo.iter_commits('master..origin/master'):
-            win = UpdatesAvailable(repo, app)
+            win = UpdatesAvailable(repo, window)
 
     sys.exit(app.exec_())
 
