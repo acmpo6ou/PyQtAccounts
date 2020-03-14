@@ -18,7 +18,7 @@
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
-
+from PyQt5.QtGui import *
 
 import git
 import widgets
@@ -53,7 +53,7 @@ def getChangeLog(repo):
 
 class Updating(QObject):
     progress = pyqtSignal(int)
-    res = pyqtSignal(int)
+    result = pyqtSignal(int)
 
     import git
     class Progress(git.remote.RemoteProgress):
@@ -67,8 +67,8 @@ class Updating(QObject):
 
     def run(self):
         repo = git.Repo('../')
-        repo.fetch(progress=self.Progress(self.progress))
-        repo.pull()
+        repo.git.fetch(progress=self.Progress(self.progress))
+        repo.git.pull()
 
 class UpdatingWindow(QWidget):
     def __init__(self, parent):
@@ -100,11 +100,23 @@ class UpdatingWindow(QWidget):
 
 class UpdatesAvailable(QWidget):
     def __init__(self, parent):
-        QWidget.__init__(self, parent=parent)
+        super().__init__()
         repo = git.Repo('../')
-        self.show()
+        self.setParent(parent)
         self.setWindowTitle('Доступно нове оновлення')
-        self.title = widgets.Title('Доступно нове оновлення')
+        self.setWindowFlags(Qt.Dialog)
+        self.resize(1000, 500)
+        self.show()
+
+        self.title = widgets.Title('<h3>Доступно нове оновлення</h3>')
+        self.title.setMinimumWidth(800)
+        self.icon = QLabel()
+        self.icon.setPixmap(QPixmap('../img/update-available.svg'))
+
+        header = QHBoxLayout()
+        header.addWidget(self.icon)
+        header.addWidget(self.title)
+
         tip = "Доступно нове оновлення PyQtAccounts.\n" \
               "Після оновлення програма перезапуститься.\n" \
               "Переконайтеся що ви зберігли всі зміни до ваших баз данних перед оновленням.\n"
@@ -125,7 +137,7 @@ class UpdatesAvailable(QWidget):
         buttonsLayout.addWidget(self.updateButton)
 
         layout = QVBoxLayout()
-        layout.addWidget(self.title)
+        layout.addLayout(header)
         layout.addWidget(self.text)
         layout.addWidget(self.changelogLabel)
         layout.addLayout(buttonsLayout)
