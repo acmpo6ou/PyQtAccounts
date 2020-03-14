@@ -20,6 +20,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 import utils
+import widgets
 from myutils import akidump
 from forms import *
 
@@ -258,7 +259,7 @@ class ShowAccForm(QWidget):
             label.setTextInteractionFlags(Qt.TextSelectableByMouse)
             label.setCursor(QCursor(Qt.IBeamCursor))
 
-        self.copyTip = utils.Tip('Ви можете натиснути гарячі клавіші Ctrl+C\n'
+        self.copyTip = widgets.Tip('Ви можете натиснути гарячі клавіші Ctrl+C\n'
                                  'аби скопіювати пароль одразу.')
 
         layout = QVBoxLayout()

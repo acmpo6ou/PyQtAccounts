@@ -17,10 +17,7 @@
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
 
 from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-import sys
-import utils
+import widgets
 
 class CreateForm(QWidget):
     def __init__(self, title, namePlaceholder, nameError, nameTip, passTip, \
@@ -30,7 +27,7 @@ class CreateForm(QWidget):
         self.hide()
         self.helpTip = helpTip
 
-        self.title = utils.Title(title)
+        self.title = widgets.Title(title)
 
         self.nameLabel = QLabel("Ім'я:")
         self.nameInput = QLineEdit()
@@ -38,26 +35,26 @@ class CreateForm(QWidget):
         self.nameInput.textChanged.connect(self.validateName)
 
         self.passLabel = QLabel('Пароль:')
-        self.passField = utils.PasswordField('введіть пароль')
+        self.passField = widgets.PasswordField('введіть пароль')
         self.passField.passInput.textChanged.connect(self.validatePass)
 
-        self.nameTip = utils.Tip(nameTip)
-        self.passTip = utils.Tip(passTip)
+        self.nameTip = widgets.Tip(nameTip)
+        self.passTip = widgets.Tip(passTip)
 
         self.validate = {'pass': False, 'name': False}
 
         self.passRepeatLabel = QLabel('Повторіть пароль:')
-        self.passRepeatField = utils.PasswordField('повторно введіть пароль')
+        self.passRepeatField = widgets.PasswordField('повторно введіть пароль')
         self.passRepeatField.passInput.textChanged.connect(self.validatePass)
 
-        self.passEqError = utils.Error('Паролі не співпадають!')
+        self.passEqError = widgets.Error('Паролі не співпадають!')
         self.passEqError.hide()
-        self.passFilledError = utils.Error('Введіть пароль!')
+        self.passFilledError = widgets.Error('Введіть пароль!')
         self.passFilledError.hide()
 
-        self.nameError = utils.Error(nameError)
+        self.nameError = widgets.Error(nameError)
         self.nameError.hide()
-        self.nameFilledError = utils.Error("Введіть ім'я!")
+        self.nameFilledError = widgets.Error("Введіть ім'я!")
         self.nameFilledError.hide()
 
         self.errors = QWidget()
@@ -114,7 +111,7 @@ class CreateForm(QWidget):
             self.createButton.setEnabled(True)
 
     def generate(self, event):
-        dialog = utils.GenPassDialog(self)
+        dialog = widgets.GenPassDialog(self)
         dialog.show()
 
     def clear(self, event=None):

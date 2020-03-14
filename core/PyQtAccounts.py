@@ -18,10 +18,8 @@
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
-from PyQt5.QtCore import *
 import sys
 import os
-from const import *
 
 def main():
     window = QMainWindow()
@@ -40,7 +38,7 @@ def main():
     alreadyOpen = HelpTip('Базу данних вже відкрито')
 
     editTip = WarningTip('Ви повинні відкрити базу данних перед тим як '
-                      'редагувати її!')
+                         'редагувати її!')
 
     exportTip = WarningTip("Виберіть базу данних яку хочете експортувати.")
 
@@ -82,7 +80,7 @@ def main():
             return
 
         action = QMessageBox.question(window, 'Увага!', 'Ви певні що хочете '
-                                                      'вийти?')
+                                                        'вийти?')
         if action == QMessageBox.No:
             event.ignore()
         else:
@@ -118,6 +116,7 @@ def main():
         if changes:
             print('updating...')
             win = UpdatesAvailable(window)
+    win = UpdatesAvailable(window)
 
     sys.exit(app.exec_())
 
@@ -150,8 +149,11 @@ try:
     from db_forms import *
     from account_forms import *
     from utils import *
-    import git
+    from widgets import *
     from updates import *
+    from const import *
+
+    import git
 
     main()
 except ImportError as err:
@@ -165,6 +167,7 @@ except ImportError as err:
 except Exception as err:
     mess = '''Вибачте програма повинна припинити роботу через помилку.'''
     ErrorWindow(mess, err)
+    raise
     sys.exit()
 
 sys.exit(app.exec_())

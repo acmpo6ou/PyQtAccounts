@@ -17,11 +17,11 @@
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
 
 from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
+
 import git
-import utils
+import widgets
 from const import *
 
 def time_for_updates():
@@ -55,6 +55,7 @@ class Updating(QObject):
     progress = pyqtSignal(int)
     res = pyqtSignal(int)
 
+    import git
     class Progress(git.remote.RemoteProgress):
         def __init__(self, progress):
             git.remote.RemoteProgress.__init__(self)
@@ -66,7 +67,7 @@ class Updating(QObject):
 
     def run(self):
         repo = git.Repo('../')
-        repo.fetch(progress=Progress(self.progress))
+        repo.fetch(progress=self.Progress(self.progress))
         repo.pull()
 
 class UpdatingWindow(QWidget):
@@ -75,7 +76,7 @@ class UpdatingWindow(QWidget):
         QWidget.__init__(self, parent=parent)
         self.setWindowTitle('Оновлення')
         self.progress = QProgressBar()
-        self.errors = utils.Errors()
+        self.errors = widgets.Errors()
 
         self.thread = QThread()
         self.updating = Updating()
@@ -103,7 +104,7 @@ class UpdatesAvailable(QWidget):
         repo = git.Repo('../')
         self.show()
         self.setWindowTitle('Доступно нове оновлення')
-        self.title = utils.Title('Доступно нове оновлення')
+        self.title = widgets.Title('Доступно нове оновлення')
         tip = "Доступно нове оновлення PyQtAccounts.\n" \
               "Після оновлення програма перезапуститься.\n" \
               "Переконайтеся що ви зберігли всі зміни до ваших баз данних перед оновленням.\n"
@@ -132,4 +133,4 @@ class UpdatesAvailable(QWidget):
 
     def applyUpdate(self):
         self.hide()
-        updating = UpdatingWindow(self.parent())
+        self.updating = UpdatingWindow(self.parent())

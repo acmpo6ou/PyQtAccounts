@@ -21,6 +21,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
 from utils import *
+from widgets import *
 from getaki import *
 from forms import *
 
@@ -183,7 +184,7 @@ class OpenDbForm(QWidget):
 
         self.title = Title()
         self.passLabel = QLabel('Пароль:')
-        self.passField = utils.PasswordField('введіть пароль')
+        self.passField = widgets.PasswordField('введіть пароль')
         self.passField.passInput.returnPressed.connect(self.open)
 
         self.incorrectPass = Error('Неправильний пароль!')
