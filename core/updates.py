@@ -55,25 +55,26 @@ class Updating(QObject):
     progress = pyqtSignal(int)
     result = pyqtSignal(int)
 
-    import git
-    class Progress(git.remote.RemoteProgress):
-        def __init__(self, progress):
-            git.remote.RemoteProgress.__init__(self)
-            self.progress = progress
-
-        def update(self, op_code, cur_count, max_count=None, message=''):
-            progress = cur_count * 100 / max_count
-            self.progress.emit(progress)
-
     def run(self):
+        import git
+        class Progress(git.remote.RemoteProgress):
+            def __init__(self, progress):
+                git.remote.RemoteProgress.__init__(self)
+                self.progress = progress
+
+            def update(self, op_code, cur_count, max_count=None, message=''):
+                progress = cur_count * 100 / max_count
+                self.progress.emit(progress)
+
         repo = git.Repo('../')
-        repo.git.fetch(progress=self.Progress(self.progress))
-        repo.git.pull()
+        origin = repo.remote()
+        origin.fetch(progress=Progress(self.progress))
+        origin.pull()
 
 class UpdatingWindow(QWidget):
     def __init__(self, parent):
-        print('here')
-        QWidget.__init__(self, parent=parent)
+        super().__init__()
+        self.setParent(parent)
         self.setWindowTitle('Оновлення')
         self.progress = QProgressBar()
         self.errors = widgets.Errors()
@@ -146,3 +147,4 @@ class UpdatesAvailable(QWidget):
     def applyUpdate(self):
         self.hide()
         self.updating = UpdatingWindow(self.parent())
+        self.updating.show()
