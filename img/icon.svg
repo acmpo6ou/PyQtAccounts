@@ -8,12 +8,35 @@
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.0"
    width="96"
    height="96"
    id="svg2408"
-   style="display:inline">
+   style="display:inline"
+   sodipodi:docname="icon.svg"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="986"
+     id="namedview129"
+     showgrid="false"
+     inkscape:zoom="4.9166667"
+     inkscape:cx="50.329434"
+     inkscape:cy="49.636075"
+     inkscape:window-x="0"
+     inkscape:window-y="60"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
   <defs
      id="defs2410">
     <linearGradient
@@ -507,37 +530,6 @@
        inkscape:connector-curvature="0"
        id="path3615"
        style="opacity:0.4;fill:url(#radialGradient2886);fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline" />
-    <rect
-       width="84"
-       height="84"
-       rx="6"
-       ry="6"
-       x="-94"
-       y="6"
-       id="rect3654"
-       style="fill:#ff00ff;fill-opacity:1;fill-rule:nonzero;stroke:none" />
-    <rect
-       width="16"
-       height="16"
-       x="112"
-       y="8"
-       id="rect3797"
-       style="color:#000000;fill:#ffffff;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:8.6;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
-    <text
-       x="131.39261"
-       y="11.969256"
-       id="text3799"
-       xml:space="preserve"
-       style="font-size:4px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Liberation Sans;-inkscape-font-specification:Liberation Sans"><tspan
-         x="131.39261"
-         y="11.969256"
-         id="tspan3801">Width: 2px</tspan><tspan
-         x="131.39261"
-         y="16.969257"
-         id="tspan3803">Blur: 12</tspan><tspan
-         x="131.39261"
-         y="21.969257"
-         id="tspan3807">Opacity: 60</tspan></text>
   </g>
   <g
      id="layer3"
