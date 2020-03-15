@@ -22,6 +22,8 @@ from PyQt5.QtGui import *
 
 import git
 import widgets
+import os
+import threading
 from const import *
 
 def time_for_updates():
@@ -118,3 +120,6 @@ class UpdatesAvailable(QWidget):
         repo = git.Repo('../')
         origin = repo.remote()
         origin.pull()
+        t = threading.Thread(target=os.system, args=('../run.sh',), daemon=True)
+        t.start()
+        self.parent().close()
