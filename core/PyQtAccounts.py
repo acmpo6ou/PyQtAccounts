@@ -116,7 +116,7 @@ def main():
         if changes:
             print('updating...')
             win = UpdatesAvailable(window)
-    win = UpdatesAvailable(window)
+    win = UpdatingWindow(window)
 
     sys.exit(app.exec_())
 

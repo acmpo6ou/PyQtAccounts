@@ -71,11 +71,18 @@ class Updating(QObject):
         origin.fetch(progress=Progress(self.progress))
         origin.pull()
 
-class UpdatingWindow(QWidget):
+class UpdatingWindow(QDialog):
     def __init__(self, parent):
-        super().__init__()
+        QDialog.__init__(self, parent)
         self.setParent(parent)
         self.setWindowTitle('Оновлення')
+        self.resize(500, 100)
+        frameGm = self.frameGeometry()
+        screen = QApplication.desktop().screenNumber(QApplication.desktop().cursor().pos())
+        centerPoint = QApplication.desktop().screenGeometry(screen).center()
+        frameGm.moveCenter(centerPoint)
+        self.move(frameGm.topLeft())
+
         self.progress = QProgressBar()
         self.errors = widgets.Errors()
 
@@ -86,6 +93,12 @@ class UpdatingWindow(QWidget):
         self.updating.progress.connect(self.update_progress)
         self.thread.started.connect(self.updating.run)
         self.thread.start()
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.progress)
+        layout.addWidget(self.errors)
+        self.setLayout(layout)
+        self.show()
 
     def update_progress(self, progress):
         self.progress.setValue(progress)
@@ -147,4 +160,3 @@ class UpdatesAvailable(QWidget):
     def applyUpdate(self):
         self.hide()
         self.updating = UpdatingWindow(self.parent())
-        self.updating.show()
