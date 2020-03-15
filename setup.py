@@ -51,8 +51,8 @@ class ReqsList(QListView):
     def __init__(self, reqs):
         QListView.__init__(self)
 
-        installed = QIcon('img/installed.svg')
-        not_installed = QIcon('img/not_installed.svg')
+        installed = QIcon('/usr/share/icons/Humanity/actions/48/gtk-yes.svg')
+        not_installed = QIcon('/usr/share/icons/Humanity/actions/128/stock_not.svg')
         self.model = QStandardItemModel()
         self.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
@@ -133,7 +133,8 @@ class InstallationWizard(QWizard):
 class WelcomePage(QWizardPage):
     def __init__(self, parent=None):
         super(WelcomePage, self).__init__(parent)
-        self.setPixmap(QWizard.WatermarkPixmap, QPixmap('img/icon.svg'))
+        self.setPixmap(QWizard.WatermarkPixmap,
+                       QPixmap('/usr/share/icons/Mint-X/mimetypes/96/application-pgp-keys.svg'))
 
         self.title = Title('<pre>Вітаємо у майстрі встановлення\n PyQtAccounts!</pre>')
         self.text = QLabel('<pre><br>Ми допоможемо вам пройти всі кроки \n'
@@ -375,7 +376,7 @@ class FinishPage(QWizardPage):
 
     def initializePage(self):
         initPage = self._parent.initPage
-        cwd = os.getcwd()
+        cwd = initPage.folder
         desktop = initPage.desktopCheckbox.isChecked()
         startmenu = initPage.menuCheckbox.isChecked()
         from pyshortcuts import make_shortcut
@@ -404,9 +405,9 @@ class FinishPage(QWizardPage):
                 with open(home+'/.local/share/applications/PyQtAccounts.desktop', 'w') as file:
                     file.write(menu.replace('.ico', ''))
 
-        run = open('run.sh').read()
+        run = open(cwd+'run.sh').read()
         run = run.replace('cd ./core', 'cd {}/core'.format(cwd))
-        with open('run.sh', 'w') as runfile:
+        with open(cwd+'run.sh', 'w') as runfile:
             runfile.write(run)
 
 if __name__ == '__main__':
@@ -417,7 +418,7 @@ if __name__ == '__main__':
         font-size: 24px;
     }
     ''')
-    app.setWindowIcon(QIcon('img/icon.svg'))
+    app.setWindowIcon(QIcon('/usr/share/icons/Mint-X/mimetypes/96/application-pgp-keys.svg'))
     wizard = InstallationWizard()
     wizard.show()
     sys.exit(app.exec_())
