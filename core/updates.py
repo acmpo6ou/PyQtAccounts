@@ -52,65 +52,19 @@ def getChangeLog(repo):
     return res
 
 class Updating(QObject):
-    progress = pyqtSignal(int)
-    result = pyqtSignal(int)
+    result = pyqtSignal()
 
     def run(self):
         import git
-        class Progress(git.remote.RemoteProgress):
-            def __init__(self, progress):
-                git.remote.RemoteProgress.__init__(self)
-                self.progress = progress
-
-            def update(self, op_code, cur_count, max_count=None, message=''):
-                progress = cur_count * 100 / max_count
-                self.progress.emit(progress)
-
         repo = git.Repo('../')
         origin = repo.remote()
-        origin.fetch(progress=Progress(self.progress))
-        origin.pull()
-
-class UpdatingWindow(QDialog):
-    def __init__(self, parent):
-        QDialog.__init__(self, parent)
-        self.setParent(parent)
-        self.setWindowTitle('Оновлення')
-        self.resize(500, 100)
-        frameGm = self.frameGeometry()
-        screen = QApplication.desktop().screenNumber(QApplication.desktop().cursor().pos())
-        centerPoint = QApplication.desktop().screenGeometry(screen).center()
-        frameGm.moveCenter(centerPoint)
-        self.move(frameGm.topLeft())
-
-        self.progress = QProgressBar()
-        self.errors = widgets.Errors()
-
-        self.thread = QThread()
-        self.updating = Updating()
-        self.updating.moveToThread(self.thread)
-        self.updating.result.connect(self.result)
-        self.updating.progress.connect(self.update_progress)
-        self.thread.started.connect(self.updating.run)
-        self.thread.start()
-
-        layout = QVBoxLayout()
-        layout.addWidget(self.progress)
-        layout.addWidget(self.errors)
-        self.setLayout(layout)
-        self.show()
-
-    def update_progress(self, progress):
-        self.progress.setValue(progress)
-
-    def result(self, res):
-        self.errors.setText('')
-        if res:
-            self.errors.setText('Помилка підключення! Перевірте мережеве з\'єднання.')
-            self.errors.show()
+        origin.fetch()
+        if DEBUG:
+            changes = list(repo.iter_commits('dev..origin/dev'))
         else:
-            self.hide()
-            QMessageBox.information('Оновлення', 'Успішно оновлено!')
+            changes = list(repo.iter_commits('master..origin/master'))
+        if changes:
+            self.result.emit()
 
 class UpdatesAvailable(QWidget):
     def __init__(self, parent):
@@ -159,4 +113,6 @@ class UpdatesAvailable(QWidget):
 
     def applyUpdate(self):
         self.hide()
-        self.updating = UpdatingWindow(self.parent())
+        repo = git.Repo('../')
+        origin = repo.remote()
+        origin.pull()

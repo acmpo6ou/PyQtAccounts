@@ -105,18 +105,12 @@ def main():
         ''')
 
     if time_for_updates():
-        repo = git.Repo('../')
-        repo.git.fetch()
-
-        if DEBUG:
-            changes = list(repo.iter_commits('dev..origin/dev'))
-        else:
-            changes = list(repo.iter_commits('master..origin/master'))
-
-        if changes:
-            print('updating...')
-            win = UpdatesAvailable(window)
-    win = UpdatingWindow(window)
+        thread = QThread()
+        updating = Updating()
+        updating.moveToThread(thread)
+        updating.result.connect(lambda: UpdatesAvailable(window))
+        thread.started.connect(updating.run)
+        thread.start()
 
     sys.exit(app.exec_())
 
