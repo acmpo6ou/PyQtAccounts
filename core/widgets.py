@@ -4,12 +4,14 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import QKeySequence
+
 import os
 import genpass
+
 from account_forms import *
 from getaki import *
 from utils import *
-
+from updates import *
 
 class Tip(QLabel):
     def __init__(self, text=''):
@@ -283,6 +285,7 @@ class MenuBar(QMenuBar):
     def __init__(self, parent):
         QMenuBar.__init__(self, parent)
         self.parent = parent
+        self._thread = None
 
         self.File = self.addMenu('&File')
         self.quit = self.File.addAction(QIcon('../img/quit.svg'), '&Quit',
@@ -291,6 +294,10 @@ class MenuBar(QMenuBar):
         self.Edit = self.addMenu('&Edit')
         self.Edit.addAction(QIcon('../img/preferences.png'), '&Preferences',
                             self.preferences, QKeySequence('Ctrl+P'))
+
+        self.Updates = self.addMenu('&Updates')
+        self.Updates.addAction(QIcon('../img/update-available.svg'), '&Check for updates',
+                               self.checkForUpdates)
 
         self.Help = self.addMenu('&Help')
         self.Help.addAction(QIcon('../img/info.png'), 'About', about.exec,
@@ -302,7 +309,25 @@ class MenuBar(QMenuBar):
         QMessageBox.information(self.parent, 'Preferences',
                                 'Вибачте налаштування ще не готові, '
                                 'але будуть доступні у пізніших версіях.')
+    def checkForUpdates(self):
+        def mess(parent, changes):
+            if changes:
+                res = UpdatesAvailable(parent)
+            else:
+                res = QMessageBox.information(parent, "Оновлення", "Немає оновленнь.")
+            parent.res = res
 
+        thread = QThread()
+        updating = Updating()
+        updating.moveToThread(thread)
+        updating.result.connect(lambda changes: mess(self.parent, changes))
+        thread.started.connect(updating.run)
+        thread.start()
+
+        if self._thread and not self._thread.isFinished():
+            self._thread.exit()
+        self._thread = thread
+        self.updating = updating
 
 class AppMenuBar(MenuBar):
     def __init__(self, parent):

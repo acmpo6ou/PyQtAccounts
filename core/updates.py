@@ -54,7 +54,7 @@ def getChangeLog(repo):
     return res
 
 class Updating(QObject):
-    result = pyqtSignal()
+    result = pyqtSignal(bool)
 
     def run(self):
         import git
@@ -67,8 +67,7 @@ class Updating(QObject):
         else:
             changes = list(repo.iter_commits('master..origin/master'))
 
-        if changes:
-            self.result.emit()
+        self.result.emit(bool(changes))
 
 class UpdatesAvailable(QWidget):
     def __init__(self, parent):
