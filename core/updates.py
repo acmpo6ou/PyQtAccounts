@@ -24,7 +24,9 @@ import git
 import widgets
 import os
 import threading
+
 from const import *
+import utils
 
 def time_for_updates():
     settings = QSettings('PyTools', 'PyQtAccounts')
@@ -122,3 +124,21 @@ class UpdatesAvailable(QWidget):
         t = threading.Thread(target=os.system, args=('../run.sh',), daemon=True)
         t.start()
         self.parent().close()
+
+class ShowChangelog(QDialog):
+    def __init__(self, parent):
+        QDialog.__init__(self, parent)
+        self.show()
+        self.setWindowTitle("Changelog")
+        self.resize(800, 500)
+
+        version = utils.getVersion()
+        changelog = '<h4>PyQtAccounts {}:</h4><ul>'.format(version)
+        for change in open('../change.log'):
+            changelog += '<li>{}</li>\n'.format(change)
+        changelog += '</ul>'
+        self.changelogLabel = QLabel(changelog)
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.changelogLabel)
+        self.setLayout(layout)
