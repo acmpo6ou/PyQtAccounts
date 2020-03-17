@@ -174,6 +174,8 @@ class MenuBar(QMenuBar):
         self.Updates = self.addMenu('&Updates')
         self.Updates.addAction(QIcon('../img/update-available.svg'), '&Check for updates',
                                self.checkForUpdates)
+        self.Updates.addAction(QIcon('../img/changelog.svg'), '&View changelog',
+                               lambda: ShowChangelog(parent))
 
         self.Help = self.addMenu('&Help')
         self.Help.addAction(QIcon('../img/info.png'), 'About', about.exec,
