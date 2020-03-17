@@ -19,10 +19,11 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-import utils
-import widgets
-from myutils import akidump
+
+import akidump
 from forms import *
+from utils import *
+from widgets import *
 
 HELP_TIP = ("<pre>Поки що у вас немає жодного акаунта.\n" +
                           '{0:<36}\n'.format("Спробуйте:") +
@@ -111,7 +112,7 @@ class CreateAccForm(CreateAcc):
 
     def validateName(self, event):
         name = self.accountInput.text()
-        if name in utils.getAkiList(self.db):
+        if name in getAkiList(self.db):
             self.nameError.show()
             self.createButton.setEnabled(False)
             self.validate['name'] = False
@@ -158,7 +159,7 @@ class EditAccForm(CreateAcc):
 
     def validateName(self, event):
         name = self.accountInput.text()
-        if name in utils.getAkiList(self.db) and name != self.account.account:
+        if name in getAkiList(self.db) and name != self.account.account:
             self.nameError.show()
             self.createButton.setEnabled(False)
             self.validate['name'] = False
@@ -191,7 +192,7 @@ class EditAccForm(CreateAcc):
             self.list.model.sort(0)
             self.clear()
 
-            if not utils.getAkiList(self.db):
+            if not getAkiList(self.db):
                 self.tips['help'].setText(HELP_TIP)
 
     def setAcc(self, index):
@@ -213,7 +214,7 @@ class EditAccForm(CreateAcc):
                 self.dateInput.setDate(QDate(year, month, day))
 
                 self.commentInput.setText(self.account.comment)
-                utils.hide(self.forms, self.tips)
+                hide(self.forms, self.tips)
                 self.show()
                 return
 
@@ -259,7 +260,7 @@ class ShowAccForm(QWidget):
             label.setTextInteractionFlags(Qt.TextSelectableByMouse)
             label.setCursor(QCursor(Qt.IBeamCursor))
 
-        self.copyTip = widgets.Tip('Ви можете натиснути гарячі клавіші Ctrl+C\n'
+        self.copyTip = Tip('Ви можете натиснути гарячі клавіші Ctrl+C\n'
                                  'аби скопіювати пароль одразу.')
 
         layout = QVBoxLayout()

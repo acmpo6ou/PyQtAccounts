@@ -18,14 +18,12 @@
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
+
 import glob
-import os.path
+import git
 import os
 import tarfile
 from string import *
-from account_forms import *
-from getaki import *
-
 
 def getDbList():
     return [os.path.basename(db).replace('.db', '') for db in
@@ -33,6 +31,12 @@ def getDbList():
 
 def getAkiList(db):
     return [acc for acc in db]
+
+def getVersion():
+    repo = git.Repo('../')
+    tags = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
+    version = tags[-1]
+    return version
 
 def hide(*args):
     for arg in args:
@@ -46,19 +50,6 @@ def validName(name):
         if c in valid:
             result += c
     return result
-
-def selectDb(obj, index):
-    obj.index = index
-
-    for win in obj.windows:
-        if index.data() == win.name:
-            hide(obj.forms, obj.tips)
-            obj.tips['already-open'].show()
-            return
-    obj.forms['open'].setDb(index)
-    hide(obj.forms, obj.tips)
-    obj.forms['open'].show()
-    obj.forms['open'].passField.passInput.setFocus()
 
 def export(name, path, parent):
     name = name.data()

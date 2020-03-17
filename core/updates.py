@@ -21,10 +21,11 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
 import git
-import widgets
 import os
 import threading
+
 from const import *
+from utils import *
 
 def time_for_updates():
     settings = QSettings('PyTools', 'PyQtAccounts')
@@ -54,7 +55,7 @@ def getChangeLog(repo):
     return res
 
 class Updating(QObject):
-    result = pyqtSignal()
+    result = pyqtSignal(bool)
 
     def run(self):
         import git
@@ -67,8 +68,7 @@ class Updating(QObject):
         else:
             changes = list(repo.iter_commits('master..origin/master'))
 
-        if changes:
-            self.result.emit()
+        self.result.emit(bool(changes))
 
 class UpdatesAvailable(QWidget):
     def __init__(self, parent):
@@ -80,7 +80,7 @@ class UpdatesAvailable(QWidget):
         self.resize(1000, 500)
         self.show()
 
-        self.title = widgets.Title('<h3>Доступно нове оновлення</h3>')
+        self.title = Title('<h3>Доступно нове оновлення</h3>')
         self.title.setMinimumWidth(800)
         self.icon = QLabel()
         self.icon.setPixmap(QPixmap('../img/update-available.svg'))
@@ -123,3 +123,21 @@ class UpdatesAvailable(QWidget):
         t = threading.Thread(target=os.system, args=('../run.sh',), daemon=True)
         t.start()
         self.parent().close()
+
+class ShowChangelog(QDialog):
+    def __init__(self, parent):
+        QDialog.__init__(self, parent)
+        self.show()
+        self.setWindowTitle("Changelog")
+        self.resize(800, 500)
+
+        version = getVersion()
+        changelog = '<h4>PyQtAccounts {}:</h4><ul>'.format(version)
+        for change in open('../change.log'):
+            changelog += '<li>{}</li>\n'.format(change)
+        changelog += '</ul>'
+        self.changelogLabel = QLabel(changelog)
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.changelogLabel)
+        self.setLayout(layout)

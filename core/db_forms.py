@@ -20,10 +20,10 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
-from utils import *
+from forms import *
 from widgets import *
 from getaki import *
-from forms import *
+from windows import *
 
 from cryptography.exceptions import InvalidSignature
 from cryptography.fernet import InvalidToken
@@ -60,8 +60,8 @@ class CreateDbForm(CreateForm):
         self.tips['help'].setText("Виберіть базу данних")
 
     def validateName(self, event):
-        name = utils.validName(self.nameInput.text())
-        if name in utils.getDbList():
+        name = validName(self.nameInput.text())
+        if name in getDbList():
             self.nameError.show()
             self.createButton.setEnabled(False)
             self.validate['name'] = False
@@ -184,7 +184,7 @@ class OpenDbForm(QWidget):
 
         self.title = Title()
         self.passLabel = QLabel('Пароль:')
-        self.passField = widgets.PasswordField('введіть пароль')
+        self.passField = PasswordField('введіть пароль')
         self.passField.passInput.returnPressed.connect(self.open)
 
         self.incorrectPass = Error('Неправильний пароль!')

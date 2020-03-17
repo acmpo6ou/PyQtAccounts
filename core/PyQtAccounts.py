@@ -108,7 +108,7 @@ def main():
         thread = QThread()
         updating = Updating()
         updating.moveToThread(thread)
-        updating.result.connect(lambda: UpdatesAvailable(window))
+        updating.result.connect(lambda changes: changes and UpdatesAvailable(window))
         thread.started.connect(updating.run)
         thread.start()
 
@@ -144,6 +144,7 @@ try:
     from account_forms import *
     from utils import *
     from widgets import *
+    from windows import *
     from updates import *
     from const import *
 

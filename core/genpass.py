@@ -16,7 +16,8 @@
 # You should have received a copy of the GNU General Public License
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
 
-import random, sys, string
+import random
+import string
 
 def main(symbols = "", length=16):
     symbs = ''
