@@ -127,9 +127,9 @@ class UpdatesAvailable(QWidget):
 class ShowChangelog(QDialog):
     def __init__(self, parent):
         QDialog.__init__(self, parent)
-        self.show()
         self.setWindowTitle("Changelog")
         self.resize(800, 500)
+        self.show()
 
         version = getVersion()
         changelog = '<h4>PyQtAccounts {}:</h4><ul>'.format(version)
@@ -137,6 +137,7 @@ class ShowChangelog(QDialog):
             changelog += '<li>{}</li>\n'.format(change)
         changelog += '</ul>'
         self.changelogLabel = QLabel(changelog)
+        self.changelogLabel.setWordWrap(True)
 
         layout = QVBoxLayout()
         layout.addWidget(self.changelogLabel)

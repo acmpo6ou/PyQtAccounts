@@ -55,9 +55,3 @@ def loads(data):
                           comment)
         res[accountname] = account
     return res
-
-def main():
-    pass
-
-if __name__ == '__main__':
-    main()

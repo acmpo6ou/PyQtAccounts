@@ -82,9 +82,9 @@ def selectDb(obj, index):
     obj.forms['open'].show()
     obj.forms['open'].passField.passInput.setFocus()
 
-class Dbs(QVBoxLayout):
+class Dbs(QWidget):
     def __init__(self, forms, windows, tips):
-        QVBoxLayout.__init__(self)
+        super().__init__()
         self.forms = forms
         self.windows = windows
         self.tips = tips
@@ -101,8 +101,10 @@ class Dbs(QVBoxLayout):
         self.forms['create'].list = self.list
         self.forms['create'].tips = tips
 
-        self.addLayout(self.panel)
-        self.addWidget(self.list)
+        layout = QVBoxLayout()
+        layout.addLayout(self.panel)
+        layout.addWidget(self.list)
+        self.setLayout(layout)
 
     def add(self):
         hide(self.forms, self.tips)
@@ -214,7 +216,7 @@ class AppMenuBar(MenuBar):
         MenuBar.__init__(self, parent)
 
         self.new = QAction(QIcon('../img/list-add.svg'), '&New database...')
-        self.new.triggered.connect(parent.dbs.layout().panel.addButton.click)
+        self.new.triggered.connect(parent.dbs.panel.addButton.click)
         self.new.setShortcut(QKeySequence('Ctrl+N'))
 
         self._import = QAction(QIcon('../img/import.png'), '&Import database...')
@@ -239,7 +241,7 @@ class AppMenuBar(MenuBar):
             _import(path, self.parent)
 
     def Export(self):
-        name = self.parent.dbs.layout().list.index
+        name = self.parent.dbs.list.index
         if name:
             home = os.getenv('HOME')
             path = QFileDialog.getSaveFileName(
@@ -252,8 +254,8 @@ class AppMenuBar(MenuBar):
                 path += '.tar'
             export(name, path, self.parent)
         else:
-            tips = self.parent.dbs.layout().tips
-            forms = self.parent.dbs.layout().forms
+            tips = self.parent.dbs.tips
+            forms = self.parent.dbs.forms
             hide(tips, forms)
             tips['export'].show()
 
