@@ -376,7 +376,7 @@ class FinishPage(QWizardPage):
 
     def initializePage(self):
         initPage = self._parent.initPage
-        cwd = initPage.folder
+        cwd = initPage.folder + '/PyQtAccounts/'
         desktop = initPage.desktopCheckbox.isChecked()
         startmenu = initPage.menuCheckbox.isChecked()
         from pyshortcuts import make_shortcut
