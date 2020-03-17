@@ -16,9 +16,8 @@
 # You should have received a copy of the GNU General Public License
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
 
-import sys, os, base64
-import os.path
-from myutils import akidump
+import os, base64
+import akidump
 
 from cryptography.fernet import Fernet
 from cryptography.hazmat.backends import default_backend

@@ -144,6 +144,7 @@ try:
     from account_forms import *
     from utils import *
     from widgets import *
+    from windows import *
     from updates import *
     from const import *
 

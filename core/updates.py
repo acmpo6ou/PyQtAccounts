@@ -21,12 +21,10 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
 import git
-import widgets
 import os
 import threading
 
 from const import *
-import utils
 
 def time_for_updates():
     settings = QSettings('PyTools', 'PyQtAccounts')
@@ -81,7 +79,7 @@ class UpdatesAvailable(QWidget):
         self.resize(1000, 500)
         self.show()
 
-        self.title = widgets.Title('<h3>Доступно нове оновлення</h3>')
+        self.title = Title('<h3>Доступно нове оновлення</h3>')
         self.title.setMinimumWidth(800)
         self.icon = QLabel()
         self.icon.setPixmap(QPixmap('../img/update-available.svg'))
@@ -132,7 +130,7 @@ class ShowChangelog(QDialog):
         self.setWindowTitle("Changelog")
         self.resize(800, 500)
 
-        version = utils.getVersion()
+        version = getVersion()
         changelog = '<h4>PyQtAccounts {}:</h4><ul>'.format(version)
         for change in open('../change.log'):
             changelog += '<li>{}</li>\n'.format(change)
