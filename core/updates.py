@@ -26,6 +26,7 @@ import threading
 
 from const import *
 from utils import *
+from widgets import *
 
 def time_for_updates():
     settings = QSettings('PyTools', 'PyQtAccounts')
