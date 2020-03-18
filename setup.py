@@ -420,7 +420,7 @@ class FinishPage(QWizardPage):
                     file.write(menu.replace('.ico', ''))
 
         run = open(cwd+'run.sh').read()
-        run = run.replace('cd ./core', 'cd {}/core'.format(cwd))
+        run = run.replace('cd ./core', 'cd {}core'.format(cwd))
         with open(cwd+'run.sh', 'w') as runfile:
             runfile.write(run)
 
