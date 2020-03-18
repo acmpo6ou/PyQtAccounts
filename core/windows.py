@@ -26,7 +26,53 @@ from widgets import *
 from updates import *
 from utils import *
 from getaki import *
+import tarfile
 from account_forms import *
+
+def export(name, path, parent):
+    name = name.data()
+    try:
+        file = tarfile.open(path, 'w')
+        file.add('../src/{}.db'.format(name))
+        file.add('../src/{}.bin'.format(name))
+        file.close()
+    except Exception:
+        QMessageBox.critical(parent, 'Помилка!', 'Експорт бази данних '
+                                                 'завершився невдачею.')
+        raise
+    else:
+        QMessageBox.information(parent, 'Експорт', 'Успішно експортовано базу '
+                                        'данних <i><b>{}</b></i>'.format(name))
+
+def _import(path, parent):
+    try:
+        tar = tarfile.open(path)
+        for i, file in enumerate(tar.getmembers()):
+            if '.db' not in file.name and '.bin' not in file.name:
+                raise Exception('Невірний файл!')
+
+        name = os.path.basename(file.name).replace('.db', '').replace('.bin', '')
+
+        if i != 1:
+            raise Exception('Невірний файл!')
+        tar.extractall('../src/')
+
+        model = parent.dbs.list.model
+        list = parent.dbs.list
+
+        for item in model.findItems(name):
+            model.removeRow(item.row())
+
+        item = QStandardItem(list.icon, name)
+        model.appendRow(item)
+        model.sort(0)
+        parent.dbs.tips['help'].setText("Виберіть базу данних")
+
+    except Exception as err:
+        QMessageBox.critical(parent, 'Помилка!', str(err))
+    else:
+        QMessageBox.information(parent, 'Імпорт',
+                'Успішно імпортовано базу данних <i><b>{}</b></i>'.format(name))
 
 class Panel(QHBoxLayout):
     def __init__(self, add, edit):

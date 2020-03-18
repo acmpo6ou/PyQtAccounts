@@ -22,7 +22,6 @@ from PyQt5.QtGui import *
 import glob
 import git
 import os
-import tarfile
 from string import *
 
 def getDbList():
@@ -50,47 +49,3 @@ def validName(name):
         if c in valid:
             result += c
     return result
-
-def export(name, path, parent):
-    name = name.data()
-    try:
-        file = tarfile.open(path, 'w')
-        os.chdir(os.path.abspath(__file__).replace('utils.py', '../src'))
-        file.add('{}.db'.format(name))
-        file.add('{}.bin'.format(name))
-        os.chdir(os.path.abspath(__file__).replace('utils.py', ''))
-        file.close()
-    except Exception:
-        QMessageBox.critical(parent, 'Помилка!', 'Експорт бази данних '
-                                                 'завершився невдачею.')
-    else:
-        QMessageBox.information(parent, 'Експорт', 'Успішно експортовано базу '
-                                        'данних <i><b>{}</b></i>'.format(name))
-
-def _import(path, parent):
-    try:
-        tar = tarfile.open(path)
-        for i, file in enumerate(tar.getmembers()):
-            if '.db' not in file.name and '.bin' not in file.name:
-                raise Exception('Невірний файл!')
-            name = file.name.replace('.db', '').replace('.bin', '')
-        if i != 1:
-            raise Exception('Невірний файл!')
-        tar.extractall('../src/')
-
-        model = parent.dbs.list.model
-        list = parent.dbs.list
-
-        for item in model.findItems(name):
-            model.removeRow(item.row())
-
-        item = QStandardItem(list.icon, name)
-        model.appendRow(item)
-        model.sort(0)
-        parent.dbs.tips['help'].setText("Виберіть базу данних")
-
-    except Exception as err:
-        QMessageBox.critical(parent, 'Помилка!', str(err))
-    else:
-        QMessageBox.information(parent, 'Імпорт',
-                'Успішно імпортовано базу данних <i><b>{}</b></i>'.format(name))
