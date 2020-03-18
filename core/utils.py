@@ -78,8 +78,8 @@ def _import(path, parent):
             raise Exception('Невірний файл!')
         tar.extractall('../src/')
 
-        model = parent.dbs.layout().list.model
-        list = parent.dbs.layout().list
+        model = parent.dbs.list.model
+        list = parent.dbs.list
 
         for item in model.findItems(name):
             model.removeRow(item.row())
@@ -87,7 +87,7 @@ def _import(path, parent):
         item = QStandardItem(list.icon, name)
         model.appendRow(item)
         model.sort(0)
-        parent.dbs.layout().tips['help'].setText("Виберіть базу данних")
+        parent.dbs.tips['help'].setText("Виберіть базу данних")
 
     except Exception as err:
         QMessageBox.critical(parent, 'Помилка!', str(err))

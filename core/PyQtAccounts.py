@@ -53,13 +53,12 @@ def main():
     open_db_form = OpenDbForm(helpTip, windows, parent=window)
     edit_db_form = EditDbForm(tips, windows, parent=window)
 
-    dbs = QWidget()
     forms = {
         'create': create_db_form,
         'edit': edit_db_form,
         'open': open_db_form
     }
-    dbs.setLayout(Dbs(forms, windows, tips))
+    dbs = Dbs(forms, windows, tips)
     dbs.setMaximumWidth(200)
 
     splitter = QSplitter()

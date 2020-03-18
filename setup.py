@@ -162,6 +162,7 @@ class PipInstall(QObject):
 class RequirementsPage(QWizardPage):
     def __init__(self, parent=None):
         super(RequirementsPage, self).__init__(parent)
+        self._thread = None
         self.title = Title('Залежності')
         self.text = QLabel('<pre>PyQtAccounts вимагає наявності\n'
                            'певних пакетів. Ось перелік тих які\n'
@@ -206,14 +207,20 @@ class RequirementsPage(QWizardPage):
             return
 
         self.installButton.setEnabled(False)
-        self.thread = QThread()
+
+        if self._thread and not self._thread.isFinished():
+            self._thread.exit()
+
+        thread = QThread()
         self.install = PipInstall(self.reqs)
-        self.install.moveToThread(self.thread)
+        self.install.moveToThread(thread)
         self.install.result.connect(self.install_progress)
-        self.thread.started.connect(self.install.run)
-        self.thread.start()
+        thread.started.connect(self.install.run)
+        thread.start()
         self.installLabel.show()
         self.installProgress.show()
+
+        self._thread = thread
 
     def install_progress(self, res, req):
         self.progress += 100 / len(self.reqs.to_install)
@@ -276,6 +283,7 @@ class Initialize(QObject):
 class InitPage(QWizardPage):
     def __init__(self, parent=None):
         super(InitPage, self).__init__(parent)
+        self._thread = None
         self.folder = os.getenv('HOME')
         self.title = Title('Ініціалізація')
         self.errors = Errors()
@@ -338,13 +346,19 @@ class InitPage(QWizardPage):
             self.progress.setValue(100)
 
         if self.progress.value() != 100:
-            self.thread = QThread()
+
+            if self._thread and not self._thread.isFinished():
+                self._thread.exit()
+
+            thread = QThread()
             self.init = Initialize(self.folder)
-            self.init.moveToThread(self.thread)
+            self.init.moveToThread(thread)
             self.init.result.connect(self.check_result)
             self.init.progress.connect(self.init_progress)
-            self.thread.started.connect(self.init.run)
-            self.thread.start()
+            thread.started.connect(self.init.run)
+            thread.start()
+
+            self._thread = thread
 
     def check_result(self, res):
         self.errors.hide()
