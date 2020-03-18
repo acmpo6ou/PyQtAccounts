@@ -415,7 +415,7 @@ class FinishPage(QWizardPage):
                     file.write(desktop.replace('.ico', ''))
 
             if startmenu:
-                menu = open(home+'/Desktop/PyQtAccounts.desktop').read()
+                menu = open(home+'/.local/share/applications/PyQtAccounts.desktop').read()
                 with open(home+'/.local/share/applications/PyQtAccounts.desktop', 'w') as file:
                     file.write(menu.replace('.ico', ''))
 
