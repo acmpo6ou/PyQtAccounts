@@ -211,7 +211,7 @@ class RequirementsPage(QWizardPage):
         if self._thread and not self._thread.isFinished():
             self._thread.exit()
 
-        thread = QThread()
+        thread = QThread(parent=self)
         self.install = PipInstall(self.reqs)
         self.install.moveToThread(thread)
         self.install.result.connect(self.install_progress)
@@ -350,7 +350,7 @@ class InitPage(QWizardPage):
             if self._thread and not self._thread.isFinished():
                 self._thread.exit()
 
-            thread = QThread()
+            thread = QThread(parent=self)
             self.init = Initialize(self.folder)
             self.init.moveToThread(thread)
             self.init.result.connect(self.check_result)

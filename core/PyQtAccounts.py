@@ -104,7 +104,7 @@ def main():
         ''')
 
     if time_for_updates():
-        thread = QThread()
+        thread = QThread(parent=window)
         updating = Updating()
         updating.moveToThread(thread)
         updating.result.connect(lambda changes: changes and UpdatesAvailable(window))

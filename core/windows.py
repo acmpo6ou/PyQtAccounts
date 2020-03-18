@@ -198,7 +198,7 @@ class MenuBar(QMenuBar):
                 res = QMessageBox.information(parent, "Оновлення", "Немає оновленнь.")
             parent.res = res
 
-        thread = QThread()
+        thread = QThread(parent=self)
         updating = Updating()
         updating.moveToThread(thread)
         updating.result.connect(lambda changes: mess(self.parent, changes))
