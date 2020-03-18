@@ -1,5 +1,7 @@
 PyQtAccounts use external libraries and make use of the following persons' or companies' code:
 
-* Copyright © 2001-2020.  Python Software Foundation
+* Copyright © 2001-2020   Python Software Foundation
 * Copyright © 2020        The Qt Company Ltd.
-* Copyright © 2013-2017,  Individual Contributors Revision c0dbbb52. 
+* Copyright © 2013-2017   Individual contributors.
+* Copyright © 2008, 2009  Michael Trier and contributors
+* Copyright © 2018        Matthew Newville, The University of Chicago
