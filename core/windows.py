@@ -330,8 +330,11 @@ class DbMenuBar(MenuBar):
         db = self.parent.db
         name = self.parent.name
         password = self.parent.password
-        encryptDatabase(name, db, password)
+        token = encryptDatabase(name, db, password)
 
+        dbfile = '../src/' + name + '.db'
+        with open(dbfile, 'wb') as file:
+            file.write(token)
 
 class DbWindow(QMainWindow):
     def __init__(self, windows, name, db, password):
@@ -378,6 +381,15 @@ class DbWindow(QMainWindow):
         self.show()
 
     def closeEvent(self, event):
+        name = self.name
+        password = self.password
+        db = openDatabase(name, password)
+
+        if isEqual(db, self.db):
+            self.ask = False
+        else:
+            self.ask = True
+
         if self.ask:
             action = QMessageBox.question(self, 'Увага!',
                                           'Ви певні що хочете вийти?\n'

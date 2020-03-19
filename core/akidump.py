@@ -25,6 +25,17 @@ class Account:
         self.date = date
         self.comment = comment
 
+    def __eq__(self, other):
+        attrs = [a for a in dir(self) if not a.startswith('__')]
+
+        for a in attrs:
+            my = getattr(self, a)
+            his = getattr(other, a)
+            if my != his:
+                return False
+        else:
+            return True
+
 SEPARATOR = 's' + '-='*30 + 'e'
 
 def dumps(data):

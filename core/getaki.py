@@ -54,7 +54,6 @@ def openDatabase(dbname, password):
     return db
 
 def encryptDatabase(dbname, db, password):
-    dbfile = '../src/' + dbname + '.db'
     saltfile = '../src/' + dbname + '.bin'
 
     with open(saltfile, 'rb') as file:
@@ -70,11 +69,25 @@ def encryptDatabase(dbname, db, password):
     f = Fernet(key)
     data = akidump.dumps(db)
     token = f.encrypt(data)
-    with open(dbfile, 'wb') as db:
-        db.write(token)
+    return token
 
 def newDatabase(dbname, password):
     saltfile = '../src/' + dbname + '.bin'
+    dbfile = '../src/' + dbname + '.db'
+
     db = {}
     generateSalt(saltfile)
-    encryptDatabase(dbname, db, password)
+    token = encryptDatabase(dbname, db, password)
+
+    with open(dbfile, 'wb') as file:
+        file.write(token)
+
+def isEqual(first, second):
+    if set(first) != set(second):
+        return False
+
+    for acc in first:
+        if first[acc] != second[acc]:
+            return False
+    else:
+        return True
