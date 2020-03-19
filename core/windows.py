@@ -287,13 +287,13 @@ class AppMenuBar(MenuBar):
             _import(path, self.parent)
 
     def Export(self):
-        name = self.parent.dbs.list.index
+        name = self.parent.dbs.list.index.data()
         if name:
             home = os.getenv('HOME')
             path = QFileDialog.getSaveFileName(
                 caption='Експортувати базу данних',
                 filter='Tarball (*.tar)',
-                directory=home)[0]
+                directory=f'{home}/{name}.tar')[0]
             if not path:
                 return
             if not path.endswith('.tar'):
