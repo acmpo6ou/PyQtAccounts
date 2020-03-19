@@ -30,7 +30,6 @@ import tarfile
 from account_forms import *
 
 def export(name, path, parent):
-    name = name.data()
     try:
         file = tarfile.open(path, 'w')
         file.add('../src/{}.db'.format(name))
@@ -287,24 +286,25 @@ class AppMenuBar(MenuBar):
             _import(path, self.parent)
 
     def Export(self):
-        name = self.parent.dbs.list.index.data()
-        if name:
-            home = os.getenv('HOME')
-            path = QFileDialog.getSaveFileName(
-                caption='Експортувати базу данних',
-                filter='Tarball (*.tar)',
-                directory=f'{home}/{name}.tar')[0]
-            if not path:
-                return
-            if not path.endswith('.tar'):
-                path += '.tar'
-            export(name, path, self.parent)
-        else:
+        try:
+            name = self.parent.dbs.list.index.data()
+        except AttributeError:
             tips = self.parent.dbs.tips
             forms = self.parent.dbs.forms
             hide(tips, forms)
             tips['export'].show()
+            return 
 
+        home = os.getenv('HOME')
+        path = QFileDialog.getSaveFileName(
+            caption='Експортувати базу данних',
+            filter='Tarball (*.tar)',
+            directory=f'{home}/{name}.tar')[0]
+        if not path:
+            return
+        if not path.endswith('.tar'):
+            path += '.tar'
+        export(name, path, self.parent)
 
 class DbMenuBar(MenuBar):
     def __init__(self, parent):
