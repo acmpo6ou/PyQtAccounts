@@ -49,3 +49,11 @@ def validName(name):
         if c in valid:
             result += c
     return result
+
+class Index:
+    '''Fake index for main database settings.'''
+    def __init__(self, name):
+        self.name = name
+
+    def data(self):
+        return self.name

@@ -17,6 +17,7 @@
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
 
 from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 import sys
 import os
@@ -70,6 +71,12 @@ def main():
 
     splitter.addWidget(dbs)
     window.dbs = dbs
+
+    sets = QSettings('PyTools', 'PyQtAccounts')
+    is_main_db = sets.value('advanced/is_main_db', False, type=bool)
+    main_db = sets.value('advanced/main_db', '', type=str)
+    if is_main_db and main_db in getDbList():
+        window.dbs.list.selected(Index(main_db))
 
     def onClose(event):
         # Do not show the close confirmation popup if there is no opened
