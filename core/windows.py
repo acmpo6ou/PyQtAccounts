@@ -464,5 +464,41 @@ class About(QDialog):
         self.layout.addLayout(self.titleLayout)
         self.layout.addWidget(self.content)
 
-
 about = About()
+
+class Settings(QDialog):
+    def __init__(self, parent):
+        QDialog.__init__(self, parent)
+        self.setWindowTitle('Settings - PyQtAccounts')
+        # self.setWidth(800, 500)
+        self.show()
+        settings = QSettings('PyTools', 'PyQtAccounts')
+
+        label = QLabel('<h4>Швидке введення</h4>')
+
+        checkbox = QCheckBox('Показувати форму для введення пароля одразу після запуску')
+        checkbox.setChecked(settings.value('advanced/is_main_db', False))
+
+        dbs = QComboBox()
+        dbs.addItems(getDbList())
+        main_db = settings.value('advanced/main_db', None)
+        if main_db:
+            dbs.setCurrentText(main_db)
+
+        mainDbLayout = QVBoxLayout()
+        mainDbLayout.addWidget(label)
+        mainDbLayout.addWidget(checkbox)
+        mainDbLayout.addWidget(dbs)
+
+        self.saveButton = QPushButton('Зберегти')
+        self.closeButton = QPushButton('Скасувати')
+        self.closeButton.clicked.connect(self.hide)
+
+        buttonsLayout = QHBoxLayout()
+        buttonsLayout.addWidget(self.closeButton)
+        buttonsLayout.addWidget(self.saveButton)
+
+        layout = QVBoxLayout()
+        layout.addLayout(mainDbLayout)
+        layout.addLayout(buttonsLayout)
+        self.setLayout(layout)

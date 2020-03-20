@@ -111,6 +111,8 @@ def main():
         thread.started.connect(updating.run)
         thread.start()
 
+    settings = Settings(window)
+
     sys.exit(app.exec_())
 
 class ErrorWindow(QMessageBox):
