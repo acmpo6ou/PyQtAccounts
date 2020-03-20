@@ -231,9 +231,7 @@ class MenuBar(QMenuBar):
                             lambda: QMessageBox.aboutQt(parent))
 
     def preferences(self):
-        QMessageBox.information(self.parent, 'Preferences',
-                                'Вибачте налаштування ще не готові, '
-                                'але будуть доступні у пізніших версіях.')
+        self.parent.settings.show()
 
     def checkForUpdates(self):
         def mess(parent, changes):
@@ -471,26 +469,37 @@ class Settings(QDialog):
         QDialog.__init__(self, parent)
         self.setWindowTitle('Settings - PyQtAccounts')
         # self.setWidth(800, 500)
-        self.show()
-        settings = QSettings('PyTools', 'PyQtAccounts')
+        self.settings = QSettings('PyTools', 'PyQtAccounts')
 
-        label = QLabel('<h4>Швидке введення</h4>')
+        header = QLabel('<h4>Швидке введення</h4>')
+        label = QLabel('Головна база данних:')
 
         checkbox = QCheckBox('Показувати форму для введення пароля одразу після запуску')
-        checkbox.setChecked(settings.value('advanced/is_main_db', False))
+        checkbox.setChecked(self.settings.value('advanced/is_main_db', False, type=bool))
 
         dbs = QComboBox()
         dbs.addItems(getDbList())
-        main_db = settings.value('advanced/main_db', None)
+        main_db = self.settings.value('advanced/main_db', '', type=str)
         if main_db:
             dbs.setCurrentText(main_db)
+        elif 'main' in getDbList():
+            dbs.setCurrentText('main')
+
+        mainLayout = QHBoxLayout()
+        mainLayout.addWidget(label)
+        mainLayout.addWidget(dbs)
 
         mainDbLayout = QVBoxLayout()
-        mainDbLayout.addWidget(label)
+        mainDbLayout.addWidget(header)
         mainDbLayout.addWidget(checkbox)
-        mainDbLayout.addWidget(dbs)
+        mainDbLayout.addLayout(mainLayout)
+
+        mainDbLayout.checkbox = checkbox
+        mainDbLayout.dbs = dbs
+        self.mainDbLayout = mainDbLayout
 
         self.saveButton = QPushButton('Зберегти')
+        self.saveButton.clicked.connect(self.save)
         self.closeButton = QPushButton('Скасувати')
         self.closeButton.clicked.connect(self.hide)
 
@@ -502,3 +511,11 @@ class Settings(QDialog):
         layout.addLayout(mainDbLayout)
         layout.addLayout(buttonsLayout)
         self.setLayout(layout)
+
+    def save(self):
+        is_main_db = self.mainDbLayout.checkbox.isChecked()
+        self.settings.setValue('advanced/is_main_db', is_main_db)
+        main_db = self.mainDbLayout.dbs.currentText()
+        self.settings.setValue('advanced/main_db', main_db)
+
+        self.hide()

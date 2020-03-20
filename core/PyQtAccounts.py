@@ -112,6 +112,7 @@ def main():
         thread.start()
 
     settings = Settings(window)
+    window.settings = settings
 
     sys.exit(app.exec_())
 
