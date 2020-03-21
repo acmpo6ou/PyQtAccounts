@@ -107,7 +107,7 @@ def main():
         thread = QThread(parent=window)
         updating = Updating()
         updating.moveToThread(thread)
-        updating.result.connect(lambda changes: changes and UpdatesAvailable(window))
+        updating.result.connect(lambda changes, log: changes and UpdatesAvailable(window, log))
         thread.started.connect(updating.run)
         thread.start()
 

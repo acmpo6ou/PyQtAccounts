@@ -51,7 +51,7 @@ def getChangeLog():
         'https://raw.githubusercontent.com/Acmpo6ou/PyQtAccounts/master/change.log')]
 
 class Updating(QObject):
-    result = pyqtSignal(bool)
+    result = pyqtSignal(bool, list)
 
     def run(self):
         import git
@@ -63,11 +63,12 @@ class Updating(QObject):
             changes = list(repo.iter_commits('dev..origin/dev'))
         else:
             changes = list(repo.iter_commits('master..origin/master'))
+        changelog = getChangeLog()
 
-        self.result.emit(bool(changes))
+        self.result.emit(True, changelog)
 
 class UpdatesAvailable(QWidget):
-    def __init__(self, parent):
+    def __init__(self, parent, log):
         super().__init__()
         self.setParent(parent)
         self.setWindowTitle('Доступно нове оновлення')
@@ -89,7 +90,8 @@ class UpdatesAvailable(QWidget):
               "Переконайтеся що ви зберігли всі зміни до ваших баз данних перед оновленням.\n"
         self.text = QLabel(tip)
         changelog = '<h4>Що нового:</h4><ul>'
-        for change in getChangeLog():
+        print(log)
+        for change in log:
             changelog += '<li>{}</li>\n'.format(change)
         changelog += '</ul>'
         self.changelogLabel = QLabel(changelog)
