@@ -65,7 +65,7 @@ class Updating(QObject):
             changes = list(repo.iter_commits('master..origin/master'))
         changelog = getChangeLog()
 
-        self.result.emit(True, changelog)
+        self.result.emit(bool(changes), changelog)
 
 class UpdatesAvailable(QWidget):
     def __init__(self, parent, log):
