@@ -110,6 +110,17 @@ def main():
         <p>Система оновлення автоматично перевіряє, завантажує і встановлює оновлення.</p>
         ''')
 
+    reqs_list = ['git', 'pip3', 'xclip']
+    for req in reqs_list:
+        if os.system(f'which {req}'):
+            WarningWindow('''
+            <h3>Не всі пакети встановлено!</h3>
+            <p>Пакет {0} не встановлено, без певних пакетів PyQtAccounts буде працювати 
+            некоректно!</p>
+            <p>Встановіть {0} такою командою:</p>
+            <p>sudo apt install {0}</p>
+            '''.format(req))
+
     if time_for_updates():
         thread = QThread(parent=window)
         updating = Updating()
@@ -161,13 +172,16 @@ try:
 
     main()
 except ImportError as err:
-    if 'cryptography' in err.msg:
-        mess = '''Здається не всі бібліотеки встановлені.
-Переконайтеся що ви встановили бібліотеку cryptography.
-Якщо ні, спробуйте ввести в термінал цю кофманду:
-            pip3 install cryptography'''
-        ErrorWindow(mess, err)
-        sys.exit()
+    reqs_pip = ['setuptools', 'cryptography', 'git', 'pyshortcuts']  # git is gitpython module
+    for req in reqs_pip:
+        if req in err.msg:
+            req = req.replace('git', 'gitpython')
+            mess = ('<p>Здається не всі бібліотеки встановлені.</p>'
+                  f'<p>Переконайтеся що ви встановили бібліотеку {req}.</p>'
+                   '<p>Якщо ні, спробуйте ввести в термінал цю кофманду:</p>'
+                  f'<p><b>pip3 install {req}</b></p>')
+            ErrorWindow(mess, err)
+    sys.exit()
 except Exception as err:
     mess = '''Вибачте програма повинна припинити роботу через помилку.'''
     ErrorWindow(mess, err)

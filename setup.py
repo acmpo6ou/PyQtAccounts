@@ -22,7 +22,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
-reqs_list = ['git', 'pip3']
+reqs_list = ['git', 'pip3', 'xclip']
 reqs_pip = ['setuptools', 'cryptography', 'git', 'pyshortcuts']  # git is gitpython module
 
 

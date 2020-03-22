@@ -21,6 +21,8 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
 import akidump
+import os
+
 from forms import *
 from utils import *
 from widgets import *
@@ -261,7 +263,7 @@ class ShowAccForm(QWidget):
             label.setCursor(QCursor(Qt.IBeamCursor))
 
         self.copyTip = Tip('Ви можете натиснути гарячі клавіші Ctrl+C\n'
-                                 'аби скопіювати пароль одразу.')
+                           'аби скопіювати пароль і e-mail одразу.')
 
         layout = QVBoxLayout()
         layout.addWidget(self.account)
@@ -285,5 +287,10 @@ class ShowAccForm(QWidget):
         self.comment.setText('Коментарій: ' + account.comment)
 
     def copyAcc(self):
+        # to copy password
         clipboard = QGuiApplication.clipboard()
         clipboard.setText(self.password.text().replace('Пароль: ', ''))
+
+        # to copy e-mail
+        email = self.email.text().replace('E-mail: ', '')
+        os.system(f'echo {email} | xclip')
