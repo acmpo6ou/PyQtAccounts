@@ -27,6 +27,7 @@ import threading
 from const import *
 from utils import *
 from widgets import *
+from urllib.request import urlopen
 
 def time_for_updates():
     settings = QSettings('PyTools', 'PyQtAccounts')
@@ -45,18 +46,12 @@ def time_for_updates():
             return False
 
 
-def getChangeLog(repo):
-    if DEBUG:
-        commits = repo.iter_commits('dev..origin/dev')
-    else:
-        commits = repo.iter_commits('master..origin/master')
-    res = []
-    for commit in commits:
-        res.append(commit.message)
-    return res
+def getChangeLog():
+    return [change.decode().rstrip() for change in urlopen(
+        'https://raw.githubusercontent.com/Acmpo6ou/PyQtAccounts/master/change.log')]
 
 class Updating(QObject):
-    result = pyqtSignal(bool)
+    result = pyqtSignal(bool, list)
 
     def run(self):
         import git
@@ -68,13 +63,13 @@ class Updating(QObject):
             changes = list(repo.iter_commits('dev..origin/dev'))
         else:
             changes = list(repo.iter_commits('master..origin/master'))
+        changelog = getChangeLog()
 
-        self.result.emit(bool(changes))
+        self.result.emit(bool(changes), changelog)
 
 class UpdatesAvailable(QWidget):
-    def __init__(self, parent):
+    def __init__(self, parent, log):
         super().__init__()
-        repo = git.Repo('../')
         self.setParent(parent)
         self.setWindowTitle('Доступно нове оновлення')
         self.setWindowFlags(Qt.Dialog)
@@ -95,10 +90,12 @@ class UpdatesAvailable(QWidget):
               "Переконайтеся що ви зберігли всі зміни до ваших баз данних перед оновленням.\n"
         self.text = QLabel(tip)
         changelog = '<h4>Що нового:</h4><ul>'
-        for change in getChangeLog(repo):
+        print(log)
+        for change in log:
             changelog += '<li>{}</li>\n'.format(change)
         changelog += '</ul>'
         self.changelogLabel = QLabel(changelog)
+        self.changelogLabel.setWordWrap(True)
 
         self.laterButton = QPushButton('Пізніше')
         self.updateButton = QPushButton('Оновити')
