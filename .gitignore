@@ -131,5 +131,4 @@ dmypy.json
 # My rules
 
 .idea/
-test/*
 !change.log
