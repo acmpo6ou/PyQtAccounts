@@ -22,117 +22,123 @@ from PyQt5.QtGui import *
 import sys
 import os
 
-def main():
-    window = QMainWindow()
-    window.setWindowTitle("PyQtAccounts - PyQt5")
-    window.resize(1000, 500)
 
-    window.name = ''
-    window.setWindowIcon(QIcon('../img/icon.svg'))
-    windows = [window]
+class Window(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("PyQtAccounts - PyQt5")
+        self.resize(1000, 500)
+        self.show()
 
-    helpTip = HelpTip(HELP_TIP_DB)
-    if getDbList():
-        helpTip = HelpTip("Виберіть базу данних")
-    helpTip.show()
+        self.name = ''
+        self.setWindowIcon(QIcon('../img/icon.svg'))
+        windows = [self]
 
-    alreadyOpen = HelpTip('Базу данних вже відкрито')
+        helpTip = HelpTip(HELP_TIP_DB)
+        if getDbList():
+            helpTip = HelpTip("Виберіть базу данних")
+        helpTip.show()
 
-    editTip = WarningTip('Ви повинні відкрити базу данних перед тим як '
-                         'редагувати її!')
+        alreadyOpen = HelpTip('Базу данних вже відкрито')
 
-    exportTip = WarningTip("Виберіть базу данних яку хочете експортувати.")
+        editTip = WarningTip('Ви повинні відкрити базу данних перед тим як '
+                             'редагувати її!')
 
-    tips = {
-        'help': helpTip,
-        'already-open': alreadyOpen,
-        'edit-w': editTip,
-        'export': exportTip
-    }
+        exportTip = WarningTip("Виберіть базу данних яку хочете експортувати.")
 
-    create_db_form = CreateDbForm(helpTip, parent=window)
-    open_db_form = OpenDbForm(helpTip, windows, parent=window)
-    edit_db_form = EditDbForm(tips, windows, parent=window)
+        tips = {
+            'help': helpTip,
+            'already-open': alreadyOpen,
+            'edit-w': editTip,
+            'export': exportTip
+        }
 
-    forms = {
-        'create': create_db_form,
-        'edit': edit_db_form,
-        'open': open_db_form
-    }
-    dbs = Dbs(forms, windows, tips)
-    dbs.setMaximumWidth(200)
+        create_db_form = CreateDbForm(helpTip, parent=self)
+        open_db_form = OpenDbForm(helpTip, windows, parent=self)
+        edit_db_form = EditDbForm(tips, windows, parent=self)
 
-    splitter = QSplitter()
-    for tip in tips:
-        splitter.addWidget(tips[tip])
+        forms = {
+            'create': create_db_form,
+            'edit': edit_db_form,
+            'open': open_db_form
+        }
+        dbs = Dbs(forms, windows, tips)
+        dbs.setMaximumWidth(200)
 
-    for form in forms:
-        splitter.addWidget(forms[form])
+        splitter = QSplitter()
+        for tip in tips:
+            splitter.addWidget(tips[tip])
 
-    splitter.addWidget(dbs)
-    window.dbs = dbs
+        for form in forms:
+            splitter.addWidget(forms[form])
 
-    sets = QSettings('PyTools', 'PyQtAccounts')
-    is_main_db = sets.value('advanced/is_main_db', False, type=bool)
-    main_db = sets.value('advanced/main_db', '', type=str)
-    if is_main_db and main_db in getDbList():
-        window.dbs.list.selected(Index(main_db))
+        splitter.addWidget(dbs)
+        self.dbs = dbs
 
-    def onClose(event):
-        # Do not show the close confirmation popup if there is no opened
-        # databases.
-        if len(windows) == 1:
-            event.accept()
-            return
+        sets = QSettings('PyTools', 'PyQtAccounts')
+        is_main_db = sets.value('advanced/is_main_db', False, type=bool)
+        main_db = sets.value('advanced/main_db', '', type=str)
+        if is_main_db and main_db in getDbList():
+            self.dbs.list.selected(Index(main_db))
 
-        action = QMessageBox.question(window, 'Увага!', 'Ви певні що хочете '
-                                                        'вийти?')
-        if action == QMessageBox.No:
-            event.ignore()
-        else:
-            for win in windows:
-                win.ask = False
-                win.close()
+        def onClose(event):
+            # Do not show the close confirmation popup if there is no opened
+            # databases.
+            if len(windows) == 1:
+                event.accept()
+                return
 
-    menuBar = AppMenuBar(window)
-    window.setMenuBar(menuBar)
-    window.closeEvent = onClose
+            action = QMessageBox.question(self, 'Увага!', 'Ви певні що хочете '
+                                                          'вийти?')
+            if action == QMessageBox.No:
+                event.ignore()
+            else:
+                for win in windows:
+                    win.ask = False
+                    win.close()
 
-    window.setCentralWidget(splitter)
-    window.show()
+        menuBar = AppMenuBar(self)
+        self.setMenuBar(menuBar)
+        self.closeEvent = onClose
 
-    if not '.git' in os.listdir('../'):
-        WarningWindow('''
-        <h3>Програму не ініціалізовано!</h3>
-        <p>Завантажте файл <b><i>setup.py</i></b> з нашого github репозиторія.</p>
-        <p>Запустіть його і пройдіть всі кроки інсталяції.</p>
-        <p>Ініціалізація потрібна, аби система оновлення PyQtAccounts працювала.</p>
-        <p>Система оновлення автоматично перевіряє, завантажує і встановлює оновлення.</p>
-        ''')
+        self.setCentralWidget(splitter)
+        self.show()
 
-    reqs_list = ['git', 'pip3', 'xclip']
-    for req in reqs_list:
-        if os.system(f'which {req}'):
+        if not '.git' in os.listdir('../'):
             WarningWindow('''
-            <h3>Не всі пакети встановлено!</h3>
-            <p>Пакет {0} не встановлено, без певних пакетів PyQtAccounts буде працювати 
-            некоректно!</p>
-            <p>Встановіть {0} такою командою:</p>
-            <p>sudo apt install {0}</p>
-            '''.format(req))
+            <h3>Програму не ініціалізовано!</h3>
+            <p>Завантажте файл <b><i>setup.py</i></b> з нашого github репозиторія.</p>
+            <p>Запустіть його і пройдіть всі кроки інсталяції.</p>
+            <p>Ініціалізація потрібна, аби система оновлення PyQtAccounts працювала.</p>
+            <p>Система оновлення автоматично перевіряє, завантажує і встановлює оновлення.</p>
+            ''')
 
-    if time_for_updates():
-        thread = QThread(parent=window)
-        updating = Updating()
-        updating.moveToThread(thread)
-        updating.result.connect(lambda changes, log: changes and UpdatesAvailable(window, log))
-        thread.started.connect(updating.run)
-        thread.start()
+        reqs_list = ['git', 'pip3', 'xclip']
+        for req in reqs_list:
+            if os.system(f'which {req}'):
+                WarningWindow('''
+                    <h3>Не всі пакети встановлено!</h3>
+                    <p>Пакет {0} не встановлено, без певних пакетів PyQtAccounts буде працювати 
+                    некоректно!</p>
+                    <p>Встановіть {0} такою командою:</p>
+                    <p>sudo apt install {0}</p>
+                    '''.format(req))
 
-    settings = Settings(window)
-    window.settings = settings
+        if time_for_updates():
+            thread = QThread(parent=self)
+            updating = Updating()
+            updating.moveToThread(thread)
+            updating.result.connect(lambda changes, log: changes and UpdatesAvailable(self, log))
+            thread.started.connect(updating.run)
+            thread.start()
 
+        settings = Settings(self)
+        self.settings = settings
+
+def main():
+    window = Window()
     sys.exit(app.exec_())
+
 
 class ErrorWindow(QMessageBox):
     def __init__(self, text, err, parent=None):
@@ -143,6 +149,7 @@ class ErrorWindow(QMessageBox):
         self.setText(text)
         self.exec()
 
+
 class WarningWindow(QMessageBox):
     def __init__(self, text, parent=None):
         super().__init__()
@@ -150,6 +157,7 @@ class WarningWindow(QMessageBox):
         self.setIcon(super().Warning)
         self.setText(text)
         self.exec()
+
 
 app = QApplication(sys.argv)
 
@@ -170,16 +178,17 @@ try:
 
     import git
 
-    main()
+    if __name__ == '__main__':
+        main()
 except ImportError as err:
     reqs_pip = ['setuptools', 'cryptography', 'git', 'pyshortcuts']  # git is gitpython module
     for req in reqs_pip:
         if req in err.msg:
             req = req.replace('git', 'gitpython')
             mess = ('<p>Здається не всі бібліотеки встановлені.</p>'
-                  f'<p>Переконайтеся що ви встановили бібліотеку {req}.</p>'
-                   '<p>Якщо ні, спробуйте ввести в термінал цю кофманду:</p>'
-                  f'<p><b>pip3 install {req}</b></p>')
+                    f'<p>Переконайтеся що ви встановили бібліотеку {req}.</p>'
+                    '<p>Якщо ні, спробуйте ввести в термінал цю кофманду:</p>'
+                    f'<p><b>pip3 install {req}</b></p>')
             ErrorWindow(mess, err)
     sys.exit()
 except Exception as err:
@@ -188,4 +197,5 @@ except Exception as err:
     raise
     sys.exit()
 
-sys.exit(app.exec_())
+if __name__ == '__main__':
+    sys.exit(app.exec_())

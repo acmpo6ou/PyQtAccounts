@@ -7,6 +7,7 @@ from PyQt5.QtCore import *
 import genpass
 from utils import *
 
+
 class Tip(QLabel):
     def __init__(self, text=''):
         QLabel.__init__(self, text)
@@ -25,11 +26,13 @@ class HelpTip(QLabel):
         self.setFont(font)
         self.hide()
 
+
 class WarningTip(HelpTip):
     def __init__(self, text=''):
         HelpTip.__init__(self, text)
         self.setStyleSheet('color: #be9117;')
         self.hide()
+
 
 class Title(QLabel):
     def __init__(self, text=''):
@@ -47,12 +50,14 @@ class Error(QLabel):
         self.setStyleSheet('color: #f26666;')
         self.setFont(font)
 
+
 class Errors(QTextEdit):
     def __init__(self):
         QTextEdit.__init__(self)
         self.setReadOnly(True)
         self.hide()
         self.setTextColor(QColor('#f26666'))
+
 
 class PasswordField(QHBoxLayout):
     def __init__(self, placeholder=''):
@@ -77,6 +82,7 @@ class PasswordField(QHBoxLayout):
         else:
             self.passInput.setEchoMode(QLineEdit.Password)
             self.showButton.setIcon(QIcon('../img/show.svg'))
+
 
 class GenPassDialog(QDialog):
     def __init__(self, form):

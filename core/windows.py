@@ -29,6 +29,7 @@ from getaki import *
 import tarfile
 from account_forms import *
 
+
 def export(name, path, parent):
     try:
         file = tarfile.open(path, 'w')
@@ -41,7 +42,8 @@ def export(name, path, parent):
         raise
     else:
         QMessageBox.information(parent, 'Експорт', 'Успішно експортовано базу '
-                                        'данних <i><b>{}</b></i>'.format(name))
+                                                   'данних <i><b>{}</b></i>'.format(name))
+
 
 def _import(path, parent):
     try:
@@ -71,7 +73,8 @@ def _import(path, parent):
         QMessageBox.critical(parent, 'Помилка!', str(err))
     else:
         QMessageBox.information(parent, 'Імпорт',
-                'Успішно імпортовано базу данних <i><b>{}</b></i>'.format(name))
+                                'Успішно імпортовано базу данних <i><b>{}</b></i>'.format(name))
+
 
 class Panel(QHBoxLayout):
     def __init__(self, add, edit):
@@ -114,6 +117,7 @@ class List(QListView):
     def selected(self, index):
         self.select(self, index)
 
+
 def selectDb(obj, index):
     obj.index = index
 
@@ -126,6 +130,7 @@ def selectDb(obj, index):
     hide(obj.forms, obj.tips)
     obj.forms['open'].show()
     obj.forms['open'].passField.passInput.setFocus()
+
 
 class Dbs(QWidget):
     def __init__(self, forms, windows, tips):
@@ -291,7 +296,7 @@ class AppMenuBar(MenuBar):
             forms = self.parent.dbs.forms
             hide(tips, forms)
             tips['export'].show()
-            return 
+            return
 
         home = os.getenv('HOME')
         path = QFileDialog.getSaveFileName(
@@ -303,6 +308,7 @@ class AppMenuBar(MenuBar):
         if not path.endswith('.tar'):
             path += '.tar'
         export(name, path, self.parent)
+
 
 class DbMenuBar(MenuBar):
     def __init__(self, parent):
@@ -333,6 +339,7 @@ class DbMenuBar(MenuBar):
         dbfile = '../src/' + name + '.db'
         with open(dbfile, 'wb') as file:
             file.write(token)
+
 
 class DbWindow(QMainWindow):
     def __init__(self, windows, name, db, password):
@@ -462,13 +469,14 @@ class About(QDialog):
         self.layout.addLayout(self.titleLayout)
         self.layout.addWidget(self.content)
 
+
 about = About()
+
 
 class Settings(QDialog):
     def __init__(self, parent):
         QDialog.__init__(self, parent)
         self.setWindowTitle('Settings - PyQtAccounts')
-        # self.setWidth(800, 500)
         self.settings = QSettings('PyTools', 'PyQtAccounts')
 
         header = QLabel('<h4>Швидке введення</h4>')

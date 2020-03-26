@@ -29,6 +29,7 @@ from utils import *
 from widgets import *
 from urllib.request import urlopen
 
+
 def time_for_updates():
     settings = QSettings('PyTools', 'PyQtAccounts')
     frequency = settings.value('updates/frequency', 'always')
@@ -50,6 +51,7 @@ def getChangeLog():
     return [change.decode().rstrip() for change in urlopen(
         'https://raw.githubusercontent.com/Acmpo6ou/PyQtAccounts/master/change.log')]
 
+
 class Updating(QObject):
     result = pyqtSignal(bool, list)
 
@@ -66,6 +68,7 @@ class Updating(QObject):
         changelog = getChangeLog()
 
         self.result.emit(bool(changes), changelog)
+
 
 class UpdatesAvailable(QWidget):
     def __init__(self, parent, log):
@@ -121,6 +124,7 @@ class UpdatesAvailable(QWidget):
         t = threading.Thread(target=os.system, args=('../run.sh',), daemon=True)
         t.start()
         self.parent().close()
+
 
 class ShowChangelog(QDialog):
     def __init__(self, parent):

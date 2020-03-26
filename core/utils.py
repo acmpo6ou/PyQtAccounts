@@ -24,12 +24,15 @@ import git
 import os
 from string import *
 
+
 def getDbList():
     return [os.path.basename(db).replace('.db', '') for db in
             glob.glob('../src/*.db')]
 
+
 def getAkiList(db):
     return [acc for acc in db]
+
 
 def getVersion():
     repo = git.Repo('../')
@@ -37,10 +40,12 @@ def getVersion():
     version = tags[-1]
     return version
 
+
 def hide(*args):
     for arg in args:
         for widget in arg:
             arg[widget].hide()
+
 
 def validName(name):
     valid = ascii_letters + digits + '.()-_'
@@ -50,8 +55,10 @@ def validName(name):
             result += c
     return result
 
+
 class Index:
     '''Fake index for main database settings.'''
+
     def __init__(self, name):
         self.name = name
 
