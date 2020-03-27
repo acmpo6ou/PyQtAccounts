@@ -1,13 +1,8 @@
 #!/usr/bin/env python3
 
-from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtTest import *
 import unittest
-import pytest
 import sys
-import os
 
 sys.path.append('.')
 
@@ -35,9 +30,20 @@ class MainDbTest(unittest.TestCase):
         window = Window()
         self.assertIn('main', window.dbs.forms['open'].title.text())
 
-    def test_is_main_db_False(self):
+    def test_is_main_db_not_set(self):
         # Tom doesn't know about main database feature of PyQtAccounts yet.
         # He has it turned off by default.
+        self.settings.remove('advanced/is_main_db')
+        self.settings.remove('advanced/main_db')
+
+        # He opens PyQtAccounts and there is no form for opening any database.
+        # Title of open database form is empty.
+        window = Window()
+        self.assertEqual('<b></b>', window.dbs.forms['open'].title.text())
+
+    def test_is_main_db_False(self):
+        # Ross doesn't use main database feature of PyQtAccounts.
+        # He turned it off by himself.
         self.settings.setValue('advanced/is_main_db', False)
         self.settings.setValue('advanced/main_db', 'main')
 
