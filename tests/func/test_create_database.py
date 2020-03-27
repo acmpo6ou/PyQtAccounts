@@ -17,6 +17,7 @@ class CreateDbTest(BaseTest):
     Testing does create database form appears wheather we click on the `+` button
     or through Menu -> File -> New database... or Ctrl+N key sequences
     '''
+    @pytest.mark.skip
     def test_create_db_ctrl_n(self):
         pyautogui.hotkey("ctrl", "n")
         QTest.qWait(100)
@@ -38,8 +39,8 @@ class CreateDbTest(BaseTest):
         self.window.dbs.panel.addButton.click()
 
         # He starts typing `cry` at the name input.
-        _input = self.window.dbs.forms['create'].nameInput
-        QTest.keyClicks(_input, 'cry')
+        name = self.window.dbs.forms['create'].nameInput
+        QTest.keyClicks(name, 'cry')
 
         # There is now errors appearing
         error = self.window.dbs.forms['create'].nameError
@@ -47,24 +48,31 @@ class CreateDbTest(BaseTest):
 
         # He then types `pt` at the name input, so the name in the input (`crypt`)
         # is the same as the name of database he already has
-        QTest.keyClicks(_input, 'pt')
+        QTest.keyClicks(name, 'pt')
 
         # The error message appears saying that the database with such name already exists.
         self.assertTrue(error.visibility)
 
         # Then Bob types `2` to change name from `crypt` to `crypt2`
-        QTest.keyClick(_input, '2')
+        QTest.keyClick(name, '2')
 
         # The error message disappears
         self.assertFalse(error.visibility)
+
+        # He then erases the name input
+        name.setText('')
+
+        # Another error appears saying that he needs to fill name field
+        filled_error = self.window.dbs.forms['create'].nameFilledError
+        self.assertTrue(filled_error.visibility)
 
     def test_valid_password(self):
         # Tom wants to create new database
         self.window.dbs.panel.addButton.click()
 
         # First he types name
-        _input = self.window.dbs.forms['create'].nameInput
-        QTest.keyClicks(_input, 'somedb')
+        name = self.window.dbs.forms['create'].nameInput
+        QTest.keyClicks(name, 'somedb')
 
         # Then he types password to first password input
         pass_input = self.window.dbs.forms['create'].passField.passInput
@@ -121,3 +129,69 @@ class CreateDbTest(BaseTest):
         self.assertIsNot(pass_input.text(), '')
         self.assertIsNot(pass_repeat_input.text(), '')
         self.assertEqual(pass_input.text(), pass_repeat_input.text())
+
+    def test_create_button_enabled(self):
+        # Lea wants to create new database, so she opens up PyQtAccounts
+        # and presses the `+` button
+        self.window.dbs.panel.addButton.click()
+
+        # The create database form appears and `create` button is disabled
+        create = self.window.dbs.forms['create'].createButton
+        self.assertFalse(create.isEnabled())
+
+        # She types database name in the name input
+        name = self.window.dbs.forms['create'].nameInput
+        QTest.keyClicks(name, 'somedb')
+
+        # The `create` button is still disabled
+        self.assertFalse(create.isEnabled())
+
+        # She then generates password via `generate` button
+        gen = self.window.dbs.forms['create'].generateButton
+        gen.click()
+        dialog = self.window.dbs.forms['create'].dialog
+        dialog.buttonGenerate.click()
+
+        # `create` button enables now
+        self.assertTrue(create.isEnabled())
+
+        # Lea then changes name of the database to `main` which is already taken
+        name.setText('main')
+
+        # `create` button disables
+        self.assertFalse(create.isEnabled())
+
+        # She then erases name input
+        name.setText('')
+        
+        # `create` button is still disabled
+        self.assertFalse(create.isEnabled())
+        
+        # Lea types old name again
+        name.setText('somedb')
+        
+        # `create` button enables now
+        self.assertTrue(create.isEnabled())
+        
+        # She changes password in the first field to something else
+        # so both passwords aren't equal
+        pass_input = self.window.dbs.forms['create'].passField.passInput
+        pass_input.setText('some_password')
+
+        # `create` button disables again
+        self.assertFalse(create.isEnabled())
+
+        # Lea then erases all password fields
+        pass_input.setText('')
+        pass_repeat_input = self.window.dbs.forms['create'].passRepeatField.passInput
+        pass_repeat_input.setText('')
+
+        # `create` button is still disabled
+        self.assertFalse(create.isEnabled())
+
+        # and she generates password again
+        gen.click()
+        dialog.buttonGenerate.click()
+
+        # `create` button enables
+        self.assertTrue(create.isEnabled())
