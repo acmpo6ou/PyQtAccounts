@@ -9,43 +9,40 @@ import sys
 
 sys.path.append('.')
 
+from .base import BaseTest
 from PyQtAccounts import *
 
-class CreateDbTest(unittest.TestCase):
+class CreateDbTest(BaseTest):
     '''
     Testing does create database form appears wheather we click on the `+` button
     or through Menu -> File -> New database... or Ctrl+N key sequences
     '''
     def test_create_db_ctrl_n(self):
-        window = Window()
         pyautogui.hotkey("ctrl", "n")
         QTest.qWait(100)
-        self.assertTrue(window.dbs.forms['create'].vis)
+        self.assertTrue(self.window.dbs.forms['create'].vis)
 
     def test_create_db_click(self):
-        window = Window()
-        window.dbs.panel.addButton.click()
-        self.assertTrue(window.dbs.forms['create'].vis)
+        self.window.dbs.panel.addButton.click()
+        self.assertTrue(self.window.dbs.forms['create'].vis)
 
     def test_create_db_menu(self):
-        window = Window()
-        file = window.menuBar().actions()[0]  # first is `File` submenu
+        file = self.window.menuBar().actions()[0]  # first is `File` submenu
         new_db = file.menu().actions()[0]     # first action is `New database...`
         new_db.trigger()
-        self.assertTrue(window.dbs.forms['create'].vis)
+        self.assertTrue(self.window.dbs.forms['create'].vis)
 
     def test_valid_db_name(self):
         # Bob has two databases called `main` and `crypt`.
         # He wants to create new one:
-        window = Window()
-        window.dbs.panel.addButton.click()
+        self.window.dbs.panel.addButton.click()
 
         # He starts typing `cry` at the name input.
-        _input = window.dbs.forms['create'].nameInput
+        _input = self.window.dbs.forms['create'].nameInput
         QTest.keyClicks(_input, 'cry')
 
         # There is now errors appearing
-        error = window.dbs.forms['create'].nameError
+        error = self.window.dbs.forms['create'].nameError
         self.assertFalse(error.vis)
 
         # He then types `pt` at the name input, so the name in the input (`crypt`)
@@ -63,24 +60,23 @@ class CreateDbTest(unittest.TestCase):
 
     def test_valid_password(self):
         # Tom wants to create new database
-        window = Window()
-        window.dbs.panel.addButton.click()
+        self.window.dbs.panel.addButton.click()
 
         # First he types name
-        _input = window.dbs.forms['create'].nameInput
+        _input = self.window.dbs.forms['create'].nameInput
         QTest.keyClicks(_input, 'somedb')
 
         # Then he types password to first password input
-        pass_input = window.dbs.forms['create'].passField.passInput
+        pass_input = self.window.dbs.forms['create'].passField.passInput
         QTest.keyClicks(pass_input, 'password123')
 
         # The error message appears saying that both passwords aren't equal,
         # because first input is filled and the second is not
-        error = window.dbs.forms['create'].passEqError
+        error = self.window.dbs.forms['create'].passEqError
         self.assertTrue(error.vis)
 
         # Tom then filles second password field with the same password
-        pass_repeat_input = window.dbs.forms['create'].passRepeatField.passInput
+        pass_repeat_input = self.window.dbs.forms['create'].passRepeatField.passInput
         QTest.keyClicks(pass_repeat_input, 'password123')
 
         # The error disappears
@@ -91,7 +87,7 @@ class CreateDbTest(unittest.TestCase):
         pass_repeat_input.setText('')
 
         # Another error appears saying that he needs to fill password fields
-        pass_error = window.dbs.forms['create'].passFilledError
+        pass_error = self.window.dbs.forms['create'].passFilledError
         self.assertTrue(pass_error.vis)
 
         # Tom filles them again

@@ -11,4 +11,8 @@ sys.path.append('.')
 from PyQtAccounts import *
 
 class BaseTest(unittest.TestCase):
-    pass
+    def setUp(self):
+        self.window = Window()
+
+    def tearDown(self):
+        del self.window
