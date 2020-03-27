@@ -112,8 +112,8 @@ class CreateForm(QWidget):
             self.createButton.setEnabled(True)
 
     def generate(self, event):
-        dialog = widgets.GenPassDialog(self)
-        dialog.show()
+        self.dialog = widgets.GenPassDialog(self)
+        self.dialog.show()
 
     def clear(self, event=None):
         self.nameInput.clear()

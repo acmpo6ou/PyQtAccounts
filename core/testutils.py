@@ -9,15 +9,15 @@ show = QWidget.show
 hide = QWidget.hide
 
 def _show_(self, *args, **kwargs):
-    self.vis = True
+    self.visibility = True
     show(self, *args, **kwargs)
 
 def _hide_(self, *args, **kwargs):
-    self.vis = False
+    self.visibility = False
     hide(self, *args, **kwargs)
 
 def _init_(self, *args, **kwargs):
-    self.vis = False
+    self.visibility = False
     init(self, *args, **kwargs)
 
 QWidget.__init__ = _init_
