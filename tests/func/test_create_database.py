@@ -17,7 +17,7 @@ class CreateDbTest(BaseTest):
     Testing does create database form appears wheather we click on the `+` button
     or through Menu -> File -> New database... or Ctrl+N key sequences
     '''
-    @pytest.mark.skip
+    #@pytest.mark.skip
     def test_create_db_ctrl_n(self):
         pyautogui.hotkey("ctrl", "n")
         QTest.qWait(100)
@@ -130,6 +130,7 @@ class CreateDbTest(BaseTest):
         self.assertIsNot(pass_repeat_input.text(), '')
         self.assertEqual(pass_input.text(), pass_repeat_input.text())
 
+    # @pytest.mark.skip
     def test_create_button_enabled(self):
         # Lea wants to create new database, so she opens up PyQtAccounts
         # and presses the `+` button
@@ -190,8 +191,8 @@ class CreateDbTest(BaseTest):
         self.assertFalse(create.isEnabled())
 
         # and she generates password again
-        gen.click()
-        dialog.buttonGenerate.click()
+        pass_input.setText('some_password')
+        pass_repeat_input.setText('some_password')
 
         # `create` button enables
         self.assertTrue(create.isEnabled())
