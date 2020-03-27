@@ -4,31 +4,32 @@ from PyQt5.QtCore import *
 from PyQt5.QtTest import QTest
 import unittest
 import pytest
+import pyautogui
 import sys
 
 sys.path.append('.')
 
-from .base import win
 from PyQtAccounts import *
 
 class CreateDbTest(unittest.TestCase):
-    def create_db_show(self):
-        pass
-
-    @pytest.fixture(autouse=True)
-    def window(self, win):
-        self.window = win
-
+    '''
+    Testing does create database form appears wheather we click on the `+` button
+    or through Menu -> File -> New database... or Ctrl+N key sequences
+    '''
     def test_create_db_ctrl_n(self):
-        QTest.keyClicks(self.window, 'n', Qt.ControlModifier)
-        self.create_db_show()
+        window = Window()
+        pyautogui.hotkey("ctrl", "n")
+        QTest.qWait(100)
+        self.assertTrue(window.dbs.forms['create'].vis)
 
     def test_create_db_click(self):
-        self.window.dbs.panel.addButton.click()
-        self.create_db_show()
+        window = Window()
+        window.dbs.panel.addButton.click()
+        self.assertTrue(window.dbs.forms['create'].vis)
 
     def test_create_db_menu(self):
-        file = self.window.menuBar().actions()[0] # first is `File` submenu
-        new_db = file.menu().actions()[0] # first action is `New database...`
+        window = Window()
+        file = window.menuBar().actions()[0]  # first is `File` submenu
+        new_db = file.menu().actions()[0]     # first action is `New database...`
         new_db.trigger()
-        self.create_db_show()
+        self.assertTrue(window.dbs.forms['create'].vis)

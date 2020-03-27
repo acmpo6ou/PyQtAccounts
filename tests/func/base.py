@@ -10,6 +10,5 @@ sys.path.append('.')
 
 from PyQtAccounts import *
 
-@pytest.fixture()
-def win():
-    return Window()
+class BaseTest(unittest.TestCase):
+    pass
