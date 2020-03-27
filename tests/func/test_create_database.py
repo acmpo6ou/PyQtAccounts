@@ -40,12 +40,19 @@ class CreateDbTest(unittest.TestCase):
         window = Window()
         window.dbs.panel.addButton.click()
 
-        # He types `crypt` at the name input.
+        # He starts typing `cry` at the name input.
         _input = window.dbs.forms['create'].nameInput
-        QTest.keyClicks(_input, 'crypt')
+        QTest.keyClicks(_input, 'cry')
+
+        # There is now errors appearing
+        error = window.dbs.forms['create'].nameError
+        self.assertFalse(error.vis)
+
+        # He then types `pt` at the name input, so the name in the input (`crypt`)
+        # is the same as the name of database he already has
+        QTest.keyClicks(_input, 'pt')
 
         # The error message appears saying that the database with such name already exists.
-        error = window.dbs.forms['create'].nameError
         self.assertTrue(error.vis)
 
         # Then Bob types `2` to change name from `crypt` to `crypt2`
@@ -53,3 +60,21 @@ class CreateDbTest(unittest.TestCase):
 
         # The error message disappears
         self.assertFalse(error.vis)
+
+    def test_valid_password(self):
+        # Tom wants to create new database
+        window = Window()
+        window.dbs.panel.addButton.click()
+
+        # First he types name
+        _input = window.dbs.forms['create'].nameInput
+        QTest.keyClicks(_input, 'somedb')
+
+        # Then he types password to first password input
+        pass_input = window.dbs.forms['create'].passField.passInput
+        QTest.keyClicks(pass_input, 'password123')
+
+        # The error message appears saying that both passwords aren't equal,
+        # because first input is filled and the second is not
+        error = window.dbs.forms['create'].passEqError
+        self.assertTrue(error.vis)
