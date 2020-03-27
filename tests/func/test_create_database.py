@@ -33,3 +33,23 @@ class CreateDbTest(unittest.TestCase):
         new_db = file.menu().actions()[0]     # first action is `New database...`
         new_db.trigger()
         self.assertTrue(window.dbs.forms['create'].vis)
+
+    def test_valid_db_name(self):
+        # Bob has two databases called `main` and `crypt`.
+        # He wants to create new one:
+        window = Window()
+        window.dbs.panel.addButton.click()
+
+        # He types `crypt` at the name input.
+        _input = window.dbs.forms['create'].nameInput
+        QTest.keyClicks(_input, 'crypt')
+
+        # The error message appears saying that the database with such name already exists.
+        error = window.dbs.forms['create'].nameError
+        self.assertTrue(error.vis)
+
+        # Then Bob types `2` to change name from `crypt` to `crypt2`
+        QTest.keyClick(_input, '2')
+
+        # The error message disappears
+        self.assertFalse(error.vis)
