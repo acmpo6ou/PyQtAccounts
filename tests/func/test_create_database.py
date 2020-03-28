@@ -12,26 +12,36 @@ sys.path.append('.')
 from .base import BaseTest
 from PyQtAccounts import *
 
+
 class CreateDbTest(BaseTest):
     '''
-    Testing does create database form appears wheather we click on the `+` button
-    or through Menu -> File -> New database... or Ctrl+N key sequences
+    Next 3 tests are testing does create database form appears whether we click on the
+    `+` button or through Menu -> File -> New database... or Ctrl+N key sequences
     '''
-    #@pytest.mark.skip
+
     def test_create_db_ctrl_n(self):
         pyautogui.hotkey("ctrl", "n")
         QTest.qWait(100)
-        self.assertTrue(self.window.dbs.forms['create'].visibility)
+
+        dbs = self.window.dbs
+        form = dbs.forms['create']
+        self.checkOnlyVisible(form, dbs)
 
     def test_create_db_click(self):
         self.window.dbs.panel.addButton.click()
-        self.assertTrue(self.window.dbs.forms['create'].visibility)
+
+        dbs = self.window.dbs
+        form = dbs.forms['create']
+        self.checkOnlyVisible(form, dbs)
 
     def test_create_db_menu(self):
         file = self.window.menuBar().actions()[0]  # first is `File` submenu
-        new_db = file.menu().actions()[0]     # first action is `New database...`
+        new_db = file.menu().actions()[0]  # first action is `New database...`
         new_db.trigger()
-        self.assertTrue(self.window.dbs.forms['create'].visibility)
+
+        dbs = self.window.dbs
+        form = dbs.forms['create']
+        self.checkOnlyVisible(form, dbs)
 
     def test_valid_db_name(self):
         # Bob has two databases called `main` and `crypt`.
@@ -164,16 +174,16 @@ class CreateDbTest(BaseTest):
 
         # She then erases name input
         name.setText('')
-        
+
         # `create` button is still disabled
         self.assertFalse(create.isEnabled())
-        
+
         # Lea types old name again
         name.setText('somedb')
-        
+
         # `create` button enables now
         self.assertTrue(create.isEnabled())
-        
+
         # She changes password in the first field to something else
         # so both passwords aren't equal
         pass_input = self.window.dbs.forms['create'].passField.passInput
@@ -196,3 +206,15 @@ class CreateDbTest(BaseTest):
 
         # `create` button enables
         self.assertTrue(create.isEnabled())
+
+    def test_cancel_button(self):
+        dbs = self.window.dbs
+        # Emily accidentally presses the `+` button
+        dbs.panel.addButton.click()
+
+        # She didn't want it so she just presses `cancel` button to hide the create form
+        dbs.forms['create'].cancelButton.click()
+
+        # End the form disappears
+        tip = dbs.tips['help']
+        self.checkOnlyVisible(tip, dbs)
