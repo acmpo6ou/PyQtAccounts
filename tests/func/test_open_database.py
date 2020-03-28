@@ -34,7 +34,7 @@ class OpenDbTest(BaseTest):
         # Tom wants to open his database called `database`
         self.list.selected(Index('database'))
 
-        # He types accidentally types wrong password and hits Enter
+        # He accidentally types wrong password and hits Enter
         QTest.keyClicks(self.pass_input, 'password')
         QTest.keyClick(self.pass_input, Qt.Key_Enter)
 
@@ -42,23 +42,13 @@ class OpenDbTest(BaseTest):
         error = self.form.incorrectPass
         self.assertTrue(error.visibility)
 
-        # Tom then corrects password and again hits Enter
+        # Tom then corrects password and now presses `open` button
         self.pass_input.setText('some_password')
-        QTest.keyClick(self.pass_input, Qt.Key_Enter)
+        self.form.openButton.click()
 
         # The error disappears
         self.assertFalse(error.visibility)
 
         # Database window appears
-        win = self.window.windows[1]  # first is main window, second is database one
-        self.assertTrue(win.visibility)
-
-    def test_open_button(self):
-        # Ross wants to open his database, so he chose one in list and types password
-        self.list.selected(Index('database'))
-        self.pass_input.setText('some_password')
-
-        # Then he presses the `open` button and the database window appears
-        self.form.openButton.click()
         win = self.window.windows[1]  # first is main window, second is database one
         self.assertTrue(win.visibility)
