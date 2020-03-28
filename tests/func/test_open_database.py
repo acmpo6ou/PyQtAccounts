@@ -52,3 +52,13 @@ class OpenDbTest(BaseTest):
         # Database window appears
         win = self.window.windows[1]  # first is main window, second is database one
         self.assertTrue(win.visibility)
+
+    def test_open_button(self):
+        # Ross wants to open his database, so he chose one in list and types password
+        self.list.selected(Index('database'))
+        self.pass_input.setText('some_password')
+
+        # Then he presses the `open` button and the database window appears
+        self.form.openButton.click()
+        win = self.window.windows[1]  # first is main window, second is database one
+        self.assertTrue(win.visibility)
