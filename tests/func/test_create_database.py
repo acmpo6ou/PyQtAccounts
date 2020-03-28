@@ -6,10 +6,12 @@ import unittest
 import pytest
 import pyautogui
 import sys
+import os
 
 sys.path.append('.')
 
 from .base import BaseTest
+from utils import getDbList
 from PyQtAccounts import *
 
 
@@ -222,7 +224,7 @@ class CreateDbTest(BaseTest):
         self.form.createButton.click()
 
         # The create form disappears
-        # self.checkOnlyVisible(self.dbs.tips['help'], self.dbs)
+        self.checkOnlyVisible(self.dbs.tips['help'], self.dbs)
 
         # `somedb` appears at the database list
         model = self.dbs.list.model
@@ -232,3 +234,10 @@ class CreateDbTest(BaseTest):
                 break
         else:
             raise AssertionError('Database not in the list!')
+
+        # And it actually on disk at the `src` folder
+        self.assertIn('somedb', getDbList())
+
+        # clean up
+        os.remove('../src/somedb.db')
+        os.remove('../src/somedb.bin')
