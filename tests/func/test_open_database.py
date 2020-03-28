@@ -30,7 +30,7 @@ class OpenDbTest(BaseTest):
         # There is title that says `Відкрити базу данних crypt`
         self.assertIn('crypt', self.form.title.text())
 
-    def test_password_validation(self):
+    def test_password_and_open_validation(self):
         # Tom wants to open his database called `database`
         self.list.selected(Index('database'))
 

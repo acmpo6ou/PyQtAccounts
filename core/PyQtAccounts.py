@@ -82,29 +82,12 @@ class Window(QMainWindow):
         if is_main_db and main_db in getDbList():
             self.dbs.list.selected(Index(main_db))
 
-        def onClose(event):
-            # Do not show the close confirmation popup if there is no opened
-            # databases.
-            if len(windows) == 1:
-                event.accept()
-                return
-
-            action = QMessageBox.question(self, 'Увага!', 'Ви певні що хочете '
-                                                          'вийти?')
-            if action == QMessageBox.No:
-                event.ignore()
-            else:
-                for win in windows:
-                    win.ask = False
-                    win.close()
-
         menuBar = AppMenuBar(self)
+
         self.setMenuBar(menuBar)
-        self.closeEvent = onClose
-
         self.setCentralWidget(splitter)
-        self.show()
 
+        self.show()
         if not '.git' in os.listdir('../'):
             WarningWindow('''
             <h3>Програму не ініціалізовано!</h3>
@@ -115,6 +98,7 @@ class Window(QMainWindow):
             ''')
 
         reqs_list = ['git', 'pip3', 'xclip']
+
         for req in reqs_list:
             if os.system(f'which {req}'):
                 WarningWindow('''
@@ -124,7 +108,6 @@ class Window(QMainWindow):
                     <p>Встановіть {0} такою командою:</p>
                     <p>sudo apt install {0}</p>
                     '''.format(req))
-
         if time_for_updates():
             thread = QThread(parent=self)
             updating = Updating()
@@ -134,8 +117,25 @@ class Window(QMainWindow):
             thread.start()
 
         settings = Settings(self)
+
         self.settings = settings
         self.windows = windows
+
+    def closeEvent(self, event):
+        # Do not show the close confirmation popup if there is no opened
+        # databases.
+        if len(windows) == 1:
+            event.accept()
+            return
+
+        action = QMessageBox.question(self, 'Увага!', 'Ви певні що хочете '
+                                                      'вийти?')
+        if action == QMessageBox.No:
+            event.ignore()
+        else:
+            for win in windows:
+                win.ask = False
+                win.close()
 
 
 def main():
