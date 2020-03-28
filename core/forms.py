@@ -20,10 +20,11 @@ from PyQt5.QtWidgets import *
 from testutils import QWidget
 import widgets
 
+
 class CreateForm(QWidget):
     def __init__(self, title, namePlaceholder, nameError, nameTip, passTip, \
-                                                     helpTip, \
-                                                           parent=None):
+                 helpTip, \
+                 parent=None):
         QWidget.__init__(self, parent)
         self.hide()
         self.helpTip = helpTip

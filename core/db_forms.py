@@ -31,24 +31,26 @@ from cryptography.exceptions import InvalidSignature
 from cryptography.fernet import InvalidToken
 
 HELP_TIP_DB = ("<pre>Поки що у вас немає жодної бази данних.\n" +
-                          '{0:<39}\n'.format("Спробуйте:") +
-                          '{0:<39}\n'.format("Натиснути +") +
-                          '{0:<39}\n'.format("Гарячі клавіші Ctl+N") +
-                          '{0:<39}\n'.format("Меню: File -> New database...") +
-                          "</pre>")
+               '{0:<39}\n'.format("Спробуйте:") +
+               '{0:<39}\n'.format("Натиснути +") +
+               '{0:<39}\n'.format("Гарячі клавіші Ctl+N") +
+               '{0:<39}\n'.format("Меню: File -> New database...") +
+               "</pre>")
+
 
 class CreateDbForm(CreateForm):
     def __init__(self, helpTip, parent=None):
         title = 'Створити базу данних'
         namePlaceholder = "ім'я бази данних"
         nameTip = ("Для імені бази данних підтримуються \n"
-                           "лише великі та малі англійські символи, а також ці: .()-_\n"
-                           "Усі неправильні символи видаляються автоматично.")
+                   "лише великі та малі англійські символи, а також ці: .()-_\n"
+                   "Усі неправильні символи видаляються автоматично.")
         passTip = ("Якщо ви не хочете придумувати пароль ви можете\n"
-                      "натиснути кнопку 'Згенерувати', аби згенерувати його.")
+                   "натиснути кнопку 'Згенерувати', аби згенерувати його.")
         nameError = 'База даних з таким іменем вже існує!'
         CreateForm.__init__(self, title, namePlaceholder, nameError, nameTip, passTip, \
-                                                     helpTip, parent)
+                            helpTip, parent)
+
     def create(self, event):
         name = validName(self.nameInput.text())
         password = self.passField.passInput.text().encode()
@@ -79,18 +81,19 @@ class CreateDbForm(CreateForm):
         if self.validate['pass'] and self.validate['name']:
             self.createButton.setEnabled(True)
 
+
 class EditDbForm(CreateForm):
     def __init__(self, tips, windows, parent=None):
         title = 'Редагувати базу данних'
         namePlaceholder = "ім'я бази данних"
         nameTip = ("Для імені бази данних підтримуються \n"
-                           "лише великі та малі англійські символи, а також ці: .()-_\n"
-                           "Усі неправильні символи видаляються автоматично.")
+                   "лише великі та малі англійські символи, а також ці: .()-_\n"
+                   "Усі неправильні символи видаляються автоматично.")
         passTip = ("Якщо ви не хочете придумувати пароль ви можете\n"
-                      "натиснути кнопку 'Згенерувати', аби згенерувати його.")
+                   "натиснути кнопку 'Згенерувати', аби згенерувати його.")
         nameError = 'База даних з таким іменем вже існує!'
         CreateForm.__init__(self, title, namePlaceholder, nameError, nameTip, passTip, \
-                                                     tips['help'], parent)
+                            tips['help'], parent)
         self.windows = windows
         self.hide()
         self.tips = tips
@@ -138,12 +141,12 @@ class EditDbForm(CreateForm):
 
     def delete(self, event):
         name = self.db.name
-                            # first is the main window
+        # first is the main window
         action = QMessageBox.warning(self.windows[0], 'Увага!',
-                             'Ви певні що хочете видалити базу данних '
-                             '<i><b>{}</b></i>'.format(name),
-                             buttons=QMessageBox.No | QMessageBox.Yes,
-                             defaultButton=QMessageBox.No)
+                                     'Ви певні що хочете видалити базу данних '
+                                     '<i><b>{}</b></i>'.format(name),
+                                     buttons=QMessageBox.No | QMessageBox.Yes,
+                                     defaultButton=QMessageBox.No)
         if action == QMessageBox.Yes:
             os.remove('../src/{}.db'.format(name))
             os.remove('../src/{}.bin'.format(name))
@@ -175,6 +178,7 @@ class EditDbForm(CreateForm):
         self.list.model.appendRow(item)
         self.list.model.sort(0)
         self.db.close()
+
 
 class OpenDbForm(QWidget):
     def __init__(self, helpTip, windows, parent=None):
@@ -225,7 +229,6 @@ class OpenDbForm(QWidget):
         win = DbWindow(self.windows, name, db, password)
         self.windows.append(win)
         win.setAttribute(Qt.WA_QuitOnClose)
-
 
         self.hide()
         self.helpTip.show()

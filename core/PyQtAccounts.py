@@ -136,6 +136,7 @@ class Window(QMainWindow):
         settings = Settings(self)
         self.settings = settings
 
+
 def main():
     window = Window()
     sys.exit(app.exec_())
