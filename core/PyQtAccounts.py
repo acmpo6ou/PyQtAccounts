@@ -135,6 +135,7 @@ class Window(QMainWindow):
 
         settings = Settings(self)
         self.settings = settings
+        self.windows = windows
 
 
 def main():
