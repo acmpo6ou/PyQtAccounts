@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
-from PyQt5.QtCore import *
 from PyQt5.QtTest import QTest
-import unittest
 import pytest
 import pyautogui
 import sys
@@ -23,7 +21,6 @@ class CreateDbTest(BaseTest):
 
     def setUp(self):
         super().setUp()
-        self.dbs = self.window.dbs
         self.form = self.dbs.forms['create']
         self.name = self.form.nameInput
         self.nameError = self.form.nameError
@@ -83,7 +80,7 @@ class CreateDbTest(BaseTest):
         self.dbs.panel.addButton.click()
 
         # First he types name
-        
+
         QTest.keyClicks(self.name, 'somedb')
 
         # Then he types password to first password input
@@ -145,7 +142,7 @@ class CreateDbTest(BaseTest):
         self.assertFalse(create.isEnabled())
 
         # She types database name in the name input
-        
+
         QTest.keyClicks(self.name, 'somedb')
 
         # The `create` button is still disabled

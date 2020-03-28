@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 
-from PyQt5.QtCore import *
-from PyQt5.QtTest import QTest
 import unittest
-import pytest
 import sys
 
 sys.path.append('.')
@@ -14,6 +11,7 @@ from PyQtAccounts import *
 class BaseTest(unittest.TestCase):
     def setUp(self):
         self.window = Window()
+        self.dbs = self.window.dbs
 
     def tearDown(self):
         del self.window
