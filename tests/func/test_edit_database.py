@@ -2,6 +2,7 @@
 
 from PyQt5.QtTest import QTest
 from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
 import unittest
 import pytest
 import sys
@@ -31,6 +32,22 @@ class EditDbTest(BaseTest):
         self.saveButton = self.form.createButton
 
         self.help = self.dbs.tips['help']
+
+        # pre-saving database
+        self.salt = open('../src/database.bin', 'rb').read()
+        self.db = open('../src/database.db', 'rb').read()
+
+    def tearDown(self):
+        # restoring database
+        open('../src/database.bin', 'wb').write(self.salt)
+        open('../src/database.db', 'wb').write(self.db)
+
+        # cleaning up
+        try:
+            os.remove('../src/another_database.bin')
+            os.remove('../src/another_database.db')
+        except Exception:
+            pass
 
     def openDatabase(self, name='database', password='some_password'):
         self.list.selected(Index(name))
@@ -83,10 +100,6 @@ class EditDbTest(BaseTest):
         self.assertTrue(self.saveButton.isEnabled())
 
     def test_save_button(self):
-        # pre-saving database
-        salt = open('../src/database.bin', 'rb').read()
-        db = open('../src/database.db', 'rb').read()
-
         # Tom wants to edit database
         self.openDatabase()
         self.editButton.click()
@@ -121,10 +134,31 @@ class EditDbTest(BaseTest):
         win = self.window.windows[1]  # first is main window, second is database one
         self.assertTrue(win.visibility)
 
-        # restoring database
-        open('../src/database.bin', 'wb').write(salt)
-        open('../src/database.db', 'wb').write(db)
+    @pytest.fixture(autouse=True)
+    def monkeypatching(self, monkeypatch):
+        self.monkeypatch = monkeypatch
 
-        # cleaning up
-        os.remove('../src/another_database.bin')
-        os.remove('../src/another_database.db')
+    def test_delete_db(self):
+        # Bob wants to delete database, so he opens it up and presses edit button
+        self.openDatabase()
+        self.editButton.click()
+
+        # Then he presses delete button
+        # Suddenly Bob changes his mind and presses `No` button in warning dialog that appears
+        self.monkeypatch.setattr(QMessageBox, "warning", lambda *args, **kwargs: QMessageBox.No)
+        self.form.deleteButton.click()
+
+        # Everything is fine database still in the list and exists on the disk
+        self.checkDbInList('database')
+        self.assertIn('database', getDbList())
+
+        # Then he decided to delete database
+        self.monkeypatch.setattr(QMessageBox, "warning", lambda *args, **kwargs: QMessageBox.Yes)
+        self.form.deleteButton.click()
+
+        # And there in no longer database in the list, neither on the disk
+        self.checkDbNotInList('database')
+        self.assertNotIn('database', getDbList())
+
+        # Edit form disappears
+        self.checkOnlyVisible(self.help)
