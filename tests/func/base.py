@@ -28,3 +28,20 @@ class BaseTest(unittest.TestCase):
                 self.assertTrue(dbs.tips[tip].visibility)
                 continue
             self.assertFalse(dbs.tips[tip].visibility)
+
+    def checkDbInList(self, name):
+        model = self.dbs.list.model
+        for i in range(model.rowCount()):
+            index = model.item(i)
+            if index.text() == name:
+                break
+        else:
+            raise AssertionError(f'Database {name} not in the list!')
+
+    def checkDbNotInList(self, name):
+        try:
+            self.checkDbInList(name)
+        except AssertionError:
+            pass
+        else:
+            raise AssertionError(f"Database {name} in the list, but it shouldn't be!")

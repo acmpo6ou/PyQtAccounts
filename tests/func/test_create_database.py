@@ -224,13 +224,7 @@ class CreateDbTest(BaseTest):
         self.checkOnlyVisible(self.dbs.tips['help'], self.dbs)
 
         # `somedb` appears at the database list
-        model = self.dbs.list.model
-        for i in range(model.rowCount()):
-            index = model.item(i)
-            if index.text() == 'somedb':
-                break
-        else:
-            raise AssertionError('Database not in the list!')
+        self.checkDbInList('somedb')
 
         # And it actually on disk at the `src` folder
         self.assertIn('somedb', getDbList())
