@@ -156,6 +156,9 @@ class EditDbForm(CreateForm):
             self.model.sort(0)
             self.clear()
             self.db.ask = False
+            # to avoid errors that occurs because of close behavior
+            self.windows.remove(self.db)
+            self.db.closeEvent = lambda self: None
             self.db.close()
 
             if not getDbList():
