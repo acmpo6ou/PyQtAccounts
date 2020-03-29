@@ -14,7 +14,8 @@ class BaseTest(unittest.TestCase):
         self.dbs = self.window.dbs
 
     def tearDown(self):
-        del self.window
+        self.window.destroy = True
+        self.window.close()
 
     def checkOnlyVisible(self, elem, dbs):
         for form in dbs.forms:

@@ -34,6 +34,7 @@ class Window(QMainWindow):
         self.name = ''
         self.setWindowIcon(QIcon('../img/icon.svg'))
         windows = [self]
+        self.destroy = False
 
         helpTip = HelpTip(HELP_TIP_DB)
         if getDbList():
@@ -122,6 +123,10 @@ class Window(QMainWindow):
         self.windows = windows
 
     def closeEvent(self, event):
+        if self.destroy:
+            event.accept()
+            return
+
         # Do not show the close confirmation popup if there is no opened
         # databases.
         if len(self.windows) == 1:
