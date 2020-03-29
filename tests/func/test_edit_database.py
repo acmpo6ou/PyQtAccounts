@@ -134,10 +134,6 @@ class EditDbTest(BaseTest):
         win = self.window.windows[1]  # first is main window, second is database one
         self.assertTrue(win.visibility)
 
-    @pytest.fixture(autouse=True)
-    def monkeypatching(self, monkeypatch):
-        self.monkeypatch = monkeypatch
-
     def test_delete_db(self):
         # Bob wants to delete database, so he opens it up and presses edit button
         self.openDatabase()

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import unittest
+import pytest
 import sys
 
 sys.path.append('.')
@@ -49,3 +50,7 @@ class BaseTest(unittest.TestCase):
             pass
         else:
             raise AssertionError(f"Database {name} in the list, but it shouldn't be!")
+
+    @pytest.fixture(autouse=True)
+    def monkeypatching(self, monkeypatch):
+        self.monkeypatch = monkeypatch
