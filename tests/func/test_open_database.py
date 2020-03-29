@@ -30,6 +30,18 @@ class OpenDbTest(BaseTest):
         # There is title that says `Відкрити базу данних crypt`
         self.assertIn('crypt', self.form.title.text())
 
+    def test_form_doesnt_show_if_db_already_opened(self):
+        # Ross opened database
+        self.list.selected(Index('database'))
+        self.pass_input.setText('some_password')
+        self.form.openButton.click()
+
+        # Then he chose same database in the list again
+        self.list.selected(Index('database'))
+
+        # The message appears saying that he already opened this database
+        self.checkOnlyVisible(self.dbs.tips['already-open'], self.dbs)
+
     def test_password_and_open_validation(self):
         # Tom wants to open his database called `database`
         self.list.selected(Index('database'))
