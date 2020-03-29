@@ -177,6 +177,10 @@ class EditDbForm(CreateForm):
         item = QStandardItem(self.list.icon, name)
         self.list.model.appendRow(item)
         self.list.model.sort(0)
+
+        # to avoid errors that occurs because of close behavior
+        self.windows.remove(self.db)
+        self.db.closeEvent = lambda self: None
         self.db.close()
 
 

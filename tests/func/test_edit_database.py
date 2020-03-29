@@ -97,8 +97,6 @@ class EditDbTest(BaseTest):
         self.pass_repeat_input.setText('another_password')
 
         # And presses the save button
-        win = self.window.windows[1]
-        win.closeEvent = lambda self: None  # we don't need close event behavior in this test
         self.saveButton.click()
 
         # Edit database form disappears
