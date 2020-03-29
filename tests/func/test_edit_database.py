@@ -19,6 +19,8 @@ class EditDbTest(BaseTest):
         super().setUp()
         self.form = self.dbs.forms['edit']
         self.list = self.dbs.list
+        
+        self.editButton = self.dbs.panel.editButton
 
         self.open_form = self.dbs.forms['open']
         self.open_pass_input = self.open_form.passField.passInput
@@ -38,7 +40,7 @@ class EditDbTest(BaseTest):
     def test_edit_db_warning(self):
         # Toon wants to edit database so he chose one from the list and presses edit button
         self.list.selected(Index('database'))
-        self.dbs.panel.editButton.click()
+        self.editButton.click()
 
         # The error message appears saying that he can't edit database until he opens it
         self.checkOnlyVisible(self.dbs.tips['edit-w'], self.dbs)
@@ -50,7 +52,7 @@ class EditDbTest(BaseTest):
         self.checkOnlyVisible(self.help, self.dbs)
 
         # and then he tries again
-        self.dbs.panel.editButton.click()
+        self.editButton.click()
 
         # Edit database form appears
         self.checkOnlyVisible(self.form, self.dbs)
@@ -60,7 +62,7 @@ class EditDbTest(BaseTest):
         self.openDatabase()
 
         # Then she presses edit button
-        self.dbs.panel.editButton.click()
+        self.editButton.click()
 
         # In the name and password fields she sees database name and password appropriately
         self.assertEqual('database', self.name.text())
@@ -87,6 +89,7 @@ class EditDbTest(BaseTest):
 
         # Tom wants to edit database
         self.openDatabase()
+        self.editButton.click()
 
         # He changes the name and password
         self.name.setText('another_database')
@@ -94,6 +97,8 @@ class EditDbTest(BaseTest):
         self.pass_repeat_input.setText('another_password')
 
         # And presses the save button
+        win = self.window.windows[1]
+        win.closeEvent = lambda self: None  # we don't need close event behavior in this test
         self.saveButton.click()
 
         # Edit database form disappears
