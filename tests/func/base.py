@@ -17,18 +17,21 @@ class BaseTest(unittest.TestCase):
         self.window.destroy = True
         self.window.close()
 
-    def checkOnlyVisible(self, elem, dbs):
-        for form in dbs.forms:
-            if dbs.forms[form] == elem:
-                self.assertTrue(dbs.forms[form].visibility)
-                continue
-            self.assertFalse(dbs.forms[form].visibility)
+    def checkOnlyVisible(self, elem):
+        self.check_only_visible(elem, self.dbs)
 
-        for tip in dbs.tips:
-            if dbs.tips[tip] == elem:
-                self.assertTrue(dbs.tips[tip].visibility)
+    def check_only_visible(self, elem, parent):
+        for form in parent.forms:
+            if parent.forms[form] == elem:
+                self.assertTrue(parent.forms[form].visibility)
                 continue
-            self.assertFalse(dbs.tips[tip].visibility)
+            self.assertFalse(parent.forms[form].visibility)
+
+        for tip in parent.tips:
+            if parent.tips[tip] == elem:
+                self.assertTrue(parent.tips[tip].visibility)
+                continue
+            self.assertFalse(parent.tips[tip].visibility)
 
     def checkDbInList(self, name):
         model = self.dbs.list.model

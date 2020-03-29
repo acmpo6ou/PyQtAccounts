@@ -25,7 +25,7 @@ class OpenDbTest(BaseTest):
         self.list.selected(Index('crypt'))
 
         # open database form appears
-        self.checkOnlyVisible(self.form, self.dbs)
+        self.checkOnlyVisible(self.form)
 
         # There is title that says `Відкрити базу данних crypt`
         self.assertIn('crypt', self.form.title.text())
@@ -40,7 +40,7 @@ class OpenDbTest(BaseTest):
         self.list.selected(Index('database'))
 
         # The message appears saying that he already opened this database
-        self.checkOnlyVisible(self.dbs.tips['already-open'], self.dbs)
+        self.checkOnlyVisible(self.dbs.tips['already-open'])
 
     def test_password_and_open_validation(self):
         # Tom wants to open his database called `database`

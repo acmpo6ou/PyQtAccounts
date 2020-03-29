@@ -43,19 +43,19 @@ class EditDbTest(BaseTest):
         self.editButton.click()
 
         # The error message appears saying that he can't edit database until he opens it
-        self.checkOnlyVisible(self.dbs.tips['edit-w'], self.dbs)
+        self.checkOnlyVisible(self.dbs.tips['edit-w'])
 
         # So Toon opens database
         self.openDatabase()
 
         # There is no errors
-        self.checkOnlyVisible(self.help, self.dbs)
+        self.checkOnlyVisible(self.help)
 
         # and then he tries again
         self.editButton.click()
 
         # Edit database form appears
-        self.checkOnlyVisible(self.form, self.dbs)
+        self.checkOnlyVisible(self.form)
 
     def test_name_validation(self):
         # Lea wants to edit database, so she opens one
@@ -100,7 +100,7 @@ class EditDbTest(BaseTest):
         self.saveButton.click()
 
         # Edit database form disappears
-        self.checkOnlyVisible(self.help, self.dbs)
+        self.checkOnlyVisible(self.help)
 
         # Database name changes in the list
         self.checkDbInList('another_database')
@@ -112,7 +112,7 @@ class EditDbTest(BaseTest):
         self.openDatabase('another_database', 'another_password')
 
         # There is no errors
-        self.checkOnlyVisible(self.help, self.dbs)
+        self.checkOnlyVisible(self.help)
 
         # database renamed on the disk
         self.assertIn('another_database', getDbList())

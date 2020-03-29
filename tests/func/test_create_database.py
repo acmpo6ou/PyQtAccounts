@@ -33,17 +33,17 @@ class CreateDbTest(BaseTest):
     def test_create_db_ctrl_n(self):
         pyautogui.hotkey("ctrl", "n")
         QTest.qWait(100)
-        self.checkOnlyVisible(self.form, self.dbs)
+        self.checkOnlyVisible(self.form)
 
     def test_create_db_click(self):
         self.dbs.panel.addButton.click()
-        self.checkOnlyVisible(self.form, self.dbs)
+        self.checkOnlyVisible(self.form)
 
     def test_create_db_menu(self):
         file = self.window.menuBar().actions()[0]  # first is `File` submenu
         new_db = file.menu().actions()[0]  # first action is `New database...`
         new_db.trigger()
-        self.checkOnlyVisible(self.form, self.dbs)
+        self.checkOnlyVisible(self.form)
 
     def test_valid_db_name(self):
         # Bob has two databases called `main` and `crypt`.
@@ -206,7 +206,7 @@ class CreateDbTest(BaseTest):
 
         # End the form disappears
         tip = dbs.tips['help']
-        self.checkOnlyVisible(tip, dbs)
+        self.checkOnlyVisible(tip)
 
     def test_create_button(self):
         # Toon wants to create new database
@@ -221,7 +221,7 @@ class CreateDbTest(BaseTest):
         self.form.createButton.click()
 
         # The create form disappears
-        self.checkOnlyVisible(self.dbs.tips['help'], self.dbs)
+        self.checkOnlyVisible(self.dbs.tips['help'])
 
         # `somedb` appears at the database list
         self.checkDbInList('somedb')
