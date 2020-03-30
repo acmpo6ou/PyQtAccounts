@@ -5,7 +5,9 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 import unittest.mock
 import pytest
+import pyautogui
 import sys
+import os
 
 sys.path.append('.')
 
@@ -19,12 +21,13 @@ class ImportExportTest(BaseTest):
         self.settings = QSettings('PyTools', 'PyQtAccounts')
         self.old_is_main_db = self.settings.value('advanced/is_main_db', False, type=bool)
         self.old_main_db = self.settings.value('advanced/main_db', '', type=str)
-        
+
         # Any database should be selected
         self.settings.setValue('advanced/is_main_db', False)
         super().setUp()
 
         self.exportWarning = self.dbs.tips['export']
+        self.list = self.dbs.list
 
     def tearDown(self):
         self.settings.setValue('advanced/is_main_db', self.old_is_main_db)
@@ -77,3 +80,25 @@ class ImportExportTest(BaseTest):
 
         # Warning message appears saying that he needs to chose database first
         self.checkOnlyVisible(self.exportWarning)
+
+    def test_export_success(self):
+        # Lea wants to export her database, so she chose one in the list
+        self.list.selected(Index('database'))
+
+        # And presses Ctrl+E
+        # File dialog appears and she chose path
+        self.monkeypatch.setattr(QFileDialog, 'getSaveFileName', lambda *args, **kwargs: (
+            '../tests/func/src/database.tar',))
+
+        # Success message appears
+        self.monkeypatch.setattr(QMessageBox, 'information',
+                                 lambda *args, **kwargs: QMessageBox.Ok)
+
+        pyautogui.hotkey("ctrl", "e")  # We press Ctrl+E here because of the dialogs
+        QTest.qWait(100)
+
+        # And Lea has database.tar on the disk now
+        self.assertTrue(os.path.exists('../tests/func/src/database.tar'))
+
+        # clean up
+        os.remove('../tests/func/src/database.tar')
