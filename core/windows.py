@@ -229,8 +229,8 @@ class MenuBar(QMenuBar):
         self.Updates.addAction(QIcon('../img/changelog.svg'), '&View changelog',
                                lambda: ShowChangelog(parent))
 
-        self.Help = self.addMenu('&Help')
-        self.Help.addAction(QIcon('../img/info.png'), 'About', parent.about.exec,
+        self.Help = self.addMenu('&Help')                     # first is the main window
+        self.Help.addAction(QIcon('../img/info.png'), 'About', parent.windows[0].about.exec,
                             QKeySequence('F1'))
         self.Help.addAction(QIcon('../img/qt5.png'), 'PyQt5',
                             lambda: QMessageBox.aboutQt(parent))

@@ -34,6 +34,7 @@ class Window(QMainWindow):
         self.name = ''
         self.setWindowIcon(QIcon('../img/icon.svg'))
         windows = [self]
+        self.windows = windows
         self.destroy = False
 
         helpTip = HelpTip(HELP_TIP_DB)
@@ -121,7 +122,6 @@ class Window(QMainWindow):
         settings = Settings(self)
 
         self.settings = settings
-        self.windows = windows
 
     def closeEvent(self, event):
         if self.destroy:
