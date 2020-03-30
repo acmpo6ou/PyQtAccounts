@@ -81,14 +81,9 @@ class Window(QMainWindow):
         is_main_db = sets.value('advanced/is_main_db', False, type=bool)
         main_db = sets.value('advanced/main_db', '', type=str)
         if is_main_db and main_db in getDbList():
+
             self.dbs.list.selected(Index(main_db))
 
-        menuBar = AppMenuBar(self)
-
-        self.setMenuBar(menuBar)
-        self.setCentralWidget(splitter)
-
-        self.show()
         if not '.git' in os.listdir('../'):
             WarningWindow('''
             <h3>Програму не ініціалізовано!</h3>
@@ -97,6 +92,12 @@ class Window(QMainWindow):
             <p>Ініціалізація потрібна, аби система оновлення PyQtAccounts працювала.</p>
             <p>Система оновлення автоматично перевіряє, завантажує і встановлює оновлення.</p>
             ''')
+
+        self.about = About()
+
+        menuBar = AppMenuBar(self)
+        self.setMenuBar(menuBar)
+        self.setCentralWidget(splitter)
 
         reqs_list = ['git', 'pip3', 'xclip']
 

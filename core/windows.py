@@ -230,7 +230,7 @@ class MenuBar(QMenuBar):
                                lambda: ShowChangelog(parent))
 
         self.Help = self.addMenu('&Help')
-        self.Help.addAction(QIcon('../img/info.png'), 'About', about.exec,
+        self.Help.addAction(QIcon('../img/info.png'), 'About', parent.about.exec,
                             QKeySequence('F1'))
         self.Help.addAction(QIcon('../img/qt5.png'), 'PyQt5',
                             lambda: QMessageBox.aboutQt(parent))
@@ -468,9 +468,6 @@ class About(QDialog):
         self.setLayout(self.layout)
         self.layout.addLayout(self.titleLayout)
         self.layout.addWidget(self.content)
-
-
-about = About()
 
 
 class Settings(QDialog):
