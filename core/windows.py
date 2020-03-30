@@ -525,5 +525,4 @@ class Settings(QDialog):
         self.settings.setValue('advanced/is_main_db', is_main_db)
         main_db = self.mainDbLayout.dbs.currentText()
         self.settings.setValue('advanced/main_db', main_db)
-
         self.hide()

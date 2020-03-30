@@ -3,7 +3,7 @@
 from PyQt5.QtTest import QTest
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
-import unittest.mock
+import unittest
 import pytest
 import pyautogui
 import sys
