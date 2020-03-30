@@ -33,34 +33,6 @@ class ImportExportTest(BaseTest):
         self.settings.setValue('advanced/is_main_db', self.old_is_main_db)
         self.settings.setValue('advanced/main_db', self.old_main_db)
 
-    def file_dialog(self, result):
-        def file_dialog(caption, filter, directory):
-                assert caption == 'Імпортувати базу данних'
-                assert filter == 'Tarball (*.tar)'
-                assert directory == os.getenv('HOME')
-                return result
-        return file_dialog
-
-    def save_file_dialog(self, name, result):
-        def save_file_dialog(caption, filter, directory):
-                home = os.getenv('HOME')
-                assert caption == 'Експортувати базу данних'
-                assert filter == 'Tarball (*.tar)'
-                assert directory == f'{home}/{name}.tar'
-                return result
-        return save_file_dialog
-
-    def mess(self, head, text):
-        def file_dialog(parent, this_head, this_text):
-                assert this_head == head
-                assert this_text == text
-                return QMessageBox.Ok
-        return file_dialog
-
-    def critical(self, parent, head, text):
-        assert head == 'Помилка!'
-        return QMessageBox.Ok
-
     def test_import_success(self):
         # Emily wants to import database so she goes to menu File -> Import database...
         file = self.window.menuBar().actions()[0]  # first is `File` submenu

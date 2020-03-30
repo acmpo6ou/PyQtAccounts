@@ -141,7 +141,10 @@ class EditDbTest(BaseTest):
 
         # Then he presses delete button
         # Suddenly Bob changes his mind and presses `No` button in warning dialog that appears
-        self.monkeypatch.setattr(QMessageBox, "warning", lambda *args, **kwargs: QMessageBox.No)
+        self.monkeypatch.setattr(QMessageBox, "warning",
+            self.mess('Увага!',
+                      'Ви певні що хочете видалити базу данних <i><b>database</b></i>',
+                      QMessageBox.No))
         self.form.deleteButton.click()
 
         # Everything is fine database still in the list and exists on the disk
@@ -149,7 +152,10 @@ class EditDbTest(BaseTest):
         self.assertIn('database', getDbList())
 
         # Then he decided to delete database
-        self.monkeypatch.setattr(QMessageBox, "warning", lambda *args, **kwargs: QMessageBox.Yes)
+        self.monkeypatch.setattr(QMessageBox, "warning",
+            self.mess('Увага!',
+                      'Ви певні що хочете видалити базу данних <i><b>database</b></i>',
+                      QMessageBox.Yes))
         self.form.deleteButton.click()
 
         # And there in no longer database in the list, neither on the disk
