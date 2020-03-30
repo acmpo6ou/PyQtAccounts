@@ -33,18 +33,48 @@ class ImportExportTest(BaseTest):
         self.settings.setValue('advanced/is_main_db', self.old_is_main_db)
         self.settings.setValue('advanced/main_db', self.old_main_db)
 
+    def file_dialog(self, result):
+        def file_dialog(caption, filter, directory):
+                assert caption == 'Імпортувати базу данних'
+                assert filter == 'Tarball (*.tar)'
+                assert directory == os.getenv('HOME')
+                return result
+        return file_dialog
+
+    def save_file_dialog(self, name, result):
+        def save_file_dialog(caption, filter, directory):
+                home = os.getenv('HOME')
+                assert caption == 'Експортувати базу данних'
+                assert filter == 'Tarball (*.tar)'
+                assert directory == f'{home}/{name}.tar'
+                return result
+        return save_file_dialog
+
+    def mess(self, head, text):
+        def file_dialog(parent, this_head, this_text):
+                assert this_head == head
+                assert this_text == text
+                return QMessageBox.Ok
+        return file_dialog
+
+    def critical(self, parent, head, text):
+        assert head == 'Помилка!'
+        return QMessageBox.Ok
+
     def test_import_success(self):
         # Emily wants to import database so she goes to menu File -> Import database...
         file = self.window.menuBar().actions()[0]  # first is `File` submenu
         import_db = file.menu().actions()[1]       # second action is `Import database...`
 
         # File dialog appears and she chose her tar file
-        self.monkeypatch.setattr(QFileDialog, 'getOpenFileName', lambda *args, **kwargs: (
-            '../tests/func/src/import_database.tar',))
+        file_dialog = self.file_dialog(('../tests/func/src/import_database.tar',))
+        self.monkeypatch.setattr(QFileDialog, 'getOpenFileName', file_dialog)
 
         # Success message appears, Emily presses `Ok` button
-        self.monkeypatch.setattr(QMessageBox, 'information',
-                                 lambda *args, **kwargs: QMessageBox.Ok)
+        success_message = self.mess(
+            'Імпорт',
+            'Успішно імпортовано базу данних <i><b>import_database</b></i>')
+        self.monkeypatch.setattr(QMessageBox, 'information', success_message)
         import_db.trigger()
 
         # Database appears in the list and on the disk
@@ -57,17 +87,16 @@ class ImportExportTest(BaseTest):
         import_db = file.menu().actions()[1]       # second action is `Import database...`
 
         # File dialog appears and he chose his tar file
-        self.monkeypatch.setattr(QFileDialog, 'getOpenFileName', lambda *args, **kwargs: (
-            '../tests/func/src/corrupted_few_files.tar',))
+        file_dialog = self.file_dialog(('../tests/func/src/corrupted_few_files.tar',))
+        self.monkeypatch.setattr(QFileDialog, 'getOpenFileName', file_dialog)
 
         # Error message appears saying that his file is corrupted, so Tom presses `Ok`
-        self.monkeypatch.setattr(QMessageBox, 'critical',
-                                 lambda *args, **kwargs: QMessageBox.Ok)
+        self.monkeypatch.setattr(QMessageBox, 'critical', self.critical)
         import_db.trigger()
 
         # He then tries to import another database
-        self.monkeypatch.setattr(QFileDialog, 'getOpenFileName', lambda *args, **kwargs: (
-            '../tests/func/src/corrupted_many_files.tar',))
+        file_dialog = self.file_dialog(('../tests/func/src/corrupted_many_files.tar',))
+        self.monkeypatch.setattr(QFileDialog, 'getOpenFileName', file_dialog)
 
         # Another error appears with the same message
         import_db.trigger()
@@ -87,12 +116,13 @@ class ImportExportTest(BaseTest):
 
         # And presses Ctrl+E
         # File dialog appears and she chose path
-        self.monkeypatch.setattr(QFileDialog, 'getSaveFileName', lambda *args, **kwargs: (
-            '../tests/func/src/database.tar',))
+        file_dialog = self.save_file_dialog('database', ('../tests/func/src/database.tar',))
+        self.monkeypatch.setattr(QFileDialog, 'getSaveFileName', file_dialog)
 
         # Success message appears
-        self.monkeypatch.setattr(QMessageBox, 'information',
-                                 lambda *args, **kwargs: QMessageBox.Ok)
+        success_message = self.mess(
+            'Експорт', 'Успішно експортовано базу данних <i><b>database</b></i>')
+        self.monkeypatch.setattr(QMessageBox, 'information', success_message)
 
         pyautogui.hotkey("ctrl", "e")  # We press Ctrl+E here because of the dialogs
         QTest.qWait(100)
@@ -109,12 +139,11 @@ class ImportExportTest(BaseTest):
 
         # And presses Ctrl+E
         # File dialog appears and he chose / path
-        self.monkeypatch.setattr(QFileDialog, 'getSaveFileName', lambda *args, **kwargs: (
-            '/database.tar',))
+        file_dialog = self.save_file_dialog('database', ('/database.tar',))
+        self.monkeypatch.setattr(QFileDialog, 'getSaveFileName', file_dialog)
 
         # Error message appears saying that export is unsuccessful
-        self.monkeypatch.setattr(QMessageBox, 'critical',
-                                 lambda *args, **kwargs: QMessageBox.Ok)
+        self.monkeypatch.setattr(QMessageBox, 'critical', self.critical)
 
         pyautogui.hotkey("ctrl", "e")  # We press Ctrl+E here because of the dialogs
         QTest.qWait(100)
