@@ -40,7 +40,6 @@ def export(name, path, parent):
     except Exception:
         QMessageBox.critical(parent, 'Помилка!', 'Експорт бази данних '
                                                  'завершився невдачею.')
-        raise
     else:
         QMessageBox.information(parent, 'Експорт', 'Успішно експортовано базу '
                                                    'данних <i><b>{}</b></i>'.format(name))

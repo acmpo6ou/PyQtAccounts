@@ -102,3 +102,22 @@ class ImportExportTest(BaseTest):
 
         # clean up
         os.remove('../tests/func/src/database.tar')
+
+    def test_export_fail(self):
+        # Toon wants to export his database, so he chose one in the list
+        self.list.selected(Index('database'))
+
+        # And presses Ctrl+E
+        # File dialog appears and he chose / path
+        self.monkeypatch.setattr(QFileDialog, 'getSaveFileName', lambda *args, **kwargs: (
+            '/database.tar',))
+
+        # Error message appears saying that export is unsuccessful
+        self.monkeypatch.setattr(QMessageBox, 'critical',
+                                 lambda *args, **kwargs: QMessageBox.Ok)
+
+        pyautogui.hotkey("ctrl", "e")  # We press Ctrl+E here because of the dialogs
+        QTest.qWait(100)
+
+        # And there is no database.tar on the disk
+        self.assertFalse(os.path.exists('/database.tar'))
