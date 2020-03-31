@@ -11,12 +11,12 @@ import os
 
 sys.path.append('.')
 
-from .base import BaseTest
+from tests.base import FuncTest
 from core.utils import *
 from PyQtAccounts import *
 
 
-class ImportExportTest(BaseTest):
+class ImportExportTest(FuncTest):
     def setUp(self):
         self.settings = QSettings('PyTools', 'PyQtAccounts')
         self.old_is_main_db = self.settings.value('advanced/is_main_db', False, type=bool)

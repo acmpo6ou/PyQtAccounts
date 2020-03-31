@@ -58,7 +58,7 @@ class Updating(QObject):
 
     def run(self):
         import git
-        repo = git.Repo('')
+        repo = git.Repo('.')
         origin = repo.remote()
         origin.fetch()
 
@@ -119,7 +119,7 @@ class UpdatesAvailable(QWidget):
 
     def applyUpdate(self):
         self.hide()
-        repo = git.Repo('')
+        repo = git.Repo('.')
         origin = repo.remote()
         origin.pull()
         t = threading.Thread(target=os.system, args=('run.sh',), daemon=True)

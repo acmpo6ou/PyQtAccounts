@@ -8,12 +8,12 @@ import sys
 
 sys.path.append('.')
 
-from .base import BaseTest
+from tests.base import FuncTest
 from core.utils import *
 from PyQtAccounts import *
 
 
-class OpenDbTest(BaseTest):
+class OpenDbTest(FuncTest):
     def setUp(self):
         super().setUp()
         self.form = self.dbs.forms['open']

@@ -10,12 +10,12 @@ import os
 
 sys.path.append('.')
 
-from .base import BaseTest
+from tests.base import FuncTest
 from core.utils import *
 from PyQtAccounts import *
 
 
-class EditDbTest(BaseTest):
+class EditDbTest(FuncTest):
     def setUp(self):
         super().setUp()
         self.form = self.dbs.forms['edit']

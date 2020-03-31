@@ -8,7 +8,7 @@ import sys
 
 sys.path.append('.')
 
-from .base import BaseTest
+from tests.base import BaseTest
 from core.utils import *
 from PyQtAccounts import *
 from core.windows import About
