@@ -18,6 +18,7 @@
 
 from PyQt5.QtWidgets import *
 import unittest
+from unittest.mock import Mock
 import pytest
 import sys
 import os
@@ -105,3 +106,24 @@ class FuncTest(BaseTest):
             pass
         else:
             raise AssertionError(f"Database {name} in the list, but it shouldn't be!")
+
+
+class UnitTest(BaseTest):
+    def patchVersion(self):
+        class Tag:
+            def __init__(self, name, date):
+                self.name = name
+                self.commit = Mock()
+                self.commit.committed_datetime = date
+
+            def __str__(self):
+                return self.name
+
+        class Repo:
+            def __init__(self, *args):
+                pass
+
+            tags = []
+            for i, name in enumerate(['v1.0.0', 'v1.0.2', 'v2.0.6']):
+                tags.append(Tag(name, i))
+        self.monkeypatch.setattr(git, 'Repo', Repo)

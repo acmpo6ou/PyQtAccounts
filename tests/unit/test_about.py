@@ -24,33 +24,18 @@ import sys
 
 sys.path.append('.')
 
-from tests.base import BaseTest
+from tests.base import UnitTest
 from core.utils import *
 from PyQtAccounts import *
 from core.windows import About
 import git
 
 
-class AboutTest(BaseTest):
+class AboutTest(UnitTest):
     def setUp(self):
         super().setUp()
 
     def test_about_version(self):
-        class Tag:
-            def __init__(self, name, date):
-                self.name = name
-                self.commit = Mock()
-                self.commit.committed_datetime = date
-            def __str__(self):
-                return self.name
-
-        class Repo:
-            def __init__(self, *args):
-                pass
-            tags = []
-            for i, name in enumerate(['v1.0.0', 'v1.0.2', 'v2.0.6']):
-                tags.append(Tag(name, i))
-
-        self.monkeypatch.setattr(git, 'Repo', Repo)
+        self.patchVersion()
         about = About()
         self.assertIn('Version 2.0.6', about.about)
