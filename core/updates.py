@@ -19,15 +19,15 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
-from testutils import QWidget
+from core.testutils import QWidget
 
 import git
 import os
 import threading
 
-from const import *
-from utils import *
-from widgets import *
+from core.const import *
+from core.utils import *
+from core.widgets import *
 from urllib.request import urlopen
 
 
@@ -58,7 +58,7 @@ class Updating(QObject):
 
     def run(self):
         import git
-        repo = git.Repo('../')
+        repo = git.Repo('')
         origin = repo.remote()
         origin.fetch()
 
@@ -83,7 +83,7 @@ class UpdatesAvailable(QWidget):
         self.title = Title('<h3>Доступно нове оновлення</h3>')
         self.title.setMinimumWidth(800)
         self.icon = QLabel()
-        self.icon.setPixmap(QPixmap('../img/update-available.svg'))
+        self.icon.setPixmap(QPixmap('img/update-available.svg'))
 
         header = QHBoxLayout()
         header.addWidget(self.icon)
@@ -119,10 +119,10 @@ class UpdatesAvailable(QWidget):
 
     def applyUpdate(self):
         self.hide()
-        repo = git.Repo('../')
+        repo = git.Repo('')
         origin = repo.remote()
         origin.pull()
-        t = threading.Thread(target=os.system, args=('../run.sh',), daemon=True)
+        t = threading.Thread(target=os.system, args=('run.sh',), daemon=True)
         t.start()
         self.parent().close()
 
@@ -136,7 +136,7 @@ class ShowChangelog(QDialog):
 
         version = getVersion()
         changelog = '<h4>PyQtAccounts {}:</h4><ul>'.format(version)
-        for change in open('../change.log'):
+        for change in open('change.log'):
             changelog += '<li>{}</li>\n'.format(change)
         changelog += '</ul>'
         self.changelogLabel = QLabel(changelog)

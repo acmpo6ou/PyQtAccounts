@@ -12,7 +12,7 @@ import os
 sys.path.append('.')
 
 from .base import BaseTest
-from utils import *
+from core.utils import *
 from PyQtAccounts import *
 
 
@@ -39,7 +39,7 @@ class ImportExportTest(BaseTest):
         import_db = file.menu().actions()[1]       # second action is `Import database...`
 
         # File dialog appears and she chose her tar file
-        file_dialog = self.file_dialog(('../tests/func/src/import_database.tar',))
+        file_dialog = self.file_dialog(('tests/func/src/import_database.tar',))
         self.monkeypatch.setattr(QFileDialog, 'getOpenFileName', file_dialog)
 
         # Success message appears, Emily presses `Ok` button
@@ -59,7 +59,7 @@ class ImportExportTest(BaseTest):
         import_db = file.menu().actions()[1]       # second action is `Import database...`
 
         # File dialog appears and he chose his tar file
-        file_dialog = self.file_dialog(('../tests/func/src/corrupted_few_files.tar',))
+        file_dialog = self.file_dialog(('tests/func/src/corrupted_few_files.tar',))
         self.monkeypatch.setattr(QFileDialog, 'getOpenFileName', file_dialog)
 
         # Error message appears saying that his file is corrupted, so Tom presses `Ok`
@@ -67,7 +67,7 @@ class ImportExportTest(BaseTest):
         import_db.trigger()
 
         # He then tries to import another database
-        file_dialog = self.file_dialog(('../tests/func/src/corrupted_many_files.tar',))
+        file_dialog = self.file_dialog(('tests/func/src/corrupted_many_files.tar',))
         self.monkeypatch.setattr(QFileDialog, 'getOpenFileName', file_dialog)
 
         # Another error appears with the same message
@@ -88,7 +88,7 @@ class ImportExportTest(BaseTest):
 
         # And presses Ctrl+E
         # File dialog appears and she chose path
-        file_dialog = self.save_file_dialog('database', ('../tests/func/src/database.tar',))
+        file_dialog = self.save_file_dialog('database', ('tests/func/src/database.tar',))
         self.monkeypatch.setattr(QFileDialog, 'getSaveFileName', file_dialog)
 
         # Success message appears
@@ -100,10 +100,10 @@ class ImportExportTest(BaseTest):
         QTest.qWait(100)
 
         # And Lea has database.tar on the disk now
-        self.assertTrue(os.path.exists('../tests/func/src/database.tar'))
+        self.assertTrue(os.path.exists('tests/func/src/database.tar'))
 
         # clean up
-        os.remove('../tests/func/src/database.tar')
+        os.remove('tests/func/src/database.tar')
 
     def test_export_fail(self):
         # Toon wants to export his database, so he chose one in the list

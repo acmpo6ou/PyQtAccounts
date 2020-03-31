@@ -19,7 +19,7 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
-from testutils import QWidget
+from core.testutils import QWidget
 import sys
 import os
 
@@ -32,7 +32,7 @@ class Window(QMainWindow):
         self.show()
 
         self.name = ''
-        self.setWindowIcon(QIcon('../img/icon.svg'))
+        self.setWindowIcon(QIcon('img/icon.svg'))
         windows = [self]
         self.windows = windows
         self.destroy = False
@@ -85,7 +85,7 @@ class Window(QMainWindow):
 
             self.dbs.list.selected(Index(main_db))
 
-        if not '.git' in os.listdir('../'):
+        if not '.git' in os.listdir('.'):
             WarningWindow('''
             <h3>Програму не ініціалізовано!</h3>
             <p>Завантажте файл <b><i>setup.py</i></b> з нашого github репозиторія.</p>
@@ -177,13 +177,13 @@ app.setStyleSheet('''
 ''')
 
 try:
-    from db_forms import *
-    from account_forms import *
-    from utils import *
-    from widgets import *
-    from windows import *
-    from updates import *
-    from const import *
+    from core.db_forms import *
+    from core.account_forms import *
+    from core.utils import *
+    from core.widgets import *
+    from core.windows import *
+    from core.updates import *
+    from core.const import *
 
     import git
 

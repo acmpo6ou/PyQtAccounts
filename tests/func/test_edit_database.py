@@ -11,7 +11,7 @@ import os
 sys.path.append('.')
 
 from .base import BaseTest
-from utils import *
+from core.utils import *
 from PyQtAccounts import *
 
 
@@ -34,18 +34,18 @@ class EditDbTest(BaseTest):
         self.help = self.dbs.tips['help']
 
         # pre-saving database
-        self.salt = open('../src/database.bin', 'rb').read()
-        self.db = open('../src/database.db', 'rb').read()
+        self.salt = open('src/database.bin', 'rb').read()
+        self.db = open('src/database.db', 'rb').read()
 
     def tearDown(self):
         # restoring database
-        open('../src/database.bin', 'wb').write(self.salt)
-        open('../src/database.db', 'wb').write(self.db)
+        open('src/database.bin', 'wb').write(self.salt)
+        open('src/database.db', 'wb').write(self.db)
 
         # cleaning up
         try:
-            os.remove('../src/another_database.bin')
-            os.remove('../src/another_database.db')
+            os.remove('src/another_database.bin')
+            os.remove('src/another_database.db')
         except Exception:
             pass
 

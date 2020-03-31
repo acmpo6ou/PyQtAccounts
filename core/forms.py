@@ -17,8 +17,8 @@
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
 
 from PyQt5.QtWidgets import *
-from testutils import QWidget
-import widgets
+from core.testutils import QWidget
+import core.widgets as widgets
 
 
 class CreateForm(QWidget):

@@ -19,14 +19,14 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-from testutils import QWidget
+from core.testutils import QWidget
 
-import akidump
+import core.akidump as akidump
 import os
 
-from forms import *
-from utils import *
-from widgets import *
+from core.forms import *
+from core.utils import *
+from core.widgets import *
 
 HELP_TIP = ("<pre>Поки що у вас немає жодного акаунта.\n" +
                           '{0:<36}\n'.format("Спробуйте:") +

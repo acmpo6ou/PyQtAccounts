@@ -19,23 +19,23 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-from testutils import QWidget
+from core.testutils import QWidget
 
 import os
 
-from widgets import *
-from updates import *
-from utils import *
-from getaki import *
+from core.widgets import *
+from core.updates import *
+from core.utils import *
+from core.getaki import *
 import tarfile
-from account_forms import *
+from core.account_forms import *
 
 
 def export(name, path, parent):
     try:
         file = tarfile.open(path, 'w')
-        file.add('../src/{}.db'.format(name))
-        file.add('../src/{}.bin'.format(name))
+        file.add('src/{}.db'.format(name))
+        file.add('src/{}.bin'.format(name))
         file.close()
     except Exception:
         QMessageBox.critical(parent, 'Помилка!', 'Експорт бази данних '
@@ -56,7 +56,7 @@ def _import(path, parent):
 
         if i != 1:
             raise Exception('Невірний файл!')
-        tar.extractall('../src/')
+        tar.extractall('src/')
 
         model = parent.dbs.list.model
         list = parent.dbs.list
@@ -81,12 +81,12 @@ class Panel(QHBoxLayout):
         QHBoxLayout.__init__(self)
 
         self.addButton = QPushButton()
-        self.addButton.setIcon(QIcon('../img/list-add.png'))
+        self.addButton.setIcon(QIcon('img/list-add.png'))
         self.addButton.setIconSize(QSize(22, 22))
         self.addButton.clicked.connect(add)
 
         self.editButton = QPushButton()
-        self.editButton.setIcon(QIcon('../img/edit.svg'))
+        self.editButton.setIcon(QIcon('img/edit.svg'))
         self.editButton.setIconSize(QSize(22, 22))
         self.editButton.clicked.connect(edit)
 
@@ -140,7 +140,7 @@ class Dbs(QWidget):
         self.tips = tips
 
         self.panel = Panel(self.add, self.edit)
-        self.list = List(sorted(getDbList()), '../img/icon.svg', forms, windows,
+        self.list = List(sorted(getDbList()), 'img/icon.svg', forms, windows,
                          tips, selectDb)
 
         self.forms['edit'].model = self.list.model
@@ -181,7 +181,7 @@ class Accs(QWidget):
         self.db = db
 
         self.panel = Panel(self.add, self.edit)
-        self.list = List(sorted(getAkiList(db)), '../img/account.png', forms,
+        self.list = List(sorted(getAkiList(db)), 'img/account.png', forms,
                          windows, tips, selectAcc)
 
         self.forms['create'].list = self.list
@@ -216,23 +216,23 @@ class MenuBar(QMenuBar):
         self._thread = None
 
         self.File = self.addMenu('&File')
-        self.quit = self.File.addAction(QIcon('../img/quit.svg'), '&Quit',
+        self.quit = self.File.addAction(QIcon('img/quit.svg'), '&Quit',
                                         parent.close, QKeySequence('Ctrl+Q'))
 
         self.Edit = self.addMenu('&Edit')
-        self.Edit.addAction(QIcon('../img/preferences.png'), '&Preferences',
+        self.Edit.addAction(QIcon('img/preferences.png'), '&Preferences',
                             self.preferences, QKeySequence('Ctrl+P'))
 
         self.Updates = self.addMenu('&Updates')
-        self.Updates.addAction(QIcon('../img/update-available.svg'), '&Check for updates',
+        self.Updates.addAction(QIcon('img/update-available.svg'), '&Check for updates',
                                self.checkForUpdates)
-        self.Updates.addAction(QIcon('../img/changelog.svg'), '&View changelog',
+        self.Updates.addAction(QIcon('img/changelog.svg'), '&View changelog',
                                lambda: ShowChangelog(parent))
 
         self.Help = self.addMenu('&Help')                     # first is the main window
-        self.Help.addAction(QIcon('../img/info.png'), 'About', parent.windows[0].about.exec,
+        self.Help.addAction(QIcon('img/info.png'), 'About', parent.windows[0].about.exec,
                             QKeySequence('F1'))
-        self.Help.addAction(QIcon('../img/qt5.png'), 'PyQt5',
+        self.Help.addAction(QIcon('img/qt5.png'), 'PyQt5',
                             lambda: QMessageBox.aboutQt(parent))
 
     def preferences(self):
@@ -263,15 +263,15 @@ class AppMenuBar(MenuBar):
     def __init__(self, parent):
         MenuBar.__init__(self, parent)
 
-        self.new = QAction(QIcon('../img/list-add.svg'), '&New database...')
+        self.new = QAction(QIcon('img/list-add.svg'), '&New database...')
         self.new.triggered.connect(parent.dbs.panel.addButton.click)
         self.new.setShortcut(QKeySequence('Ctrl+N'))
 
-        self._import = QAction(QIcon('../img/import.png'), '&Import database...')
+        self._import = QAction(QIcon('img/import.png'), '&Import database...')
         self._import.triggered.connect(self.Import)
         self._import.setShortcut(QKeySequence('Ctrl+I'))
 
-        self.export = QAction(QIcon('../img/export.png'), '&Export database...')
+        self.export = QAction(QIcon('img/export.png'), '&Export database...')
         self.export.triggered.connect(self.Export)
         self.export.setShortcut(QKeySequence('Ctrl+E'))
 
@@ -314,15 +314,15 @@ class DbMenuBar(MenuBar):
     def __init__(self, parent):
         MenuBar.__init__(self, parent)
 
-        self.new = QAction(QIcon('../img/list-add.svg'), '&New account...')
+        self.new = QAction(QIcon('img/list-add.svg'), '&New account...')
         self.new.triggered.connect(parent.accs.panel.addButton.click)
         self.new.setShortcut(QKeySequence('Ctrl+N'))
 
-        self.save = QAction(QIcon('../img/save.png'), '&Save')
+        self.save = QAction(QIcon('img/save.png'), '&Save')
         self.save.triggered.connect(self.Save)
         self.save.setShortcut(QKeySequence('Ctrl+S'))
 
-        self.copy = QAction(QIcon('../img/copy.png'), '&Copy')
+        self.copy = QAction(QIcon('img/copy.png'), '&Copy')
         self.copy.triggered.connect(parent.accs.forms['show'].copyAcc)
         self.copy.setShortcut(QKeySequence('Ctrl+C'))
 
@@ -336,7 +336,7 @@ class DbMenuBar(MenuBar):
         password = self.parent.password
         token = encryptDatabase(name, db, password)
 
-        dbfile = '../src/' + name + '.db'
+        dbfile = 'src/' + name + '.db'
         with open(dbfile, 'wb') as file:
             file.write(token)
 
@@ -346,7 +346,7 @@ class DbWindow(QMainWindow):
         QMainWindow.__init__(self)
         self.resize(1000, 500)
         self.setWindowTitle(name)
-        self.setWindowIcon(QIcon('../img/account.png'))
+        self.setWindowIcon(QIcon('img/account.png'))
         self.name = name
         self.windows = windows
         self.ask = True
@@ -417,7 +417,7 @@ class About(QDialog):
         self.title = QLabel('<h3>About PyQtAccounts</h3>')
         self.title.setMinimumWidth(800)
         self.icon = QLabel()
-        icon = QPixmap('../img/icon.svg')
+        icon = QPixmap('img/icon.svg')
         self.icon.setPixmap(icon)
 
         self.titleLayout = QHBoxLayout()
@@ -451,12 +451,12 @@ class About(QDialog):
         self.license = \
             '''<pre>
             {}
-            </pre>'''.format(open('../COPYING').read())
+            </pre>'''.format(open('COPYING').read())
         self.licenseText = QTextEdit(self.license)
         self.licenseText.setReadOnly(True)
 
         self.credits = \
-            '''<pre>{}</pre>'''.format(open('../CREDITS').read())
+            '''<pre>{}</pre>'''.format(open('CREDITS').read())
         self.creditsText = QLabel(self.credits)
 
         self.content = QTabWidget()

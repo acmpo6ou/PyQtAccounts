@@ -9,7 +9,7 @@ import os
 sys.path.append('.')
 
 from .base import BaseTest
-from utils import getDbList
+from core.utils import getDbList
 from PyQtAccounts import *
 
 
@@ -230,5 +230,5 @@ class CreateDbTest(BaseTest):
         self.assertIn('somedb', getDbList())
 
         # clean up
-        os.remove('../src/somedb.db')
-        os.remove('../src/somedb.bin')
+        os.remove('src/somedb.db')
+        os.remove('src/somedb.bin')

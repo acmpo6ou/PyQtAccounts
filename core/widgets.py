@@ -3,10 +3,10 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-from testutils import QWidget
+from core.testutils import QWidget
 
-import genpass
-from utils import *
+import core.genpass as genpass
+from core.utils import *
 
 
 class Tip(QLabel):
@@ -69,7 +69,7 @@ class PasswordField(QHBoxLayout):
         self.passInput.setEchoMode(QLineEdit.Password)
 
         self.showButton = QPushButton()
-        self.showButton.setIcon(QIcon('../img/show.svg'))
+        self.showButton.setIcon(QIcon('img/show.svg'))
         self.showButton.setIconSize(QSize(25, 25))
         self.showButton.clicked.connect(self.toggleShow)
 
@@ -79,10 +79,10 @@ class PasswordField(QHBoxLayout):
     def toggleShow(self):
         if self.passInput.echoMode() == QLineEdit.Password:
             self.passInput.setEchoMode(QLineEdit.Normal)
-            self.showButton.setIcon(QIcon('../img/hide.svg'))
+            self.showButton.setIcon(QIcon('img/hide.svg'))
         else:
             self.passInput.setEchoMode(QLineEdit.Password)
-            self.showButton.setIcon(QIcon('../img/show.svg'))
+            self.showButton.setIcon(QIcon('img/show.svg'))
 
 
 class GenPassDialog(QDialog):

@@ -9,7 +9,7 @@ import sys
 sys.path.append('.')
 
 from .base import BaseTest
-from utils import *
+from core.utils import *
 from PyQtAccounts import *
 
 

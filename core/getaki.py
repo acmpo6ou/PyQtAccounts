@@ -18,7 +18,7 @@
 
 import os
 import base64
-import akidump
+import core.akidump as akidump
 
 from cryptography.fernet import Fernet
 from cryptography.hazmat.backends import default_backend
@@ -31,8 +31,8 @@ def generateSalt(saltfile):
         file.write(salt)
 
 def openDatabase(dbname, password):
-    dbfile = '../src/' + dbname + '.db'
-    saltfile = '../src/' + dbname + '.bin'
+    dbfile = 'src/' + dbname + '.db'
+    saltfile = 'src/' + dbname + '.bin'
     with open(saltfile, 'rb') as file:
         salt = file.read()
     kdf = PBKDF2HMAC(
@@ -54,7 +54,7 @@ def openDatabase(dbname, password):
     return db
 
 def encryptDatabase(dbname, db, password):
-    saltfile = '../src/' + dbname + '.bin'
+    saltfile = 'src/' + dbname + '.bin'
 
     with open(saltfile, 'rb') as file:
         salt = file.read()
@@ -72,8 +72,8 @@ def encryptDatabase(dbname, db, password):
     return token
 
 def newDatabase(dbname, password):
-    saltfile = '../src/' + dbname + '.bin'
-    dbfile = '../src/' + dbname + '.db'
+    saltfile = 'src/' + dbname + '.bin'
+    dbfile = 'src/' + dbname + '.db'
 
     db = {}
     generateSalt(saltfile)
