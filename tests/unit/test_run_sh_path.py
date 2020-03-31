@@ -4,10 +4,13 @@ import unittest
 
 class RunShTest(unittest.TestCase):
     '''
-    We don't want to accidentally push run.sh with incorrect path.
+    We don't want to accidentally push run.sh with incorrect paths.
     '''
     def setUp(self):
-        self.file = open('run.sh')
+        self.file = open('run.sh').read()
 
-    def tearDown(self):
-        self.file.close()
+    def test_run_sh_path(self):
+        self.assertIn('cd .', self.file)
+
+    def test_run_sh_pythonpath(self):
+        self.assertIn('export PYTHONPATH="$PYTHONPATH:./"', self.file)

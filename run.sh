@@ -16,4 +16,6 @@
 # You should have received a copy of the GNU General Public License
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
 
+export PYTHONPATH="$PYTHONPATH:./"
+cd .
 python3 ./PyQtAccounts.py
