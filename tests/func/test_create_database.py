@@ -45,6 +45,7 @@ class CreateDbTest(FuncTest):
         self.passEqError = self.form.passEqError
         self.pass_input = self.form.passField.passInput
         self.pass_repeat_input = self.form.passRepeatField.passInput
+        self.createButton = self.form.createButton
 
     def test_create_db_ctrl_n(self):
         pyautogui.hotkey("ctrl", "n")
@@ -90,6 +91,28 @@ class CreateDbTest(FuncTest):
 
         # Another error appears saying that he needs to fill self.name field
         self.assertTrue(self.nameFilledError.visibility)
+
+    def test_name_symbols_validation(self):
+        # Toon wants to create database
+        self.dbs.panel.addButton.click()
+
+        # He then types `my data/base@!&%` to the name field
+        self.name.setText('my data/base@!&%')
+
+        # Also Toon types password and presses create button
+        self.pass_input.setText('something')
+        self.pass_repeat_input.setText('something')
+        self.createButton.click()
+
+        # `mydatabase` appears at the database list, cleaned name without any unallowed symbols
+        self.checkDbInList('mydatabase')
+
+        # And it actually on disk at the `src` folder
+        self.assertIn('mydatabase', getDbList())
+
+        # clean up
+        os.remove('src/mydatabase.db')
+        os.remove('src/mydatabase.bin')
 
     def test_valid_password(self):
         # Tom wants to create new database
@@ -154,7 +177,7 @@ class CreateDbTest(FuncTest):
         self.dbs.panel.addButton.click()
 
         # The create database form appears and `create` button is disabled
-        create = self.form.createButton
+        create = self.createButton
         self.assertFalse(create.isEnabled())
 
         # She types database name in the name input
@@ -234,7 +257,7 @@ class CreateDbTest(FuncTest):
         QTest.keyClicks(self.pass_repeat_input, 'some_password')
 
         # Everything is fine so he presses `create` button
-        self.form.createButton.click()
+        self.createButton.click()
 
         # The create form disappears
         self.checkOnlyVisible(self.dbs.tips['help'])
