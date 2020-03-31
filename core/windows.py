@@ -239,9 +239,9 @@ class MenuBar(QMenuBar):
         self.parent.settings.show()
 
     def checkForUpdates(self):
-        def mess(parent, changes):
+        def mess(parent, changes, log):
             if changes:
-                res = UpdatesAvailable(parent)
+                res = UpdatesAvailable(parent, log)
             else:
                 res = QMessageBox.information(parent, "Оновлення", "Немає оновленнь.")
             parent.res = res
@@ -249,7 +249,7 @@ class MenuBar(QMenuBar):
         thread = QThread(parent=self)
         updating = Updating()
         updating.moveToThread(thread)
-        updating.result.connect(lambda changes: mess(self.parent, changes))
+        updating.result.connect(lambda changes, log: mess(self.parent, changes, log))
         thread.started.connect(updating.run)
         thread.start()
 

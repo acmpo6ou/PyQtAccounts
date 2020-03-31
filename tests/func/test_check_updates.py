@@ -25,20 +25,44 @@ import os
 from tests.base import FuncTest
 from core.utils import *
 from core.updates import *
+import core.updates
 from PyQtAccounts import *
 
 
 class Test(FuncTest):
     def setUp(self):
         super().setUp()
+        updates = self.window.menuBar().actions()[2]  # third is `Updates` submenu
+        self.check = updates.menu().actions()[0]
 
-    def test_check_no_updates(self):
+    def test_check_for_updates_unavailable(self):
+        # Lea wants to check for updates, so she goes to menu: Updates -> Check for updates
+        # The message appears saying that there is no updates available
         def mock_run(self):
             self.result.emit(False, [])
         self.monkeypatch.setattr(Updating, 'run', mock_run)
         self.monkeypatch.setattr(QMessageBox, 'information',
                                  self.mess('Оновлення', "Немає оновленнь."))
+        self.check.trigger()
 
-        updates = self.window.menuBar().actions()[2]  # third is `Updates` submenu
-        check = updates.menu().actions()[0]
-        check.trigger()
+    def test_check_for_updates_available(self):
+        # Emily wants to check for updates
+        def mock_run(self):
+            self.result.emit(True, ['Fixed issues.', 'Changelog tested now.', 'Other updates.'])
+        self.monkeypatch.setattr(Updating, 'run', mock_run)
+
+        # Dialog window appears saying that there are updates available
+        self.check.trigger()
+        QTest.qWait(100)
+        try:
+            # We don't actually want to update anything during the tests
+            self.window.res.laterButton.click()
+        except AttributeError:
+            assert AssertionError('No update available window was created!')
+
+        # There is changelog in that dialog
+        right_text = '<h4>Що нового:</h4><ul><li>Fixed issues.</li>\n' \
+                     '<li>Changelog tested now.</li>\n' \
+                     '<li>Other updates.</li>\n' \
+                     '</ul>'
+        self.assertEqual(right_text, self.window.res.changelogLabel.text())

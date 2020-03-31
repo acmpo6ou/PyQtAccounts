@@ -43,7 +43,6 @@ class Test(UnitTest):
                      '<li>Changelog tested now.</li>\n' \
                      '<li>Other updates.</li>\n' \
                      '</ul>'
-        print(log.changelogLabel.text())
         self.assertEqual(right_text, log.changelogLabel.text())
 
         # clean up

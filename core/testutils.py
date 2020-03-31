@@ -6,7 +6,7 @@ from PyQt5.QtCore import *
 
 init = QWidget.__init__
 show = QWidget.show
-hide = QWidget.hide
+_hide = QWidget.hide
 
 def _show_(self, *args, **kwargs):
     self.visibility = True
@@ -14,7 +14,7 @@ def _show_(self, *args, **kwargs):
 
 def _hide_(self, *args, **kwargs):
     self.visibility = False
-    hide(self, *args, **kwargs)
+    _hide(self)
 
 def _init_(self, *args, **kwargs):
     self.visibility = False
