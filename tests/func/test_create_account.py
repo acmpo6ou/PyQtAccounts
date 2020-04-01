@@ -15,7 +15,7 @@
 
 # You should have received a copy of the GNU General Public License
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
-
+import pyautogui
 from PyQt5.QtTest import QTest
 from PyQt5.QtCore import *
 import unittest
@@ -30,4 +30,19 @@ from PyQtAccounts import *
 class Test(AccsTest):
     def setUp(self):
         super().setUp()
-        self.form = self.win.forms['open']
+        self.form = self.accs.forms['create']
+
+    def test_create_account_ctrl_n(self):
+        pyautogui.hotkey("ctrl", "n")
+        QTest.qWait(100)
+        self.checkOnlyVisible(self.form)
+
+    def test_create_account_click(self):
+        self.accs.panel.addButton.click()
+        self.checkOnlyVisible(self.form)
+
+    def test_create_account_menu(self):
+        file = self.win.menuBar().actions()[0]  # first is `File` submenu
+        new_db = file.menu().actions()[0]  # first action is `New account...`
+        new_db.trigger()
+        self.checkOnlyVisible(self.form)

@@ -140,6 +140,7 @@ class AccsTest(FuncTest):
         form.openButton.click()
         self.win = self.window.windows[1]
         self.accs = self.win.accs
+        self.splt = self.win.splt
 
     def checkOnlyVisible(self, elem):
-        self.check_only_visible(elem, self.accs)
+        self.check_only_visible(elem, self.splt)
