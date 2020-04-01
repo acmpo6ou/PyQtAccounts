@@ -87,3 +87,16 @@ class Test(FuncTest):
                      '<li>Other updates.</li>\n' \
                      '</ul>'
         self.assertEqual(right_text, window.res.changelogLabel.text())
+
+    def test_check_for_updates_unavailable_at_startup(self):
+        # Tom wants to check are there any updates available
+        def mock_run(self):
+            self.result.emit(False, [])
+        self.monkeypatch.setattr(Updating, 'run', mock_run)
+
+        # So he launches PyQtAccounts to check for them
+        window = Window()
+
+        # A few seconds passes and there is no updates available dialog
+        QTest.qWait(100)
+        self.assertIsNone(window.res)
