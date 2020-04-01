@@ -22,13 +22,13 @@ import unittest
 import pytest
 import sys
 
-from tests.base import FuncTest
+from tests.base import DbsTest
 from core.utils import *
 from PyQtAccounts import *
 from core.getaki import openDatabase
 
 
-class OpenDbTest(FuncTest):
+class OpenDbTest(DbsTest):
     def setUp(self):
         super().setUp()
         self.form = self.dbs.forms['open']

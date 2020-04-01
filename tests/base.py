@@ -29,13 +29,6 @@ from PyQtAccounts import *
 
 
 class BaseTest(unittest.TestCase):
-    def setUp(self):
-        self.window = Window()
-
-    def tearDown(self):
-        self.window.destroy = True
-        self.window.close()
-
     @pytest.fixture(autouse=True)
     def monkeypatching(self, monkeypatch):
         self.monkeypatch = monkeypatch
@@ -69,10 +62,35 @@ class BaseTest(unittest.TestCase):
         return QMessageBox.Ok
 
 
+class UnitTest(BaseTest):
+    def patchVersion(self):
+        class Tag:
+            def __init__(self, name, date):
+                self.name = name
+                self.commit = Mock()
+                self.commit.committed_datetime = date
+
+            def __str__(self):
+                return self.name
+
+        class Repo:
+            def __init__(self, *args):
+                pass
+
+            tags = []
+            for i, name in enumerate(['v1.0.0', 'v1.0.2', 'v2.0.6']):
+                tags.append(Tag(name, i))
+        self.monkeypatch.setattr(git, 'Repo', Repo)
+
+
 class FuncTest(BaseTest):
     def setUp(self):
-        super().setUp()
+        self.window = Window()
         self.dbs = self.window.dbs
+
+    def tearDown(self):
+        self.window.destroy = True
+        self.window.close()
 
     def check_only_visible(self, elem, parent):
         for form in parent.forms:
@@ -86,6 +104,10 @@ class FuncTest(BaseTest):
                 self.assertTrue(parent.tips[tip].visibility)
                 continue
             self.assertFalse(parent.tips[tip].visibility)
+
+class DbsTest(FuncTest):
+    def setUp(self):
+        super().setUp()
 
     def checkOnlyVisible(self, elem):
         self.check_only_visible(elem, self.dbs)
@@ -107,23 +129,17 @@ class FuncTest(BaseTest):
         else:
             raise AssertionError(f"Database {name} in the list, but it shouldn't be!")
 
+class AccsTest(FuncTest):
+    def setUp(self):
+        super().setUp()
+        form = self.dbs.forms['open']
+        self.list = self.dbs.list
+        self.pass_input = form.passField.passInput
+        self.list.selected(Index('database'))
+        self.pass_input.setText('some_password')
+        form.openButton.click()
+        self.win = self.window.windows[1]
+        self.accs = self.win.accs
 
-class UnitTest(BaseTest):
-    def patchVersion(self):
-        class Tag:
-            def __init__(self, name, date):
-                self.name = name
-                self.commit = Mock()
-                self.commit.committed_datetime = date
-
-            def __str__(self):
-                return self.name
-
-        class Repo:
-            def __init__(self, *args):
-                pass
-
-            tags = []
-            for i, name in enumerate(['v1.0.0', 'v1.0.2', 'v2.0.6']):
-                tags.append(Tag(name, i))
-        self.monkeypatch.setattr(git, 'Repo', Repo)
+    def checkOnlyVisible(self, elem):
+        self.check_only_visible(elem, self.accs)

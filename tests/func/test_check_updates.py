@@ -22,14 +22,14 @@ from unittest.mock import Mock
 import pytest
 import os
 
-from tests.base import FuncTest
+from tests.base import DbsTest
 from core.utils import *
 from core.updates import *
 import core.updates
 from PyQtAccounts import *
 
 
-class Test(FuncTest):
+class Test(DbsTest):
     def setUp(self):
         super().setUp()
         updates = self.window.menuBar().actions()[2]  # third is `Updates` submenu

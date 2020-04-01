@@ -23,12 +23,12 @@ import unittest
 import pytest
 import os
 
-from tests.base import FuncTest
+from tests.base import DbsTest
 from core.utils import *
 from PyQtAccounts import *
 
 
-class Test(FuncTest):
+class Test(DbsTest):
     def setUp(self):
         super().setUp()
         self.dbs.panel.addButton.click()

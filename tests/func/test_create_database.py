@@ -24,12 +24,12 @@ import os
 
 sys.path.append('.')
 
-from tests.base import FuncTest
+from tests.base import DbsTest
 from core.utils import getDbList
 from PyQtAccounts import *
 
 
-class CreateDbTest(FuncTest):
+class CreateDbTest(DbsTest):
     '''
     Next 3 tests are testing does create database form appears whether we click on the
     `+` button or through Menu -> File -> New database... or Ctrl+N key sequences

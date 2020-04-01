@@ -24,12 +24,12 @@ import sys
 
 sys.path.append('.')
 
-from tests.base import FuncTest
+from tests.base import DbsTest
 from core.utils import *
 from PyQtAccounts import *
 
 
-class SettingsTest(FuncTest):
+class SettingsTest(DbsTest):
     def setUp(self):
         self.settings = QSettings('PyTools', 'PyQtAccounts')
         self.old_is_main_db = self.settings.value('advanced/is_main_db', False, type=bool)
