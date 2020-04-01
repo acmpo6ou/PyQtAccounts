@@ -34,8 +34,28 @@ import git
 class AboutTest(UnitTest):
     def setUp(self):
         super().setUp()
+        self.open = open
+
+    def tearDown(self):
+        __builtins__['open'] = self.open
 
     def test_about_version(self):
         self.patchVersion()
         about = About()
         self.assertIn('Version 2.0.6', about.about)
+
+    def test_license_credits(self):
+        def mock_open(path, *args, **kwargs):
+            file = Mock()
+            if path == 'COPYING':
+                file.read.return_value = 'This is a License.'
+            elif path == 'CREDITS':
+                file.read.return_value = 'Here are credits.'
+            else:
+                file = self.open(path, *args, **kwargs)
+            return file
+        __builtins__['open'] = mock_open
+        about = About()
+
+        self.assertEqual(about.licenseText.toPlainText(), 'This is a License.')
+        self.assertEqual(about.creditsText.text(), '<pre>Here are credits.</pre>')

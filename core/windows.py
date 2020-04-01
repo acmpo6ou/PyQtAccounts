@@ -449,14 +449,12 @@ class About(QDialog):
         self.aboutLabel.setOpenExternalLinks(True)
 
         self.license = \
-            '''<pre>
-            {}
-            </pre>'''.format(open('COPYING').read())
+            '<pre>{}</pre>'.format(open('COPYING').read())
         self.licenseText = QTextEdit(self.license)
         self.licenseText.setReadOnly(True)
 
         self.credits = \
-            '''<pre>{}</pre>'''.format(open('CREDITS').read())
+            '<pre>{}</pre>'.format(open('CREDITS').read())
         self.creditsText = QLabel(self.credits)
 
         self.content = QTabWidget()
