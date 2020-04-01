@@ -22,11 +22,10 @@ import unittest
 import pytest
 import sys
 
-sys.path.append('.')
-
 from tests.base import FuncTest
 from core.utils import *
 from PyQtAccounts import *
+from core.getaki import openDatabase
 
 
 class OpenDbTest(FuncTest):
@@ -80,3 +79,11 @@ class OpenDbTest(FuncTest):
         # Database window appears
         win = self.window.windows[1]  # first is main window, second is database one
         self.assertTrue(win.visibility)
+
+        # It has all needed properties
+        self.assertTrue(isinstance(win, DbWindow))
+        self.assertTrue(win.ask)
+        self.assertEqual(win.password, b'some_password')
+        self.assertEqual('database', win.windowTitle())
+        self.assertEqual('database', win.name)
+        self.assertEqual(openDatabase('database', b'some_password'), win.db)
