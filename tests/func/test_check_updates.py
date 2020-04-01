@@ -35,7 +35,7 @@ class Test(FuncTest):
         updates = self.window.menuBar().actions()[2]  # third is `Updates` submenu
         self.check = updates.menu().actions()[0]
 
-    def test_check_for_updates_unavailable(self):
+    def test_check_for_updates_unavailable_menu(self):
         # Lea wants to check for updates, so she goes to menu: Updates -> Check for updates
         # The message appears saying that there is no updates available
         def mock_run(self):
@@ -45,7 +45,7 @@ class Test(FuncTest):
                                  self.mess('Оновлення', "Немає оновленнь."))
         self.check.trigger()
 
-    def test_check_for_updates_available(self):
+    def test_check_for_updates_available_menu(self):
         # Emily wants to check for updates
         def mock_run(self):
             self.result.emit(True, ['Fixed issues.', 'Changelog tested now.', 'Other updates.'])
@@ -54,11 +54,10 @@ class Test(FuncTest):
         # Dialog window appears saying that there are updates available
         self.check.trigger()
         QTest.qWait(100)
-        try:
-            # We don't actually want to update anything during the tests
-            self.window.res.laterButton.click()
-        except AttributeError:
-            assert AssertionError('No update available window was created!')
+
+        # We don't actually want to update anything during the tests
+        self.assertIsNotNone(self.window.res, 'No update available window was created!')
+        self.window.res.laterButton.click()
 
         # There is changelog in that dialog
         right_text = '<h4>Що нового:</h4><ul><li>Fixed issues.</li>\n' \
@@ -66,3 +65,25 @@ class Test(FuncTest):
                      '<li>Other updates.</li>\n' \
                      '</ul>'
         self.assertEqual(right_text, self.window.res.changelogLabel.text())
+
+    def test_check_for_updates_available_at_startup(self):
+        # There are some updates available
+        def mock_run(self):
+            self.result.emit(True, ['Fixed issues.', 'Changelog tested now.', 'Other updates.'])
+        self.monkeypatch.setattr(Updating, 'run', mock_run)
+
+        # So Ross launches PyQtAccounts to check for them
+        window = Window()
+
+        # A few seconds passes and dialog appears saying that there are updates available
+        QTest.qWait(100)
+        self.assertIsNotNone(window.res, 'No update available window was created!')
+        # We don't actually want to update anything during the tests
+        window.res.laterButton.click()
+
+        # There is changelog in that dialog
+        right_text = '<h4>Що нового:</h4><ul><li>Fixed issues.</li>\n' \
+                     '<li>Changelog tested now.</li>\n' \
+                     '<li>Other updates.</li>\n' \
+                     '</ul>'
+        self.assertEqual(right_text, window.res.changelogLabel.text())

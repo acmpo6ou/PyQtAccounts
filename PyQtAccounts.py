@@ -36,6 +36,7 @@ class Window(QMainWindow):
         windows = [self]
         self.windows = windows
         self.destroy = False
+        self.res = None
 
         helpTip = HelpTip(HELP_TIP_DB)
         if getDbList():
@@ -112,10 +113,13 @@ class Window(QMainWindow):
                     <p>sudo apt install {0}</p>
                     '''.format(req))
         if time_for_updates():
+            def mess(changes, log):
+                if changes:
+                    self.res = UpdatesAvailable(self, log)
             thread = QThread(parent=self)
             updating = Updating()
             updating.moveToThread(thread)
-            updating.result.connect(lambda changes, log: changes and UpdatesAvailable(self, log))
+            updating.result.connect(mess)
             thread.started.connect(updating.run)
             thread.start()
 
