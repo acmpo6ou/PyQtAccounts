@@ -32,9 +32,22 @@ class Test(AccsTest):
         super().setUp()
         self.form = self.accs.forms['create']
 
+        self.account_name = self.form.accountInput
+        self.nameError = self.form.nameError
+        self.nameFilledError = self.form.nameFilledError
+        self.passFilledError = self.form.passFilledError
+        self.passEqError = self.form.passEqError
+        self.pass_input = self.form.passField.passInput
+        self.pass_repeat_input = self.form.passRepeatField.passInput
+        self.createButton = self.form.createButton
+
+    def checkNameErrors(self):
+        self.assertFalse(self.nameError.visibility)
+        self.assertFalse(self.nameFilledError.visibility)
+
     def test_create_account_ctrl_n(self):
         pyautogui.hotkey("ctrl", "n")
-        QTest.qWait(100)
+        QTest.qWait(500)
         self.checkOnlyVisible(self.form)
 
     def test_create_account_click(self):
@@ -46,3 +59,38 @@ class Test(AccsTest):
         new_db = file.menu().actions()[0]  # first action is `New account...`
         new_db.trigger()
         self.checkOnlyVisible(self.form)
+
+    def test_validate_name(self):
+        # Tom wants to create account, for now there is no errors
+        self.accs.panel.addButton.click()
+        self.checkNameErrors()
+
+        # He starts typing `gma` at the name field
+        QTest.keyClicks(self.account_name, 'gma')
+
+        # There is no errors
+        self.checkNameErrors()
+
+        # Toon then continue and types `il`
+        QTest.keyClicks(self.account_name, 'il')
+
+        # The error message appears saying that account with such name exists
+        self.assertTrue(self.nameError.visibility)
+
+        # He then types `2` to account name field
+        QTest.keyClicks(self.account_name, '2')
+
+        # The error message disappears
+        self.assertFalse(self.nameError.visibility)
+
+        # Toon then erases account name
+        self.account_name.setText('')
+
+        # Another error message appears saying that he must feel account name field
+        self.assertTrue(self.nameFilledError.visibility)
+
+        # Toon then types `someaccount` to name field
+        self.account_name.setText('someaccount')
+
+        # The error message disappears
+        self.assertFalse(self.nameFilledError.visibility)

@@ -33,6 +33,10 @@ class BaseTest(unittest.TestCase):
     def monkeypatching(self, monkeypatch):
         self.monkeypatch = monkeypatch
 
+    @pytest.fixture(autouse=True)
+    def bot(self, qtbot):
+        self.qtbot = qtbot
+
     def file_dialog(self, result):
         def file_dialog(caption, filter, directory):
                 assert caption == 'Імпортувати базу данних'
@@ -140,7 +144,6 @@ class AccsTest(FuncTest):
         form.openButton.click()
         self.win = self.window.windows[1]
         self.accs = self.win.accs
-        self.splt = self.win.splt
 
     def checkOnlyVisible(self, elem):
-        self.check_only_visible(elem, self.splt)
+        self.check_only_visible(elem, self.accs)

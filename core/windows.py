@@ -377,15 +377,14 @@ class DbWindow(QMainWindow):
         accs = Accs(name, db, forms, tips, windows)
         accs.setMaximumWidth(200)
         splitter.addWidget(accs)
-        splitter.forms = forms
-        splitter.tips = tips
+        accs.forms = forms
+        accs.tips = tips
         self.accs = accs
 
         self.menu = DbMenuBar(self)
         self.setMenuBar(self.menu)
 
         self.setCentralWidget(splitter)
-        self.splt = splitter
         self.show()
 
     def closeEvent(self, event):
