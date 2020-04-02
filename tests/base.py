@@ -116,11 +116,15 @@ class FuncTest(BaseTest):
             if index.text() == name:
                 break
         else:
-            raise AssertionError(f'Database {name} not in the list!')
+            raise AssertionError('Not in the list!')
 
     def check_not_in_list(self, name):
-            self.assertRaises(AssertionError, self.checkDbInList(name),
-                              f"Database {name} in the list, but it shouldn't be!")
+        try:
+            self.checkDbInList(name)
+        except:
+            pass
+        else:
+            raise AssertionError("In the list, but it shouldn't be!")
 
 class DbsTest(FuncTest):
     def setUp(self):
