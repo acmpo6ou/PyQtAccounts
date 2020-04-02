@@ -89,8 +89,14 @@ class CreateDbTest(DbsTest):
         # He then erases the name input
         self.name.setText('')
 
-        # Another error appears saying that he needs to fill self.name field
+        # Another error appears saying that he needs to fill name field
         self.assertTrue(self.nameFilledError.visibility)
+
+        # Bob then fills it with `somedatabase`
+        self.name.setText('somedatabase')
+
+        # The error message disappears
+        self.assertFalse(self.nameFilledError.visibility)
 
     def test_name_symbols_validation(self):
         # Toon wants to create database

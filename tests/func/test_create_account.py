@@ -45,6 +45,7 @@ class Test(AccsTest):
         self.assertFalse(self.nameError.visibility)
         self.assertFalse(self.nameFilledError.visibility)
 
+    @pytest.mark.skip
     def test_create_account_ctrl_n(self):
         pyautogui.hotkey("ctrl", "n")
         QTest.qWait(500)
