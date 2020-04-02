@@ -27,18 +27,21 @@ from core.utils import *
 from PyQtAccounts import *
 
 
-class Test(AccsTest):
+class CreateAccTest(AccsTest):
     def setUp(self):
         super().setUp()
         self.form = self.accs.forms['create']
 
         self.account_name = self.form.accountInput
+        self.name = self.form.nameInput
         self.nameError = self.form.nameError
         self.nameFilledError = self.form.nameFilledError
         self.passFilledError = self.form.passFilledError
         self.passEqError = self.form.passEqError
         self.pass_input = self.form.passField.passInput
         self.pass_repeat_input = self.form.passRepeatField.passInput
+        self.email = self.form.emailInput
+        self.comment = self.form.commentInput
         self.createButton = self.form.createButton
 
     def checkNameErrors(self):
@@ -141,3 +144,34 @@ class Test(AccsTest):
 
         # And create button enables now
         self.assertTrue(self.createButton.isEnabled())
+
+    def test_create_button(self):
+        # Lea wants to create account
+        self.accs.panel.addButton.click()
+
+        # She fills all fields
+        QTest.keyClicks(self.account_name, 'someaccount')
+        QTest.keyClicks(self.name, 'somename')
+        QTest.keyClicks(self.pass_input, 'some_password')
+        QTest.keyClicks(self.pass_repeat_input, 'some_password')
+        QTest.keyClicks(self.email, 'example@gmail.com')
+        QTest.keyClicks(self.comment, 'Comment of account.')
+
+        # Everything is fine so she presses `create` button
+        self.createButton.click()
+
+        # The create form disappears
+        self.checkOnlyVisible(self.accs.tips['help'])
+
+        # `someaccount` appears in the account list
+        self.checkAccInList('someaccount')
+
+        # And it is in the database and has all keys and values
+        self.assertIn('someaccount', self.win.db)
+        acc = self.win.db['someaccount']
+        self.assertEqual('someaccount', acc.account)
+        self.assertEqual('somename', acc.name)
+        self.assertEqual(b'some_password', acc.password)
+        self.assertEqual('example@gmail.com', acc.email)
+        self.assertEqual('01.01.2000', acc.date)
+        self.assertEqual('Comment of account.', acc.comment)
