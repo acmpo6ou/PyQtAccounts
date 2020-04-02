@@ -95,3 +95,49 @@ class Test(AccsTest):
 
         # The error message disappears
         self.assertFalse(self.nameFilledError.visibility)
+
+    def test_create_button_enabled(self):
+        # Bob wants to create new account, create button disabled
+        self.accs.panel.addButton.click()
+        self.assertFalse(self.createButton.isEnabled())
+
+        # He fills account name field and create button is still disabled
+        self.account_name.setText('someaccount')
+        self.assertFalse(self.createButton.isEnabled())
+
+        # He then fills password fields
+        self.pass_input.setText('some_password')
+        self.pass_repeat_input.setText('some_password')
+
+        # Create button enables now
+        self.assertTrue(self.createButton.isEnabled())
+
+        # Bob then erases name field, create button disables
+        self.account_name.setText('')
+        self.assertFalse(self.createButton.isEnabled())
+
+        # He then types `gmail` at the name field and create button is still disabled
+        self.account_name.setText('gmail')
+        self.assertFalse(self.createButton.isEnabled())
+
+        # Then Bob changes it to `Gmail`, create button enables
+        self.account_name.setText('Gmail')
+        self.assertTrue(self.createButton.isEnabled())
+
+        # He then changes password in first field to `pass`
+        self.pass_input.setText('pass')
+
+        # Create button disables
+        self.assertFalse(self.createButton.isEnabled())
+
+        # Bob then erases both passwords and create button is still disabled
+        self.pass_input.setText('')
+        self.pass_repeat_input.setText('')
+        self.assertFalse(self.createButton.isEnabled())
+
+        # Bob then fills them again
+        self.pass_input.setText('pass')
+        self.pass_repeat_input.setText('pass')
+
+        # And create button enables now
+        self.assertTrue(self.createButton.isEnabled())
