@@ -33,6 +33,7 @@ class EditAccsTest(AccsTest):
         self.form = self.accs.forms['edit']
         self.list = self.accs.list
         self.editButton = self.accs.panel.editButton
+        self.deleteButton = self.form.deleteButton
 
         self.account = self.form.accountInput
         self.name = self.form.nameInput
@@ -58,3 +59,36 @@ class EditAccsTest(AccsTest):
         self.assertEqual(self.email.text(), 'spheromancer@habr.com')
         self.assertEqual(self.date.text(), '19.05.1990')
         self.assertEqual(self.comment.toPlainText(), 'Habr account.')
+
+    def test_delete_button(self):
+        # Toon wants to delete his account, so he chose it in the list and presses edit
+        self.list.selected(Index('mega'))
+        self.editButton.click()
+
+        # He then presses delete button
+        # Warning message appears and Toon changes his mind pressing `No`
+        self.monkeypatch.setattr(QMessageBox, 'warning',
+                self.mess('Увага!',
+                          'Ви певні що хочете видалити акаунт <i><b>mega</b></i>',
+                          QMessageBox.No))
+        self.deleteButton.click()
+
+        # account `mega` is still in the list and in the database too
+        self.checkAccInList('mega')
+        self.assertIn('mega', getAkiList(self.win.db))
+
+        # Toon changes his mind again presses delete button and `Yes` in the warning dialog
+        self.monkeypatch.setattr(QMessageBox, 'warning',
+                self.mess('Увага!',
+                          'Ви певні що хочете видалити акаунт <i><b>mega</b></i>',
+                          QMessageBox.Yes))
+        self.deleteButton.click()
+
+        # edit form disappears
+        self.checkOnlyVisible(self.accs.tips['help'])
+
+        # account `mega` disappears from the list
+        self.checkAccNotInList('mega')
+
+        # And it deleted from database too
+        self.assertNotIn('mega', getAkiList(self.win.db))
