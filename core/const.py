@@ -17,3 +17,10 @@
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
 
 DEBUG = False
+
+HELP_TIP_DB = ("<pre>Поки що у вас немає жодної бази данних.\n" +
+               '{0:<39}\n'.format("Спробуйте:") +
+               '{0:<39}\n'.format("Натиснути +") +
+               '{0:<39}\n'.format("Гарячі клавіші Ctl+N") +
+               '{0:<39}\n'.format("Меню: File -> New database...") +
+               "</pre>")

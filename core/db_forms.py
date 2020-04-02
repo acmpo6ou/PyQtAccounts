@@ -26,16 +26,10 @@ from core.widgets import *
 from core.getaki import *
 from core.windows import *
 from core.utils import *
+from core.const import *
 
 from cryptography.exceptions import InvalidSignature
 from cryptography.fernet import InvalidToken
-
-HELP_TIP_DB = ("<pre>Поки що у вас немає жодної бази данних.\n" +
-               '{0:<39}\n'.format("Спробуйте:") +
-               '{0:<39}\n'.format("Натиснути +") +
-               '{0:<39}\n'.format("Гарячі клавіші Ctl+N") +
-               '{0:<39}\n'.format("Меню: File -> New database...") +
-               "</pre>")
 
 
 class CreateDbForm(CreateForm):
