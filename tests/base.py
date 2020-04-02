@@ -109,6 +109,19 @@ class FuncTest(BaseTest):
                 continue
             self.assertFalse(parent.tips[tip].visibility)
 
+    def check_in_list(self, name, parent):
+        model = parent.list.model
+        for i in range(model.rowCount()):
+            index = model.item(i)
+            if index.text() == name:
+                break
+        else:
+            raise AssertionError(f'Database {name} not in the list!')
+
+    def check_not_in_list(self, name):
+            self.assertRaises(AssertionError, self.checkDbInList(name),
+                              f"Database {name} in the list, but it shouldn't be!")
+
 class DbsTest(FuncTest):
     def setUp(self):
         super().setUp()
@@ -117,21 +130,10 @@ class DbsTest(FuncTest):
         self.check_only_visible(elem, self.dbs)
 
     def checkDbInList(self, name):
-        model = self.dbs.list.model
-        for i in range(model.rowCount()):
-            index = model.item(i)
-            if index.text() == name:
-                break
-        else:
-            raise AssertionError(f'Database {name} not in the list!')
+        self.check_in_list(name, self.dbs)
 
     def checkDbNotInList(self, name):
-        try:
-            self.checkDbInList(name)
-        except AssertionError:
-            pass
-        else:
-            raise AssertionError(f"Database {name} in the list, but it shouldn't be!")
+        self.check_not_in_list(name)
 
 class AccsTest(FuncTest):
     def setUp(self):
@@ -147,3 +149,9 @@ class AccsTest(FuncTest):
 
     def checkOnlyVisible(self, elem):
         self.check_only_visible(elem, self.accs)
+
+    def checkAccInList(self, name):
+        self.check_in_list(name, self.accs)
+
+    def checkAccNotInList(self, name):
+        self.check_not_in_list(name)
