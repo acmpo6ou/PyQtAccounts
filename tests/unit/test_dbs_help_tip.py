@@ -35,8 +35,6 @@ class HelpTipTest(DbsTest):
         self.old_is_main_db = self.settings.value('advanced/is_main_db', False, type=bool)
         self.old_main_db = self.settings.value('advanced/main_db', '', type=str)
 
-        self.listdir = os.listdir
-
     def tearDown(self):
         self.settings.setValue('advanced/is_main_db', self.old_is_main_db)
         self.settings.setValue('advanced/main_db', self.old_main_db)

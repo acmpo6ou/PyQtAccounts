@@ -25,6 +25,7 @@ import os
 
 from core.widgets import *
 from core.updates import *
+from core.const import *
 from core.utils import *
 from core.getaki import *
 import tarfile
@@ -354,7 +355,7 @@ class DbWindow(QMainWindow):
         self.db = db
         self.password = password
 
-        helpTip = HelpTip(HELP_TIP)
+        helpTip = HelpTip(HELP_TIP_ACCS)
         if getAkiList(db):
             helpTip = HelpTip("Виберіть акаунт")
         helpTip.show()

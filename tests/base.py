@@ -136,13 +136,13 @@ class DbsTest(FuncTest):
         self.check_not_in_list(name)
 
 class AccsTest(FuncTest):
-    def setUp(self):
+    def setUp(self, name='database', password='some_password'):
         super().setUp()
         form = self.dbs.forms['open']
         self.list = self.dbs.list
         self.pass_input = form.passField.passInput
-        self.list.selected(Index('database'))
-        self.pass_input.setText('some_password')
+        self.list.selected(Index(name))
+        self.pass_input.setText(password)
         form.openButton.click()
         self.win = self.window.windows[1]
         self.accs = self.win.accs

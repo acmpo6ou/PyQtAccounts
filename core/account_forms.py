@@ -27,13 +27,8 @@ import os
 from core.forms import *
 from core.utils import *
 from core.widgets import *
+from core.const import *
 
-HELP_TIP = ("<pre>Поки що у вас немає жодного акаунта.\n" +
-                          '{0:<36}\n'.format("Спробуйте:") +
-                          '{0:<36}\n'.format("Натиснути +") +
-                          '{0:<36}\n'.format("Гарячі клавіші Ctl+N") +
-                          '{0:<36}\n'.format("Меню: File -> New account...") +
-                          "</pre>")
 
 class CreateAcc(CreateForm):
     def __init__(self, title, db, helpTip, parent=None):
@@ -196,7 +191,7 @@ class EditAccForm(CreateAcc):
             self.clear()
 
             if not getAkiList(self.db):
-                self.tips['help'].setText(HELP_TIP)
+                self.tips['help'].setText(HELP_TIP_ACCS)
 
     def setAcc(self, index):
         if not index:
