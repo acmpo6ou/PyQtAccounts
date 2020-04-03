@@ -401,7 +401,7 @@ class DbWindow(QMainWindow):
         if self.ask:
             action = QMessageBox.question(self, 'Увага!',
                                           'Ви певні що хочете вийти?\n'
-                                          'Усі не збережені зміни буде втрачено!\n'
+                                          'Усі незбережені зміни буде втрачено!\n'
                                           'Натисніть Ctrl+S аби зберегти зміни.')
         else:
             action = QMessageBox.Yes
