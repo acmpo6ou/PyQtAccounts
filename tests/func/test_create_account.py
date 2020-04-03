@@ -50,8 +50,7 @@ class CreateAccTest(AccsTest):
 
     @pytest.mark.skip
     def test_create_account_ctrl_n(self):
-        pyautogui.hotkey("ctrl", "n")
-        QTest.qWait(500)
+        self.hotkey("ctrl", "n")
         self.checkOnlyVisible(self.form)
 
     def test_create_account_click(self):

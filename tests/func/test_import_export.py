@@ -112,8 +112,7 @@ class ImportExportTest(DbsTest):
             'Експорт', 'Успішно експортовано базу данних <i><b>database</b></i>')
         self.monkeypatch.setattr(QMessageBox, 'information', success_message)
 
-        pyautogui.hotkey("ctrl", "e")  # We press Ctrl+E here because of the dialogs
-        QTest.qWait(100)
+        self.hotkey("ctrl", "e")  # We press Ctrl+E here because of the dialogs
 
         # And Lea has database.tar on the disk now
         self.assertTrue(os.path.exists('tests/func/src/database.tar'))
@@ -133,8 +132,7 @@ class ImportExportTest(DbsTest):
         # Error message appears saying that export is unsuccessful
         self.monkeypatch.setattr(QMessageBox, 'critical', self.critical)
 
-        pyautogui.hotkey("ctrl", "e")  # We press Ctrl+E here because of the dialogs
-        QTest.qWait(100)
+        self.hotkey("ctrl", "e")  # We press Ctrl+E here because of the dialogs
 
         # And there is no database.tar on the disk
         self.assertFalse(os.path.exists('/database.tar'))

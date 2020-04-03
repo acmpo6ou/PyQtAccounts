@@ -48,8 +48,7 @@ class CreateDbTest(DbsTest):
         self.createButton = self.form.createButton
 
     def test_create_db_ctrl_n(self):
-        pyautogui.hotkey("ctrl", "n")
-        QTest.qWait(100)
+        self.hotkey("ctrl", "n")
         self.checkOnlyVisible(self.form)
 
     def test_create_db_click(self):

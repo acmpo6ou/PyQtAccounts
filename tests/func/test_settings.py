@@ -48,8 +48,7 @@ class SettingsTest(DbsTest):
 
     def test_settings_show_ctrl_p(self):
         window = Window()
-        pyautogui.hotkey("ctrl", "p")
-        QTest.qWait(100)
+        self.hotkey("ctrl", "p")
         self.assertTrue(window.settings.visibility)
 
     def test_is_main_db_True(self):

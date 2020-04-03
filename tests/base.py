@@ -17,6 +17,7 @@
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
 
 from PyQt5.QtWidgets import *
+from PyQt5.QtTest import QTest
 import unittest
 from unittest.mock import Mock
 import pytest
@@ -64,6 +65,11 @@ class BaseTest(unittest.TestCase):
     def critical(self, parent, head, text):
         assert head == 'Помилка!'
         return QMessageBox.Ok
+
+    def hotkey(self, *keys):
+        import pyautogui
+        pyautogui.hotkey(*keys)
+        QTest.qWait(100)
 
 
 class UnitTest(BaseTest):
