@@ -229,6 +229,7 @@ class EditAccForm(CreateAcc):
 
         account = akidump.Account(accountname, name, email, password, date,
                                 comment)
+        del self.db[self.old_account]
         self.db[accountname] = account
         self.clear()
 
