@@ -131,6 +131,7 @@ class Window(QMainWindow):
         # Do not show the close confirmation popup if there is no opened
         # databases.
         if len(self.windows) == 1:
+            self.visibility = False
             event.accept()
             return
 
@@ -142,6 +143,7 @@ class Window(QMainWindow):
         if action == QMessageBox.No:
             event.ignore()
         else:
+            self.visibility = False
             for win in self.windows:
                 win.ask = False
                 win.close()

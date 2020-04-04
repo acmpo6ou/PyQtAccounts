@@ -22,12 +22,12 @@ import unittest
 import pytest
 import os
 
-from tests.base import AccsTest
+from tests.base import AccsTest, FuncTest
 from core.utils import *
 from PyQtAccounts import *
 
 
-class CloseTest(AccsTest):
+class CloseTestWhenDatabaseOpened(AccsTest):
     def test_close_when_database_opened_Yes(self):
         self.monkeypatch.setattr(QMessageBox, 'question', self.mess(
             'Увага!',
@@ -46,12 +46,26 @@ class CloseTest(AccsTest):
         self.window.close()
         self.assertEqual(len(self.window.windows), 2)
 
+
+class CloseTest(FuncTest):
     def test_close_when_no_database_opened(self):
-        window = Window()
         self.monkeypatch.setattr(QMessageBox, 'question', self.mess_showed)
-        window.close()
+        self.window.close()
+        self.assertFalse(self.window.visibility)
 
     def test_destroy_window(self):
         self.window.destroy = True
         self.monkeypatch.setattr(QMessageBox, 'question', self.mess_showed)
         self.window.close()
+        self.assertFalse(self.window.visibility)
+
+    def close_from_menu(self):
+        # First is `File` submenu, last is `Quit` action
+        self.monkeypatch.setattr(QMessageBox, 'question', self.mess_showed)
+        self.menu(0, -1).trigger()
+        self.assertFalse(self.window.visibility)
+
+    def close_ctrl_q(self):
+        self.monkeypatch.setattr(QMessageBox, 'question', self.mess_showed)
+        self.hotkey('ctrl', 'q')
+        self.assertFalse(self.window.visibility)
