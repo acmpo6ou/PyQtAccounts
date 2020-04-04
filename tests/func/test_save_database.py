@@ -36,12 +36,11 @@ class DbSaveTest(AccsTest):
         self.saveButton = self.form.createButton
         self.editButton = self.accs.panel.editButton
         self.name = self.form.nameInput
-        self.showForm = self.accs.forms['show']
 
-        self.db = open('src/import_database.db', 'rb').read()
+        self.save_db = open('src/import_database.db', 'rb').read()
 
     def tearDown(self):
-        open('src/import_database.db', 'wb').write(self.db)
+        open('src/import_database.db', 'wb').write(self.save_db)
 
     def test_save_after_edit(self):
         # Ross wants to edit his account, so he chose it in the list and presses edit button
@@ -60,19 +59,23 @@ class DbSaveTest(AccsTest):
         # Database is saved now, so he closes the database window, and there is no messages
         self.win.close()
         self.assertNotIn(self.win, self.window.windows)
+        self.window.close()
+        del self.window
 
         # Ross then opens database again to check is everything saved
-        form = self.dbs.forms['open']
-        self.list = self.dbs.list
-        self.pass_input = form.passField.passInput
-        self.list.selected(Index('import_database'))
-        self.pass_input.setText('import_database')
+        window = Window()
+        dbs = window.dbs
+        form = dbs.forms['open']
+        _list = dbs.list
+        pass_input = form.passField.passInput
+        _list.selected(Index('import_database'))
+        pass_input.setText('import_database')
         form.openButton.click()
-        self.win = self.window.windows[1]
-        self.accs = self.win.accs
+        win = window.windows[1]
+        accs = win.accs
 
         # He chose his account at the list
-        self.accs.list.selected(Index('firefox'))
+        accs.list.selected(Index('firefox'))
 
         # And he sees his name changed at the account show form
-        self.assertEqual("Ім'я: Ross Geller", self.showForm.name.text())
+        self.assertEqual("Ім'я: Ross Geller", accs.forms['show'].name.text())
