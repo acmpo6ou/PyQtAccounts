@@ -62,6 +62,10 @@ class BaseTest(unittest.TestCase):
                 return button
         return mess
 
+    @staticmethod
+    def mess_showed(*args, **kwargs):
+        raise AssertionError('This message showed, but shouldn\'t be!')
+
     def critical(self, parent, head, text):
         assert head == 'Помилка!'
         return QMessageBox.Ok

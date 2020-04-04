@@ -91,13 +91,14 @@ class DbSaveTest(AccsTest):
         self.list.selected(Index('firefox'))
         self.editButton.click()
 
-        # She change her e-mail to `spam@python.org`
+        # She change her e-mail to `spam@python.org` and presses save button
         self.email.setText('spam@python.org')
+        self.saveButton.click()
 
         # But then Lea changed her mind and closes database window
-        # Message appears informing her about unsaved changes
+        # Message appears asking her about unsaved changes
         # Lea presses `Yes`
-        self.monkeypatch.setattr(QMessageBox, 'information', self.mess(
+        self.monkeypatch.setattr(QMessageBox, 'question', self.mess(
             'Увага!',
             'Ви певні що хочете вийти?\n'
             'Усі незбережені зміни буде втрачено!\n'
@@ -118,3 +119,32 @@ class DbSaveTest(AccsTest):
 
         # And sees that her e-mail is such as it was
         self.assertEqual("E-mail: firefox@gmail.com", accs.forms['show'].email.text())
+
+    def test_save_message_No(self):
+        # Lea wants to edit her account again, so she chose it in the list
+        self.list.selected(Index('firefox'))
+        self.editButton.click()
+
+        # She change her e-mail to `spam@python.org` and presses save button
+        self.email.setText('spam@python.org')
+        self.saveButton.click()
+
+        # But then Lea changed her mind and closes database window
+        # Message appears asking her about unsaved changes
+        # Lea presses `No`
+        self.monkeypatch.setattr(QMessageBox, 'question', self.mess(
+            'Увага!',
+            'Ви певні що хочете вийти?\n'
+            'Усі незбережені зміни буде втрачено!\n'
+            'Натисніть Ctrl+S аби зберегти зміни.', button=QMessageBox.No))
+        self.win.close()
+
+        # Database window is still opened
+        self.assertIn(self.win, self.window.windows)
+
+        # Lea then change her e-mail back to `firefox@gmail.com` as it was and saves it
+        self.email.setText('firefox@gmail.com')
+        self.saveButton.click()
+
+        # Then she closes database window and there is now messages
+        self.monkeypatch.setattr(QMessageBox, 'question', self.mess_showed)
