@@ -38,6 +38,10 @@ class BaseTest(unittest.TestCase):
     def bot(self, qtbot):
         self.qtbot = qtbot
 
+    def menu(self, submenu_index, action_index):
+        submenu = self.window.menuBar().actions()[submenu_index]
+        return submenu.menu().actions()[action_index]
+
     def file_dialog(self, result):
         def file_dialog(caption, filter, directory):
                 assert caption == 'Імпортувати базу данних'

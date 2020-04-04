@@ -32,8 +32,8 @@ from PyQtAccounts import *
 class Test(DbsTest):
     def setUp(self):
         super().setUp()
-        updates = self.window.menuBar().actions()[2]  # third is `Updates` submenu
-        self.check = updates.menu().actions()[0]
+        # third is `Updates` submenu, first is `Check for updates` action
+        self.check = self.menu(2, 0)
 
     def test_check_for_updates_unavailable_menu(self):
         # Lea wants to check for updates, so she goes to menu: Updates -> Check for updates

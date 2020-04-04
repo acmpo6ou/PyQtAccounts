@@ -56,8 +56,8 @@ class CreateDbTest(DbsTest):
         self.checkOnlyVisible(self.form)
 
     def test_create_db_menu(self):
-        file = self.window.menuBar().actions()[0]  # first is `File` submenu
-        new_db = file.menu().actions()[0]  # first action is `New database...`
+        # first is `File` submenu,  first action is `New database...`
+        new_db = self.menu(0, 0)
         new_db.trigger()
         self.checkOnlyVisible(self.form)
 

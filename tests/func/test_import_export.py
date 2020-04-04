@@ -45,6 +45,9 @@ class ImportExportTest(DbsTest):
         self.exportWarning = self.dbs.tips['export']
         self.list = self.dbs.list
 
+        # first is `File` submenu, second action is `Import database...`
+        self.import_db = self.menu(0, 1)
+
     def tearDown(self):
         super().tearDown()
         self.settings.setValue('advanced/is_main_db', self.old_is_main_db)
@@ -52,9 +55,6 @@ class ImportExportTest(DbsTest):
 
     def test_import_success(self):
         # Emily wants to import database so she goes to menu File -> Import database...
-        file = self.window.menuBar().actions()[0]  # first is `File` submenu
-        import_db = file.menu().actions()[1]       # second action is `Import database...`
-
         # File dialog appears and she chose her tar file
         file_dialog = self.file_dialog(('tests/func/src/import_database.tar',))
         self.monkeypatch.setattr(QFileDialog, 'getOpenFileName', file_dialog)
@@ -64,7 +64,7 @@ class ImportExportTest(DbsTest):
             'Імпорт',
             'Успішно імпортовано базу данних <i><b>import_database</b></i>')
         self.monkeypatch.setattr(QMessageBox, 'information', success_message)
-        import_db.trigger()
+        self.import_db.trigger()
 
         # Database appears in the list and on the disk
         self.checkDbInList('import_database')
@@ -72,28 +72,25 @@ class ImportExportTest(DbsTest):
 
     def test_import_fail(self):
         # Tom wants to import database
-        file = self.window.menuBar().actions()[0]  # first is `File` submenu
-        import_db = file.menu().actions()[1]       # second action is `Import database...`
-
         # File dialog appears and he chose his tar file
         file_dialog = self.file_dialog(('tests/func/src/corrupted_few_files.tar',))
         self.monkeypatch.setattr(QFileDialog, 'getOpenFileName', file_dialog)
 
         # Error message appears saying that his file is corrupted, so Tom presses `Ok`
         self.monkeypatch.setattr(QMessageBox, 'critical', self.critical)
-        import_db.trigger()
+        self.import_db.trigger()
 
         # He then tries to import another database
         file_dialog = self.file_dialog(('tests/func/src/corrupted_many_files.tar',))
         self.monkeypatch.setattr(QFileDialog, 'getOpenFileName', file_dialog)
 
         # Another error appears with the same message
-        import_db.trigger()
+        self.import_db.trigger()
 
     def test_export_warning(self):
         # Bob wants to export his database, so he goes to menu File -> Export database...
-        file = self.window.menuBar().actions()[0]  # first is `File` submenu
-        export_db = file.menu().actions()[2]       # second action is `Export database...`
+        # first is `File` submenu, second action is `Export database...`
+        export_db = self.menu(0, 2)
         export_db.trigger()
 
         # Warning message appears saying that he needs to chose database first
