@@ -138,8 +138,7 @@ class Window(QMainWindow):
             event.accept()
             return
 
-        action = QMessageBox.question(self, 'Увага!', 'Ви певні що хочете '
-                                                      'вийти?')
+        action = QMessageBox.question(self, 'Увага!', 'Ви певні що хочете вийти?')
         if action == QMessageBox.No:
             event.ignore()
         else:
