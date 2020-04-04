@@ -46,6 +46,7 @@ class ImportExportTest(DbsTest):
         self.list = self.dbs.list
 
     def tearDown(self):
+        super().tearDown()
         self.settings.setValue('advanced/is_main_db', self.old_is_main_db)
         self.settings.setValue('advanced/main_db', self.old_main_db)
 

@@ -54,6 +54,7 @@ class EditDbTest(DbsTest):
         self.db = open('src/database.db', 'rb').read()
 
     def tearDown(self):
+        super().tearDown()
         # restoring database
         open('src/database.bin', 'wb').write(self.salt)
         open('src/database.db', 'wb').write(self.db)

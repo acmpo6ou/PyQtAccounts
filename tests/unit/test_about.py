@@ -37,6 +37,7 @@ class AboutTest(UnitTest):
         self.open = open
 
     def tearDown(self):
+        super().tearDown()
         __builtins__['open'] = self.open
 
     def test_about_version(self):
