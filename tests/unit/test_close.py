@@ -45,3 +45,13 @@ class CloseTest(AccsTest):
         ))
         self.window.close()
         self.assertEqual(len(self.window.windows), 2)
+
+    def test_close_when_no_database_opened(self):
+        window = Window()
+        self.monkeypatch.setattr(QMessageBox, 'question', self.mess_showed)
+        window.close()
+
+    def test_destroy_window(self):
+        self.window.destroy = True
+        self.monkeypatch.setattr(QMessageBox, 'question', self.mess_showed)
+        self.window.close()

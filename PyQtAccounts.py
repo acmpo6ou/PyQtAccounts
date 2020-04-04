@@ -128,17 +128,17 @@ class Window(QMainWindow):
         self.settings = settings
 
     def closeEvent(self, event):
-        if self.destroy:
-            event.accept()
-            return
-
         # Do not show the close confirmation popup if there is no opened
         # databases.
         if len(self.windows) == 1:
             event.accept()
             return
 
-        action = QMessageBox.question(self, 'Увага!', 'Ви певні що хочете вийти?')
+        if self.destroy:
+            action = QMessageBox.Yes
+        else:
+            action = QMessageBox.question(self, 'Увага!', 'Ви певні що хочете вийти?')
+
         if action == QMessageBox.No:
             event.ignore()
         else:

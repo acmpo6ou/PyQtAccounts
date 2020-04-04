@@ -393,10 +393,9 @@ class DbWindow(QMainWindow):
         password = self.password
         db = openDatabase(name, password)
 
-        if isEqual(db, self.db):
-            self.ask = False
-        else:
-            self.ask = True
+        if isEqual(db, self.db) and self.ask:
+            self.windows.remove(self)
+            return
 
         if self.ask:
             action = QMessageBox.question(self, 'Увага!',
