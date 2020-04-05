@@ -50,13 +50,13 @@ def _import(path, parent):
     try:
         tar = tarfile.open(path)
         for i, file in enumerate(tar.getmembers()):
-            if '.db' not in file.name and '.bin' not in file.name:
-                raise Exception('Невірний файл!')
+            if not ('.db' in file.name and '.bin' in file.name):
+                raise TypeError('Невірний файл!')
 
         name = os.path.basename(file.name).replace('.db', '').replace('.bin', '')
 
         if i != 1:
-            raise Exception('Невірний файл!')
+            raise TypeError('Невірний файл!')
         tar.extractall('src/')
 
         model = parent.dbs.list.model
