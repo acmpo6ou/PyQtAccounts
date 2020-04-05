@@ -130,4 +130,4 @@ class CreateForm(QWidget):
         self.helpTip.show()
 
     def create(self):
-        print('Not implemented!')
+        raise NotImplementedError()
