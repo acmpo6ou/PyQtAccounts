@@ -77,7 +77,7 @@ class BaseTest(unittest.TestCase):
     def hotkey(self, *keys):
         import pyautogui
         pyautogui.hotkey(*keys)
-        QTest.qWait(100)
+        QTest.qWait(200)
 
 
 class UnitTest(BaseTest):
