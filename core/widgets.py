@@ -52,14 +52,6 @@ class Error(QLabel):
         self.setFont(font)
 
 
-class Errors(QTextEdit):
-    def __init__(self):
-        QTextEdit.__init__(self)
-        self.setReadOnly(True)
-        self.hide()
-        self.setTextColor(QColor('#f26666'))
-
-
 class PasswordField(QHBoxLayout):
     def __init__(self, placeholder=''):
         QHBoxLayout.__init__(self)
