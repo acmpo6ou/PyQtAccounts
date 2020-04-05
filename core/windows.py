@@ -254,8 +254,6 @@ class MenuBar(QMenuBar):
         thread.started.connect(updating.run)
         thread.start()
 
-        if self._thread and not self._thread.isFinished():
-            self._thread.exit()
         self._thread = thread
         self.updating = updating
 

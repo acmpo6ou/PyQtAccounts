@@ -24,17 +24,11 @@ def main(symbols = "", length=16):
     if "d" in symbols:
         symbs += string.digits
 
-    if "a" in symbols:
-        symbs += string.ascii_letters
-
     if "l" in symbols:
         symbs += string.ascii_lowercase
 
     if "u" in symbols:
         symbs += string.ascii_uppercase
-
-    if "H" in symbols:
-        symbs += string.hexdigits
 
     if "p" in symbols:
         symbs += string.punctuation
