@@ -83,17 +83,7 @@ class Window(QMainWindow):
         is_main_db = sets.value('advanced/is_main_db', False, type=bool)
         main_db = sets.value('advanced/main_db', '', type=str)
         if is_main_db and main_db in getDbList():
-
             self.dbs.list.selected(Index(main_db))
-
-        if not '.git' in os.listdir('.'):
-            WarningWindow('''
-            <h3>Програму не ініціалізовано!</h3>
-            <p>Завантажте файл <b><i>setup.py</i></b> з нашого github репозиторія.</p>
-            <p>Запустіть його і пройдіть всі кроки інсталяції.</p>
-            <p>Ініціалізація потрібна, аби система оновлення PyQtAccounts працювала.</p>
-            <p>Система оновлення автоматично перевіряє, завантажує і встановлює оновлення.</p>
-            ''')
 
         self.about = About()
 
@@ -101,17 +91,6 @@ class Window(QMainWindow):
         self.setMenuBar(menuBar)
         self.setCentralWidget(splitter)
 
-        reqs_list = ['git', 'pip3', 'xclip']
-
-        for req in reqs_list:
-            if os.system(f'which {req}'):
-                WarningWindow('''
-                    <h3>Не всі пакети встановлено!</h3>
-                    <p>Пакет {0} не встановлено, без певних пакетів PyQtAccounts буде працювати 
-                    некоректно!</p>
-                    <p>Встановіть {0} такою командою:</p>
-                    <p>sudo apt install {0}</p>
-                    '''.format(req))
         if time_for_updates():
             def mess(changes, log):
                 if changes:
@@ -150,6 +129,25 @@ class Window(QMainWindow):
 
 
 def main():
+    if not '.git' in os.listdir('.'):
+        WarningWindow('''
+        <h3>Програму не ініціалізовано!</h3>
+        <p>Завантажте файл <b><i>setup.py</i></b> з нашого github репозиторія.</p>
+        <p>Запустіть його і пройдіть всі кроки інсталяції.</p>
+        <p>Ініціалізація потрібна, аби система оновлення PyQtAccounts працювала.</p>
+        <p>Система оновлення автоматично перевіряє, завантажує і встановлює оновлення.</p>
+        ''')
+
+    for req in ['git', 'pip3', 'xclip']:
+        if os.system(f'which {req}'):
+            WarningWindow('''
+                <h3>Не всі пакети встановлено!</h3>
+                <p>Пакет {0} не встановлено, без певних пакетів PyQtAccounts буде працювати 
+                некоректно!</p>
+                <p>Встановіть {0} такою командою:</p>
+                <p>sudo apt install {0}</p>
+                '''.format(req))
+
     window = Window()
     sys.exit(app.exec_())
 
