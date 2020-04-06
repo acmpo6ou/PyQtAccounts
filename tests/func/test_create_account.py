@@ -48,11 +48,6 @@ class CreateAccTest(AccsTest):
         self.assertFalse(self.nameError.visibility)
         self.assertFalse(self.nameFilledError.visibility)
 
-    @pytest.mark.skip
-    def test_create_account_ctrl_n(self):
-        self.hotkey("ctrl", "n")
-        self.checkOnlyVisible(self.form)
-
     def test_create_account_click(self):
         self.accs.panel.addButton.click()
         self.checkOnlyVisible(self.form)

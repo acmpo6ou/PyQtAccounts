@@ -67,21 +67,3 @@ class ShowAccTest(AccsTest):
         xclip = Popen(['xclip', '-o'], stdout=PIPE, stderr=STDOUT)
         mouseboard = xclip.communicate()[0].decode()
         self.assertEqual(mouseboard, 'bobgreen@gmail.com\n')
-
-    @pytest.mark.skip
-    def test_ctrl_c_for_copy(self):
-        # Toon wants to copy e-mail and password of his account, so he chose it in the list
-        self.list.selected(Index('mega'))
-
-        # and presses Ctrl+C
-        self.hotkey('Ctrl', 'C')
-        QTest.qWait(200)
-
-        # Password copied to clipboard
-        clipboard = QGuiApplication.clipboard()
-        self.assertEqual(clipboard.text(), '|MT"[Ic_zH5,Lfzm')  # those symbols are password
-
-        # E-mail is copied to mouse clipboard by xclip tool
-        xclip = Popen(['xclip', '-o'], stdout=PIPE, stderr=STDOUT)
-        mouseboard = xclip.communicate()[0].decode()
-        self.assertEqual(mouseboard, 'toon@rimworld.com\n')
