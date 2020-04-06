@@ -18,14 +18,58 @@
 
 from PyQt5.QtTest import QTest
 from PyQt5.QtCore import *
-import unittest
+from unittest.mock import Mock
 import pytest
 import os
+import git
 
 from tests.base import UnitTest
-from core.utils import *
-from PyQtAccounts import *
+from core.const import *
+from core.updates import *
 
 
 class UpdatingTest(UnitTest):
-    def test_debug_True(self):
+    def setUp(self):
+        super().setUp()
+        self.monkeypatch.setattr('core.updates.getChangeLog', lambda: ['Some changelog'])
+
+    @staticmethod
+    def mock_iter_commits(revision):
+        yield 'Some commits'
+
+    @staticmethod
+    def mock_iter_no_commits(revision):
+        return
+        yield
+
+    def test_there_are_commits(self):
+        self.monkeypatch.setattr('core.const.DEBUG', True)
+
+        mock_Repo = Mock()
+        mock_Repo.iter_commits = self.mock_iter_commits
+        self.monkeypatch.setattr('git.Repo', lambda *args: mock_Repo)
+
+        def check_result(changes, log):
+            assert changes
+            assert log == ['Some changelog']
+
+        updating = Updating()
+        updating.result.connect(check_result)
+        updating.run()
+
+    def test_there_are_no_commits(self):
+        self.monkeypatch.setattr('core.const.DEBUG', False)
+        self.monkeypatch.setattr('core.updates.getChangeLog', lambda: ['Some changelog'])
+
+        mock_Repo = Mock()
+        mock_Repo.iter_commits = self.mock_iter_no_commits
+        self.monkeypatch.setattr('git.Repo', lambda *args: mock_Repo)
+        print(list(mock_Repo.iter_commits('')))
+
+        def check_result(changes, log):
+            assert not changes
+            assert log == ['Some changelog']
+
+        updating = Updating()
+        updating.result.connect(check_result)
+        updating.run()
