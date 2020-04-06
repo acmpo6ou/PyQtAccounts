@@ -22,8 +22,6 @@ from unittest.mock import Mock
 import pytest
 import sys
 
-sys.path.append('.')
-
 from tests.base import UnitTest
 from core.utils import *
 from PyQtAccounts import *

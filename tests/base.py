@@ -24,8 +24,6 @@ import pytest
 import sys
 import os
 
-sys.path.append('.')
-
 from PyQtAccounts import *
 
 

@@ -22,8 +22,6 @@ import pyautogui
 import sys
 import os
 
-sys.path.append('.')
-
 from tests.base import DbsTest
 from core.utils import getDbList
 from PyQtAccounts import *

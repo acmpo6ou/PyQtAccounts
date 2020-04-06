@@ -22,8 +22,6 @@ import unittest
 import pyautogui
 import sys
 
-sys.path.append('.')
-
 from tests.base import DbsTest
 from core.utils import *
 from PyQtAccounts import *
