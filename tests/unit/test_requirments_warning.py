@@ -25,28 +25,28 @@ import os
 
 from tests.base import UnitTest
 from core.const import *
-from PyQtAccounts import *
+import PyQtAccounts
 
 
 class ReqsWarningsTest(UnitTest):
     def test_system_reqs(self):
         def mock_system(sys_req):
-            WarningWindow.exec = lambda self: QMessageBox.Ok
+            PyQtAccounts.WarningWindow.exec = lambda self: PyQtAccounts.QMessageBox.Ok
             def wrap(command):
                 req = command.replace('which ', '')
-                assert req in sys_reqs
+                assert req in PyQtAccounts.sys_reqs
                 if req == sys_req:
                     return True
                 else:
                     return False
             return wrap
 
-        for req in sys_reqs:
-            # Lea hasn't install any of PyQtAccounts dependencies
+        for req in PyQtAccounts.sys_reqs:
+            # Lea hasn't install any of PyQtAccounts system dependencies
             self.monkeypatch.setattr('os.system', mock_system(req))
 
             # So she launches the program
-            msg = main()
+            msg = PyQtAccounts.main()
 
             # Warning message appears saying that she needs to install some dependencies
             self.assertEqual('Увага!', msg.windowTitle())
@@ -57,3 +57,27 @@ class ReqsWarningsTest(UnitTest):
                 <p>Встановіть {0} такою командою:</p>
                 <p>sudo apt install {0}</p>
                 '''.format(req), msg.text())
+
+    def test_pip_reqs(self):
+        PyQtAccounts.ErrorWindow.exec = lambda self: PyQtAccounts.QMessageBox.Ok
+        def mock_pip(pip_req):
+            def wrap():
+                raise ImportError(f'No module named {req}')
+            return wrap
+
+        for req in PyQtAccounts.reqs_pip:
+            req = req.replace('git', 'gitpython')
+            # Toon hasn't install any of PyQtAccounts pip dependencies
+            self.monkeypatch.setattr('PyQtAccounts.Window', mock_pip(req))
+
+            # So he launches the program
+            msg = PyQtAccounts.main()
+
+            # Error message appears saying that he might hasn't installed some dependencies
+            self.assertEqual('Помилка!', msg.windowTitle())
+            mess = ('<p>Здається не всі бібліотеки встановлені.</p>'
+                    f'<p>Переконайтеся що ви встановили бібліотеку {req}.</p>'
+                    '<p>Якщо ні, спробуйте ввести в термінал цю кофманду:</p>'
+                    f'<p><b>pip3 install {req}</b></p>')
+            self.assertEqual(mess, msg.text())
+            self.assertEqual(f'No module named {req}', msg.detailedText())
