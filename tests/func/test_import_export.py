@@ -125,7 +125,8 @@ class ImportExportTest(DbsTest):
             'Експорт', 'Успішно експортовано базу данних <i><b>database</b></i>')
         QMessageBox.information = success_message
 
-        self.hotkey("ctrl", "e")  # We press Ctrl+E here because of the dialogs
+        # First is `File` submenu, third is `Export database...` action
+        self.menu(0, 2).trigger()  # We do it here because of the dialogs
 
         # And Lea has database.tar on the disk now
         self.assertTrue(os.path.exists('tests/func/src/database.tar'))

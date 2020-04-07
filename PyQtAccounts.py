@@ -201,11 +201,11 @@ except ImportError as err:
                     '<p>Якщо ні, спробуйте ввести в термінал цю кофманду:</p>'
                     f'<p><b>pip3 install {req}</b></p>')
             ErrorWindow(mess, err)
-    sys.exit()
 except Exception as err:
     mess = '''Вибачте програма повинна припинити роботу через помилку.'''
     ErrorWindow(mess, err)
-    raise
+    if DEBUG:
+        raise
 
 if __name__ == '__main__':
     sys.exit(app.exec_())
