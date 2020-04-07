@@ -158,9 +158,9 @@ def main():
             <p>Система оновлення автоматично перевіряє, завантажує і встановлює оновлення.</p>
             ''')
 
-    for req in ['git', 'pip3', 'xclip']:
+    for req in sys_reqs:
         if os.system(f'which {req}'):
-            WarningWindow('''
+            return WarningWindow('''
                 <h3>Не всі пакети встановлено!</h3>
                 <p>Пакет {0} не встановлено, без певних пакетів PyQtAccounts буде працювати 
                 некоректно!</p>
@@ -193,7 +193,6 @@ try:
     if __name__ == '__main__':
         main()
 except ImportError as err:
-    reqs_pip = ['setuptools', 'cryptography', 'git', 'pyshortcuts']  # git is gitpython module
     for req in reqs_pip:
         if req in err.msg:
             req = req.replace('git', 'gitpython')

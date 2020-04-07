@@ -18,6 +18,9 @@
 
 DEBUG = False
 
+sys_reqs = ('git', 'pip3', 'xclip')
+reqs_pip = ('setuptools', 'cryptography', 'git', 'pyshortcuts')  # git is `gitpython` module
+
 HELP_TIP_DB = ("<pre>Поки що у вас немає жодної бази данних.\n" +
                '{0:<39}\n'.format("Спробуйте:") +
                '{0:<39}\n'.format("Натиснути +") +
