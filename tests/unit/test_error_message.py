@@ -38,7 +38,7 @@ class ErrorMsgTest(UnitTest):
         # Emily launches PyQtAccounts
         msg = PyQtAccounts.main()
 
-        # The error message appears saying that program must shutdown itself due to error
+        # The error message appears saying that program must shutdown itself due to the error
         self.assertEqual('Помилка!', msg.windowTitle())
         self.assertEqual('Вибачте програма повинна припинити роботу через помилку.',
                          msg.text())
