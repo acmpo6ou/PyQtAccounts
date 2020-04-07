@@ -62,10 +62,7 @@ class Updating(QObject):
         origin = repo.remote()
         origin.fetch()
 
-        if DEBUG:
-            changes = list(repo.iter_commits('dev..origin/dev'))
-        else:
-            changes = list(repo.iter_commits('master..origin/master'))
+        changes = list(repo.iter_commits('master..origin/master'))
         changelog = getChangeLog()
 
         self.result.emit(bool(changes), changelog)

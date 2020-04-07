@@ -191,10 +191,10 @@ def main():
                 return ErrorWindow(mess, err)
     except Exception as err:
         mess = 'Вибачте програма повинна припинити роботу через помилку.'
-        if DEBUG:
-            raise
-        else:
+        if os.getenv('TESTING'):
             return ErrorWindow(mess, err)
+        else:
+            raise
 
 
 app = QApplication(sys.argv)

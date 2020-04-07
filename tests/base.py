@@ -28,6 +28,9 @@ from PyQtAccounts import *
 
 
 class BaseTest(unittest.TestCase):
+    def setUp(self):
+        os.environ['TESTING'] = 'True'
+
     @pytest.fixture(autouse=True)
     def monkeypatching(self, monkeypatch):
         self.monkeypatch = monkeypatch
@@ -101,6 +104,7 @@ class UnitTest(BaseTest):
 
 class FuncTest(BaseTest):
     def setUp(self):
+        super().setUp()
         self.window = Window()
         self.dbs = self.window.dbs
 

@@ -24,6 +24,7 @@ import pytest
 import os
 
 from tests.base import UnitTest
+import core.const
 import PyQtAccounts
 
 

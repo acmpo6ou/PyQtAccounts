@@ -43,8 +43,6 @@ class UpdatingTest(UnitTest):
         yield
 
     def test_there_are_commits(self):
-        self.monkeypatch.setattr('core.const.DEBUG', True)
-
         mock_Repo = Mock()
         mock_Repo.iter_commits = self.mock_iter_commits
         self.monkeypatch.setattr('git.Repo', lambda *args: mock_Repo)
@@ -58,7 +56,6 @@ class UpdatingTest(UnitTest):
         updating.run()
 
     def test_there_are_no_commits(self):
-        self.monkeypatch.setattr('core.const.DEBUG', False)
         self.monkeypatch.setattr('core.updates.getChangeLog', lambda: ['Some changelog'])
 
         mock_Repo = Mock()

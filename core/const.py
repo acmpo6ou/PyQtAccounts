@@ -16,8 +16,6 @@
 # You should have received a copy of the GNU General Public License
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
 
-DEBUG = True
-
 sys_reqs = ('git', 'pip3', 'xclip')
 reqs_pip = ('setuptools', 'cryptography', 'git', 'pyshortcuts')  # git is `gitpython` module
 
