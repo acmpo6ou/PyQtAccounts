@@ -23,6 +23,14 @@ from core.testutils import QWidget
 import sys
 import os
 
+from core.db_forms import *
+from core.account_forms import *
+from core.utils import *
+from core.widgets import *
+from core.windows import *
+from core.updates import *
+from core.const import *
+
 
 class Window(QMainWindow):
     def __init__(self):
@@ -168,7 +176,25 @@ def main():
                 <p>sudo apt install {0}</p>
                 '''.format(req))
 
-    window = Window()
+
+    try:
+        import git
+        window = Window()
+    except ImportError as err:
+        for req in reqs_pip:
+            if req in err.msg:
+                req = req.replace('git', 'gitpython')
+                mess = ('<p>Здається не всі бібліотеки встановлені.</p>'
+                        f'<p>Переконайтеся що ви встановили бібліотеку {req}.</p>'
+                        '<p>Якщо ні, спробуйте ввести в термінал цю кофманду:</p>'
+                        f'<p><b>pip3 install {req}</b></p>')
+                return ErrorWindow(mess, err)
+    except Exception as err:
+        mess = 'Вибачте програма повинна припинити роботу через помилку.'
+        if DEBUG:
+            raise
+        else:
+            return ErrorWindow(mess, err)
 
 
 app = QApplication(sys.argv)
@@ -179,33 +205,7 @@ app.setStyleSheet('''
 }
 ''')
 
-try:
-    from core.db_forms import *
-    from core.account_forms import *
-    from core.utils import *
-    from core.widgets import *
-    from core.windows import *
-    from core.updates import *
-    from core.const import *
-
-    import git
-
-    if __name__ == '__main__':
-        main()
-except ImportError as err:
-    for req in reqs_pip:
-        if req in err.msg:
-            req = req.replace('git', 'gitpython')
-            mess = ('<p>Здається не всі бібліотеки встановлені.</p>'
-                    f'<p>Переконайтеся що ви встановили бібліотеку {req}.</p>'
-                    '<p>Якщо ні, спробуйте ввести в термінал цю кофманду:</p>'
-                    f'<p><b>pip3 install {req}</b></p>')
-            ErrorWindow(mess, err)
-except Exception as err:
-    mess = '''Вибачте програма повинна припинити роботу через помилку.'''
-    ErrorWindow(mess, err)
-    if DEBUG:
-        raise
 
 if __name__ == '__main__':
+    main()
     sys.exit(app.exec_())
