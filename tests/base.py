@@ -75,11 +75,6 @@ class BaseTest(unittest.TestCase):
         assert head == 'Помилка!'
         return QMessageBox.Ok
 
-    def hotkey(self, *keys):
-        import pyautogui
-        pyautogui.hotkey(*keys)
-        QTest.qWait(200)
-
 
 class UnitTest(BaseTest):
     def patchVersion(self):

@@ -18,7 +18,6 @@
 
 from PyQt5.QtTest import QTest
 import pytest
-import pyautogui
 import sys
 import os
 
@@ -44,10 +43,6 @@ class CreateDbTest(DbsTest):
         self.pass_input = self.form.passField.passInput
         self.pass_repeat_input = self.form.passRepeatField.passInput
         self.createButton = self.form.createButton
-
-    def test_create_db_ctrl_n(self):
-        self.hotkey("ctrl", "n")
-        self.checkOnlyVisible(self.form)
 
     def test_create_db_click(self):
         self.dbs.panel.addButton.click()

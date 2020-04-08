@@ -15,7 +15,6 @@
 
 # You should have received a copy of the GNU General Public License
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
-import pyautogui
 from PyQt5.QtTest import QTest
 from PyQt5.QtCore import *
 import unittest

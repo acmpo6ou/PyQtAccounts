@@ -21,7 +21,6 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 import unittest
 import pytest
-import pyautogui
 import sys
 import os
 
@@ -147,7 +146,8 @@ class ImportExportTest(DbsTest):
         # Error message appears saying that export is unsuccessful
         QMessageBox.critical = self.critical
 
-        self.hotkey("ctrl", "e")  # We press Ctrl+E here because of the dialogs
+        # First is `File` submenu, third is `Export database...` action
+        self.menu(0, 2).trigger()  # We do it here because of the dialogs
 
         # And there is no database.tar on the disk
         self.assertFalse(os.path.exists('/database.tar'))

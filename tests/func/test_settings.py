@@ -19,7 +19,6 @@
 from PyQt5.QtCore import *
 from PyQt5.QtTest import QTest
 import unittest
-import pyautogui
 import sys
 
 from tests.base import DbsTest
@@ -43,11 +42,6 @@ class SettingsTest(DbsTest):
         edit = window.menuBar().actions()[1]  # second is `Edit` submenu
         pref = edit.menu().actions()[0]
         pref.trigger()
-        self.assertTrue(window.settings.visibility)
-
-    def test_settings_show_ctrl_p(self):
-        window = Window()
-        self.hotkey("ctrl", "p")
         self.assertTrue(window.settings.visibility)
 
     def test_is_main_db_True(self):

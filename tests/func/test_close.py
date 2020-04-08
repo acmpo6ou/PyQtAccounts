@@ -64,8 +64,3 @@ class CloseTest(FuncTest):
         self.monkeypatch.setattr(QMessageBox, 'question', self.mess_showed)
         self.menu(0, -1).trigger()
         self.assertFalse(self.window.visibility)
-
-    def close_ctrl_q(self):
-        self.monkeypatch.setattr(QMessageBox, 'question', self.mess_showed)
-        self.hotkey('ctrl', 'q')
-        self.assertFalse(self.window.visibility)

@@ -4,17 +4,21 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
+import os
+
 init = QWidget.__init__
 show = QWidget.show
 _hide = QWidget.hide
 
 def _show_(self, *args, **kwargs):
     self.visibility = True
-    show(self, *args, **kwargs)
+    if not os.getenv('TESTING'):
+        show(self, *args, **kwargs)
 
 def _hide_(self, *args, **kwargs):
     self.visibility = False
-    _hide(self)
+    if not os.getenv('TESTING'):
+        _hide(self)
 
 def _init_(self, *args, **kwargs):
     self.visibility = False
