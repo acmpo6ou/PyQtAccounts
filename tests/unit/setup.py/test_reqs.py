@@ -30,4 +30,5 @@ from setup import *
 class ReqsTest(UnitTest):
     def test_all_reqs_installed(self):
         reqs = Reqs()
-
+        all_req = set(reqs_pip + reqs_list)
+        self.assertFalse(all_req - set(reqs.installed))
