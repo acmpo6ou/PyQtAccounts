@@ -183,7 +183,7 @@ def main():
     except ImportError as err:
         for req in reqs_pip:
             if req in err.msg:
-                req = req.replace('git', 'gitpython')
+                req = req
                 mess = ('<p>Здається не всі бібліотеки встановлені.</p>'
                         f'<p>Переконайтеся що ви встановили бібліотеку {req}.</p>'
                         '<p>Якщо ні, спробуйте ввести в термінал цю кофманду:</p>'

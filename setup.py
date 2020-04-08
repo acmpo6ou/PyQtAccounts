@@ -23,7 +23,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
 reqs_list = ('git', 'pip3', 'xclip')
-reqs_pip = ('setuptools', 'cryptography', 'git', 'pyshortcuts')  # git is `gitpython` module
+reqs_pip = ('setuptools', 'cryptography', 'gitpython', 'pyshortcuts')
 
 
 class Reqs:
@@ -40,11 +40,11 @@ class Reqs:
 
         for req in reqs_pip:
             try:
-                __import__(req)
+                __import__(req.replace('gitpython', 'git'))
             except ImportError:
-                self.to_install.append(req.replace('git', 'gitpython'))
+                self.to_install.append(req)
             else:
-                self.installed.append(req.replace('git', 'gitpython'))
+                self.installed.append(req)
 
 
 class ReqsList(QListView):

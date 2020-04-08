@@ -66,7 +66,7 @@ class ReqsWarningsTest(UnitTest):
             return wrap
 
         for req in PyQtAccounts.reqs_pip:
-            req = req.replace('git', 'gitpython')
+            req = req
             # Toon hasn't install any of PyQtAccounts pip dependencies
             self.monkeypatch.setattr('PyQtAccounts.Window', mock_pip(req))
 
