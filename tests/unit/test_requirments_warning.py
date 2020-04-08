@@ -30,8 +30,8 @@ import PyQtAccounts
 
 class ReqsWarningsTest(UnitTest):
     def test_system_reqs(self):
+        PyQtAccounts.WarningWindow.exec = lambda self: PyQtAccounts.QMessageBox.Ok
         def mock_system(sys_req):
-            PyQtAccounts.WarningWindow.exec = lambda self: PyQtAccounts.QMessageBox.Ok
             def wrap(command):
                 req = command.replace('which ', '')
                 assert req in PyQtAccounts.sys_reqs
