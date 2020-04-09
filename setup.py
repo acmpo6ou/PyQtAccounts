@@ -22,6 +22,12 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
+# Testing stuff
+try:
+    from core.testutils import QWidget
+except ImportError:
+    pass
+
 reqs_list = ('git', 'pip3', 'xclip')
 reqs_pip = ('setuptools', 'cryptography', 'gitpython', 'pyshortcuts')
 
