@@ -28,6 +28,14 @@ from setup import *
 
 
 class ReqsTipsTest(UnitTest):
+    def test_all_installed(self):
+        reqs = Mock()
+        reqs.cant_install = ()
+        reqs.to_install = ()
+        tips = ReqsTips(reqs)
+        expect_text = 'Всі залежності встановленно!'
+        self.assertEqual(tips.toPlainText(), expect_text)
+
     def test_tips_cant_install(self):
         reqs = Mock()
         reqs.cant_install = ('git', 'pip3', 'xclip')
@@ -38,4 +46,29 @@ class ReqsTipsTest(UnitTest):
             'Для їх встановлення потрібні права адміністратора. \n'
             'Введіть в терміналі таку команду: \n'
             'sudo apt install git pip3 xclip')
+        self.assertEqual(tips.toPlainText(), expect_text)
+
+    def test_tips_to_install(self):
+        reqs = Mock()
+        reqs.cant_install = ()
+        reqs.to_install = ('gitpython', 'cryptography', 'pyshortcuts')
+        tips = ReqsTips(reqs)
+        expect_text = ('Пакети gitpython, cryptography, pyshortcuts ми можемо встановити для вас,'
+                       ' для цього натисніть кнопку "Встановити". \n'
+                       'Але спершу не забудьте перевірити наявність пакету pip3!')
+        self.assertEqual(tips.toPlainText(), expect_text)
+
+    def test_tips_to_install_and_cant_install(self):
+        reqs = Mock()
+        reqs.cant_install = ('git', 'pip3', 'xclip')
+        reqs.to_install = ('gitpython', 'cryptography', 'pyshortcuts')
+        tips = ReqsTips(reqs)
+        print(repr(tips.toPlainText()))
+        expect_text = ('Будь-ласка встановіть пакети git pip3 xclip самостійно. \n'
+                       'Для їх встановлення потрібні права адміністратора. \n'
+                       'Введіть в терміналі таку команду: \n'
+                       'sudo apt install git pip3 xclip\n'
+                       'Пакети gitpython, cryptography, pyshortcuts ми можемо встановити для вас, '
+                       'для цього натисніть кнопку "Встановити". \n'
+                       'Але спершу не забудьте перевірити наявність пакету pip3!')
         self.assertEqual(tips.toPlainText(), expect_text)
