@@ -58,7 +58,7 @@ class ReqsList(QListView):
         QListView.__init__(self)
 
         installed = QIcon('/usr/share/icons/Humanity/actions/48/gtk-yes.svg')
-        not_installed = QIcon('/usr/share/icons/Humanity/actions/128/stock_not.svg')
+        not_installed = QIcon('/usr/share/icons/Humanity/actions/48/stock_not.svg')
         self.model = QStandardItemModel()
         self.setEditTriggers(QAbstractItemView.NoEditTriggers)
 

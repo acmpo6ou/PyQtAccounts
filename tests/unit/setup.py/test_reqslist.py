@@ -26,14 +26,14 @@ import os
 from tests.base import UnitTest
 from setup import *
 
+installed = '/usr/share/icons/Humanity/actions/48/gtk-yes.svg'
+not_installed = '/usr/share/icons/Humanity/actions/48/stock_not.svg'
+
 
 class ReqsListTest(UnitTest):
     def test_icons(self):
-        yes = '/usr/share/icons/Humanity/actions/48/gtk-yes.svg'
-        no = '/usr/share/icons/Humanity/actions/128/stock_not.svg'
-
-        self.assertTrue(os.path.exists(yes))
-        self.assertTrue(os.path.exists(no))
+        self.assertTrue(os.path.exists(installed))
+        self.assertTrue(os.path.exists(not_installed))
 
     def test_reqs(self):
         reqs = Mock()
@@ -46,3 +46,14 @@ class ReqsListTest(UnitTest):
         self.assertEqual(reqslist.model, QListView.model(reqslist))  # We override model method
 
         model = reqslist.model
+        length = len(reqs.cant_install) + len(reqs.to_install) + len(reqs.installed)
+        self.assertEqual(length, model.rowCount())
+
+        for i in range(model.rowCount()):
+            req = model.item(i).text()
+            icon = model.item(i).icon().pixmap(QSize(48, 48)).toImage()
+
+            if req in reqs.installed:
+                self.assertEqual(icon, QImage(installed))
+            else:
+                self.assertEqual(icon, QImage(not_installed))
