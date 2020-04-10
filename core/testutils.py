@@ -12,12 +12,12 @@ _hide = QWidget.hide
 
 def _show_(self, *args, **kwargs):
     self.visibility = True
-    if not os.getenv('TESTING'):
+    if not os.getenv('TESTING') or os.getenv('TESTING') == 'Func':
         show(self, *args, **kwargs)
 
 def _hide_(self, *args, **kwargs):
     self.visibility = False
-    if not os.getenv('TESTING'):
+    if not os.getenv('TESTING') or os.getenv('TESTING') == 'Func':
         _hide(self)
 
 def _init_(self, *args, **kwargs):
