@@ -25,6 +25,7 @@ import sys
 import os
 
 from PyQtAccounts import *
+from setup import InstallationWizard
 
 
 class BaseTest(unittest.TestCase):
@@ -170,3 +171,9 @@ class AccsTest(FuncTest):
 
     def checkAccNotInList(self, name):
         self.check_not_in_list(name)
+
+
+class SetupFuncTest(BaseTest):
+    def setUp(self):
+        super().setUp()
+        self.wizard = InstallationWizard()
