@@ -177,3 +177,4 @@ class SetupFuncTest(BaseTest):
     def setUp(self):
         super().setUp()
         self.wizard = InstallationWizard()
+        self.next = self.wizard.button(QWizard.NextButton)

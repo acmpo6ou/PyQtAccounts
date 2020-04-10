@@ -28,9 +28,6 @@ from setup import *
 
 
 class Test(SetupFuncTest):
-    def setUp(self):
-        super().setUp()
-
     def test_first_page(self):
         # Bob wants to install PyQtAccounts, so he launches setup.py
         os.environ['TESTING'] = 'Func'
@@ -38,3 +35,9 @@ class Test(SetupFuncTest):
 
         # He sees welcome page
         self.assertIsInstance(self.wizard.currentPage(), WelcomePage)
+
+        # Bob presses `Next` button then
+        self.next.click()
+
+        # Next is requirements page
+        self.assertIsInstance(self.wizard.currentPage(), RequirementsPage)

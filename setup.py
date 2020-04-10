@@ -214,9 +214,6 @@ class RequirementsPage(QWizardPage):
 
         self.installButton.setEnabled(False)
 
-        if self._thread and not self._thread.isFinished():
-            self._thread.exit()
-
         thread = QThread(parent=self)
         self.install = PipInstall(self.reqs)
         self.install.moveToThread(thread)
@@ -252,10 +249,7 @@ class RequirementsPage(QWizardPage):
 
     def isComplete(self):
         reqs = Reqs()
-        if not (reqs.cant_install or reqs.to_install):
-            return True
-        else:
-            return False
+        return not (reqs.cant_install or reqs.to_install)
 
 class Initialize(QObject):
     result = pyqtSignal(int)
