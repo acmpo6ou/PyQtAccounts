@@ -190,7 +190,7 @@ class RequirementsPage(QWizardPage):
 
         self.installButton = QPushButton("Встановити")
         self.installButton.clicked.connect(self.install)
-        if not len(reqs.to_install):
+        if not reqs.to_install:
             self.installButton.setEnabled(False)
 
         layout = QVBoxLayout()
@@ -207,7 +207,7 @@ class RequirementsPage(QWizardPage):
         self.errors.setText('')
         self.errors.hide()
 
-        if not 'pip3' in self.reqs.installed:
+        if 'pip3' not in self.reqs.installed:
             self.errors.show()
             self.errors.setText('Встановіть пакет pip3!')
             return
@@ -222,7 +222,6 @@ class RequirementsPage(QWizardPage):
         thread.start()
         self.installLabel.show()
         self.installProgress.show()
-
         self._thread = thread
 
     def install_progress(self, res, req):

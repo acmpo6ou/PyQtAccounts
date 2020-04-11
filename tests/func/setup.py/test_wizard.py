@@ -19,8 +19,9 @@
 from PyQt5.QtTest import QTest
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
-import unittest
+from unittest.mock import Mock
 import pytest
+import time
 import os
 
 from tests.base import SetupFuncTest
@@ -28,9 +29,12 @@ from setup import *
 
 
 class Test(SetupFuncTest):
-    def test_first_page(self):
-        # Bob wants to install PyQtAccounts, so he launches setup.py
+    def setUp(self):
+        super().setUp()
         os.environ['TESTING'] = 'Func'
+
+    def test_pages(self):
+        # Bob wants to install PyQtAccounts, so he launches setup.py
         self.wizard.show()
 
         # He sees welcome page
@@ -41,3 +45,64 @@ class Test(SetupFuncTest):
 
         # Next is requirements page
         self.assertIsInstance(self.wizard.currentPage(), RequirementsPage)
+
+    def test_install_no_pip(self):
+        # Toon wants to install PyQtAccounts
+        # He hasn't installed pip and some of dependencies
+        reqs = Reqs()
+        reqs.to_install = ('gitpython', 'pyshortcuts')
+        reqs.installed.remove('gitpython')
+        reqs.installed.remove('pyshortcuts')
+
+        reqs.cant_install = ('pip3',)
+        reqs.installed.remove('pip3')
+        self.monkeypatch.setattr('setup.Reqs', lambda: reqs)
+
+        # So far he proceed to requirements page
+        wizard = InstallationWizard()
+        wizard.show()
+        _next = wizard.button(QWizard.NextButton)
+        _next.click()
+
+        # next button is unavailable until Toon installs all dependencies
+        self.assertFalse(_next.isEnabled())
+
+        # and he presses install button
+        page = wizard.currentPage()
+        page.installButton.click()
+
+        # The error appears saying that he need to install pip first
+        self.assertTrue(page.errors.visibility)
+        self.assertEqual(page.errors.toPlainText(), 'Встановіть пакет pip3!')
+
+    @pytest.mark.skip
+    def test_install_button(self):
+        # Tom wants to install PyQtAccounts
+        self.wizard.show()
+
+        # He hasn't installed some pip dependencies
+        reqs = Reqs()
+        reqs.to_install = ('gitpython', 'pyshortcuts')
+        reqs.installed.remove('gitpython')
+        reqs.installed.remove('pyshortcuts')
+        self.monkeypatch.setattr('setup.Reqs', lambda: reqs)
+
+        # So he proceed to the requirements page
+        self.next.click()
+
+        # installation will be successful
+        self.monkeypatch.setattr('os.system', lambda command: False)
+
+        # He presses install button
+        page = self.wizard.currentPage()
+        page.installButton.click()
+
+        # He has pip3 installed so errors are cleared and hidden
+        self.assertEqual(page.errors.toPlainText(), '')
+        self.assertFalse(page.errors.visibility)
+
+        # install button is disabled
+        self.assertFalse(page.installButton.isEnabled())
+
+        # install label says that installation is successful
+        self.assertEqual(page.installLabel.text(), '<p style="color: #37FF91;">Встановлено!</p>')

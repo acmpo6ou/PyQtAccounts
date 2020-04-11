@@ -58,7 +58,7 @@ class RequirementsPageTest(UnitTest):
         reqs.to_install = ('gitpython', 'pyshortcuts')
         reqs.installed = ('some', 'packages')
         reqs.cant_install = ('some', 'packages')
-
         self.monkeypatch.setattr('setup.Reqs', lambda: reqs)
+
         page = RequirementsPage()
         self.assertTrue(page.installButton.isEnabled())
