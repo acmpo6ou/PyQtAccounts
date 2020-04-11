@@ -32,6 +32,18 @@ class Test(SetupFuncTest):
     def setUp(self):
         super().setUp()
 
+    def patchReqs(self, to_install=[], cant_install=[]):
+        reqs = Mock()
+        reqs.installed = ['git', 'pip3', 'xclip',
+                          'setuptools', 'cryptography', 'gitpython', 'pyshortcuts']
+        reqs.to_install = to_install
+        reqs.cant_install = cant_install
+
+        for req in cant_install + to_install:
+            reqs.installed.remove(req)
+
+        self.monkeypatch.setattr('setup.Reqs', lambda: reqs)
+
     def test_pages(self):
         self.wizard = InstallationWizard()
         self.next = self.wizard.button(QWizard.NextButton)
@@ -51,14 +63,7 @@ class Test(SetupFuncTest):
     def test_install_no_pip(self):
         # Toon wants to install PyQtAccounts
         # He hasn't installed pip and some of dependencies
-        reqs = Reqs()
-        reqs.to_install = ('gitpython', 'pyshortcuts')
-        reqs.installed.remove('gitpython')
-        reqs.installed.remove('pyshortcuts')
-
-        reqs.cant_install = ('pip3',)
-        reqs.installed.remove('pip3')
-        self.monkeypatch.setattr('setup.Reqs', lambda: reqs)
+        self.patchReqs(['gitpython', 'pyshortcuts'], ['pip3'])
 
         # So far he proceed to requirements page
         wizard = InstallationWizard()
@@ -77,14 +82,15 @@ class Test(SetupFuncTest):
         self.assertTrue(page.errors.visibility)
         self.assertEqual(page.errors.toPlainText(), 'Встановіть пакет pip3!')
 
+    def mock_system(self, command):
+        time.sleep(1)
+        return False
+
     def test_install_button(self):
         # Tom wants to install PyQtAccounts
         # He hasn't installed some pip dependencies
-        reqs = Reqs()
-        reqs.to_install = ('gitpython', 'pyshortcuts')
-        reqs.installed.remove('gitpython')
-        reqs.installed.remove('pyshortcuts')
-        self.monkeypatch.setattr('setup.Reqs', lambda: reqs)
+        self.to_install = ['gitpython', 'pyshortcuts']
+        self.patchReqs(self.to_install)
 
         # So he proceed to the requirements page
         self.wizard = InstallationWizard()
@@ -93,7 +99,7 @@ class Test(SetupFuncTest):
         self.next.click()
 
         # installation will be successful
-        self.monkeypatch.setattr('os.system', lambda command: False)
+        self.monkeypatch.setattr('os.system', self.mock_system)
 
         # He presses install button
         page = self.wizard.currentPage()
@@ -109,3 +115,14 @@ class Test(SetupFuncTest):
         # install label and progress are shown
         self.assertTrue(page.installLabel.visibility)
         self.assertTrue(page.installProgress.visibility)
+
+        # some time passes and everything is installed without any errors
+        QTest.qWait(3000)
+        self.assertEqual(page.errors.toPlainText(), '')
+        self.assertFalse(page.errors.visibility)
+
+        # install label says that everything is installed successfully
+        self.assertEqual(page.installLabel.text(), '<p style="color: #37FF91;">Встановлено!</p>')
+
+        # tips are hidden
+        self.assertFalse(page.reqsTips.visibility)
