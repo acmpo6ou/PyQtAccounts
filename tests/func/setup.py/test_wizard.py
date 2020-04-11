@@ -31,9 +31,11 @@ from setup import *
 class Test(SetupFuncTest):
     def setUp(self):
         super().setUp()
-        os.environ['TESTING'] = 'Func'
 
     def test_pages(self):
+        self.wizard = InstallationWizard()
+        self.next = self.wizard.button(QWizard.NextButton)
+
         # Bob wants to install PyQtAccounts, so he launches setup.py
         self.wizard.show()
 
@@ -75,11 +77,8 @@ class Test(SetupFuncTest):
         self.assertTrue(page.errors.visibility)
         self.assertEqual(page.errors.toPlainText(), 'Встановіть пакет pip3!')
 
-    @pytest.mark.skip
     def test_install_button(self):
         # Tom wants to install PyQtAccounts
-        self.wizard.show()
-
         # He hasn't installed some pip dependencies
         reqs = Reqs()
         reqs.to_install = ('gitpython', 'pyshortcuts')
@@ -88,6 +87,9 @@ class Test(SetupFuncTest):
         self.monkeypatch.setattr('setup.Reqs', lambda: reqs)
 
         # So he proceed to the requirements page
+        self.wizard = InstallationWizard()
+        self.next = self.wizard.button(QWizard.NextButton)
+        self.wizard.show()
         self.next.click()
 
         # installation will be successful
@@ -104,5 +106,6 @@ class Test(SetupFuncTest):
         # install button is disabled
         self.assertFalse(page.installButton.isEnabled())
 
-        # install label says that installation is successful
-        self.assertEqual(page.installLabel.text(), '<p style="color: #37FF91;">Встановлено!</p>')
+        # install label and progress are shown
+        self.assertTrue(page.installLabel.visibility)
+        self.assertTrue(page.installProgress.visibility)
