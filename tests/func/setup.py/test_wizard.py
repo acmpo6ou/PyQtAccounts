@@ -83,13 +83,16 @@ class Test(SetupFuncTest):
         self.assertEqual(page.errors.toPlainText(), 'Встановіть пакет pip3!')
 
     def mock_system(self, command):
-        time.sleep(1)
+        time.sleep(0.1)
+        # req = command.replace('pip3 install ', '')
+        # self.to_install.remove(req)
+        # self.patchReqs(self.to_install)
         return False
 
     def test_install_button(self):
         # Tom wants to install PyQtAccounts
         # He hasn't installed some pip dependencies
-        self.to_install = ['gitpython', 'pyshortcuts']
+        self.to_install = ['cryptography', 'gitpython']
         self.patchReqs(self.to_install)
 
         # So he proceed to the requirements page
@@ -116,8 +119,13 @@ class Test(SetupFuncTest):
         self.assertTrue(page.installLabel.visibility)
         self.assertTrue(page.installProgress.visibility)
 
-        # some time passes and everything is installed without any errors
-        QTest.qWait(3000)
+        # some time pass and progress bar moves to 50%
+        QTest.qWait(150)
+        self.assertEqual(page.installProgress.value(), 50)
+
+        # finally it shows 100% and everything is installed without any errors
+        QTest.qWait(150)
+        self.assertEqual(page.installProgress.value(), 100)
         self.assertEqual(page.errors.toPlainText(), '')
         self.assertFalse(page.errors.visibility)
 
