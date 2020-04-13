@@ -59,7 +59,7 @@ class FinishPageTest(UnitTest):
         self.assertEqual(page.title.text(), '<h4>Finish</h4>')
         self.assertEqual(page.text.text(), 'Успішно установлено PyQtAccounts!')
 
-    def test_init_page(self):
+    def test_init_page_menu_and_desktop(self):
         page = FinishPage()
         page._parent = Mock()
         page._parent.initPage = InitPage()
@@ -74,8 +74,7 @@ class FinishPageTest(UnitTest):
             initPage.folder = '/home/accounts'
             p.fs.create_file('/home/accounts/PyQtAccounts/run.sh', contents=RUN_SH_TEXT)
 
-            initPage.desktopCheckbox.setChecked(True)
-            initPage.menuCheckbox.setChecked(True)
+            # Checkboxes of init page for menu and desktop shortcuts are checked by default
 
             page.initializePage()
 
@@ -85,3 +84,58 @@ class FinishPageTest(UnitTest):
                              open('/home/accounts/Desktop/PyQtAccounts.desktop').read())
             self.assertEqual(EXPECTED_SHORTCUT_TEXT, open(
                 '/home/accounts/.local/share/applications/PyQtAccounts.desktop').read())
+
+    def test_init_page_menu_no_desktop(self):
+        page = FinishPage()
+        page._parent = Mock()
+        page._parent.initPage = InitPage()
+        initPage = page._parent.initPage
+
+        self.monkeypatch.setenv('HOME', '/home/accounts')
+        with fs_unit.Patcher() as p:
+            p.fs.create_dir('/home/accounts/PyQtAccounts')
+            p.fs.create_dir('/home/accounts/Desktop')
+            p.fs.create_dir('/home/accounts/.local/share/applications/')
+
+            initPage.folder = '/home/accounts'
+            p.fs.create_file('/home/accounts/PyQtAccounts/run.sh', contents=RUN_SH_TEXT)
+
+            # Checkboxes of init page for menu and desktop shortcuts are checked by default
+            initPage.desktopCheckbox.setChecked(False)
+
+            page.initializePage()
+
+            self.assertEqual(EXPECTED_RUN_SH_TEXT,
+                             open('/home/accounts/PyQtAccounts/run.sh').read())
+
+            self.assertFalse(os.path.exists('/home/accounts/Desktop/PyQtAccounts.desktop'))
+
+            self.assertEqual(EXPECTED_SHORTCUT_TEXT, open(
+                '/home/accounts/.local/share/applications/PyQtAccounts.desktop').read())
+
+    def test_init_page_desktop_no_menu(self):
+        page = FinishPage()
+        page._parent = Mock()
+        page._parent.initPage = InitPage()
+        initPage = page._parent.initPage
+
+        self.monkeypatch.setenv('HOME', '/home/accounts')
+        with fs_unit.Patcher() as p:
+            p.fs.create_dir('/home/accounts/PyQtAccounts')
+            p.fs.create_dir('/home/accounts/Desktop')
+            p.fs.create_dir('/home/accounts/.local/share/applications/')
+
+            initPage.folder = '/home/accounts'
+            p.fs.create_file('/home/accounts/PyQtAccounts/run.sh', contents=RUN_SH_TEXT)
+
+            # Checkboxes of init page for menu and desktop shortcuts are checked by default
+            initPage.menuCheckbox.setChecked(False)
+
+            page.initializePage()
+
+            self.assertEqual(EXPECTED_RUN_SH_TEXT,
+                             open('/home/accounts/PyQtAccounts/run.sh').read())
+            self.assertEqual(EXPECTED_SHORTCUT_TEXT,
+                             open('/home/accounts/Desktop/PyQtAccounts.desktop').read())
+            self.assertFalse(os.path.exists(
+                '/home/accounts/.local/share/applications/PyQtAccounts.desktop'))
