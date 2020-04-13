@@ -172,6 +172,18 @@ class AccsTest(FuncTest):
     def checkAccNotInList(self, name):
         self.check_not_in_list(name)
 
+class SetupMixin:
+    def patchReqs(self, to_install=[], cant_install=[]):
+        reqs = Mock()
+        reqs.installed = ['git', 'pip3', 'xclip',
+                          'setuptools', 'cryptography', 'gitpython', 'pyshortcuts']
+        reqs.to_install = to_install
+        reqs.cant_install = cant_install
+
+        for req in cant_install + to_install:
+            reqs.installed.remove(req)
+
+        self.monkeypatch.setattr('setup.Reqs', lambda: reqs)
 
 class SetupFuncTest(BaseTest):
     def setUp(self):

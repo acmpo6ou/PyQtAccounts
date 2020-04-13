@@ -24,25 +24,15 @@ import pytest
 import time
 import os
 
-from tests.base import SetupFuncTest
+INSTALL_ERRORS_TEXT = ('')
+
+from tests.base import SetupFuncTest, SetupMixin
 from setup import *
 
 
-class Test(SetupFuncTest):
+class Test(SetupFuncTest, SetupMixin):
     def setUp(self):
         super().setUp()
-
-    def patchReqs(self, to_install=[], cant_install=[]):
-        reqs = Mock()
-        reqs.installed = ['git', 'pip3', 'xclip',
-                          'setuptools', 'cryptography', 'gitpython', 'pyshortcuts']
-        reqs.to_install = to_install
-        reqs.cant_install = cant_install
-
-        for req in cant_install + to_install:
-            reqs.installed.remove(req)
-
-        self.monkeypatch.setattr('setup.Reqs', lambda: reqs)
 
     def test_pages(self):
         self.wizard = InstallationWizard()
@@ -82,12 +72,14 @@ class Test(SetupFuncTest):
         self.assertTrue(page.errors.visibility)
         self.assertEqual(page.errors.toPlainText(), 'Встановіть пакет pip3!')
 
-    def mock_system(self, command):
-        time.sleep(0.1)
-        # req = command.replace('pip3 install ', '')
-        # self.to_install.remove(req)
-        # self.patchReqs(self.to_install)
-        return False
+    def mock_system(self, res):
+        def wrap(command):
+            time.sleep(0.1)
+            # req = command.replace('pip3 install ', '')
+            # self.to_install.remove(req)
+            # self.patchReqs(self.to_install)
+            return res
+        return wrap
 
     def test_install_button(self):
         # Tom wants to install PyQtAccounts
@@ -102,7 +94,7 @@ class Test(SetupFuncTest):
         self.next.click()
 
         # installation will be successful
-        self.monkeypatch.setattr('os.system', self.mock_system)
+        self.monkeypatch.setattr('os.system', self.mock_system(False))
 
         # He presses install button
         page = self.wizard.currentPage()
@@ -134,3 +126,29 @@ class Test(SetupFuncTest):
 
         # tips are hidden
         self.assertFalse(page.reqsTips.visibility)
+
+    @pytest.mark.skip
+    def test_errors_during_installation(self):
+        # Tom wants to install PyQtAccounts
+        # He hasn't installed some pip dependencies
+        to_install = ['cryptography', 'gitpython']
+        self.patchReqs(to_install)
+
+        # So he proceed to the requirements page
+        wizard = InstallationWizard()
+        next = wizard.button(QWizard.NextButton)
+        wizard.show()
+        next.click()
+
+        # installation will be unsuccessful
+        self.monkeypatch.setattr('os.system', self.mock_system(True))
+
+        # He presses install button
+        page = wizard.currentPage()
+        page.installButton.click()
+
+        # Some errors appearing during installation.
+        QTest.qWait(300)
+        print(repr(page.errors.toPlainText()))
+        self.assertEqual(page.errors.toPlainText(), INSTALL_ERRORS_TEXT)
+        self.assertTrue(page.errors.visibility)
