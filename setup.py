@@ -22,6 +22,8 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
+from pyshortcuts import make_shortcut
+
 # Testing stuff
 try:
     from core.testutils import QWidget
@@ -250,6 +252,7 @@ class RequirementsPage(QWizardPage):
         reqs = Reqs()
         return not (reqs.cant_install or reqs.to_install)
 
+
 class Initialize(QObject):
     result = pyqtSignal(int)
     progress = pyqtSignal(int)
@@ -375,6 +378,7 @@ class InitPage(QWizardPage):
         if progress >= 100:
             self.completeChanged.emit()
 
+
 class FinishPage(QWizardPage):
     def __init__(self, parent=None):
         super(FinishPage, self).__init__(parent)
@@ -392,14 +396,13 @@ class FinishPage(QWizardPage):
         cwd = initPage.folder + '/PyQtAccounts/'
         desktop = initPage.desktopCheckbox.isChecked()
         startmenu = initPage.menuCheckbox.isChecked()
-        from pyshortcuts import make_shortcut
 
         if desktop or startmenu:
             make_shortcut(
                 name='PyQtAccounts',
                 script=cwd + '/run.sh',
                 description='Simple account database manager.',
-                icon=cwd+'/img/icon.svg',
+                icon=cwd + '/img/icon.svg',
                 terminal=False,
                 desktop=desktop,
                 startmenu=startmenu,
@@ -409,21 +412,22 @@ class FinishPage(QWizardPage):
             # fixing .ico icon issue
             home = os.getenv('HOME')
             if desktop:
-                desktop = open(home+'/Desktop/PyQtAccounts.desktop').read()
-                with open(home+'/Desktop/PyQtAccounts.desktop', 'w') as file:
+                desktop = open(home + '/Desktop/PyQtAccounts.desktop').read()
+                with open(home + '/Desktop/PyQtAccounts.desktop', 'w') as file:
                     file.write(desktop.replace('.ico', ''))
 
             if startmenu:
-                menu = open(home+'/.local/share/applications/PyQtAccounts.desktop').read()
-                with open(home+'/.local/share/applications/PyQtAccounts.desktop', 'w') as file:
+                menu = open(home + '/.local/share/applications/PyQtAccounts.desktop').read()
+                with open(home + '/.local/share/applications/PyQtAccounts.desktop', 'w') as file:
                     file.write(menu.replace('.ico', ''))
 
-        run = open(cwd+'run.sh').read()
+        run = open(cwd + 'run.sh').read()
         run = run.replace('cd .', f'cd {cwd}')
         run = run.replace('export PYTHONPATH="$PYTHONPATH:./"',
                           f'export PYTHONPATH="$PYTHONPATH:{cwd}"')
-        with open(cwd+'run.sh', 'w') as runfile:
+        with open(cwd + 'run.sh', 'w') as runfile:
             runfile.write(run)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
