@@ -58,3 +58,16 @@ class InitializeTest(UnitTest):
 
         self.assertEqual(self.res, 0)
         self.assertEqual(self.progress, [0, 25, 50, 75, 100])
+
+    def test_initialize_errors(self):
+        def mock_clone(path, folder, progress):
+            raise Exception('Error!')
+
+        self.monkeypatch.setattr('git.Repo.clone_from', mock_clone)
+
+        init = Initialize('/home/accounts')
+        init.progress.connect(self.check_progress)
+        init.result.connect(self.check_result)
+        init.run()
+
+        self.assertEqual(self.res, 1)
