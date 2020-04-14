@@ -23,6 +23,7 @@ from unittest.mock import Mock
 import pytest
 import sys
 import os
+import time
 
 from PyQtAccounts import *
 from setup import InstallationWizard
@@ -184,6 +185,15 @@ class SetupMixin:
             reqs.installed.remove(req)
 
         self.monkeypatch.setattr('setup.Reqs', lambda: reqs)
+
+    def mock_system(self, res):
+        def wrap(command):
+            time.sleep(0.1)
+            # req = command.replace('pip3 install ', '')
+            # self.to_install.remove(req)
+            # self.patchReqs(self.to_install)
+            return res
+        return wrap
 
 class SetupFuncTest(BaseTest):
     def setUp(self):

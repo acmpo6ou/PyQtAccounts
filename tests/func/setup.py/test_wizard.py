@@ -24,7 +24,10 @@ import pytest
 import time
 import os
 
-INSTALL_ERRORS_TEXT = ('')
+INSTALL_ERRORS_TEXT = (
+    'Не вдалося встановити cryptography\n'
+    'Не вдалося встановити gitpython\n'
+)
 
 from tests.base import SetupFuncTest, SetupMixin
 from setup import *
@@ -51,6 +54,12 @@ class InstallationWizardTest(SetupFuncTest, SetupMixin):
         # Next is requirements page
         self.assertIsInstance(self.wizard.currentPage(), RequirementsPage)
 
+        # Everything is installed so he presses `Next`
+        self.next.click()
+
+        # Next is initialization page
+        self.assertIsInstance(self.wizard.currentPage(), InitPage)
+
     def test_install_no_pip(self):
         # Toon wants to install PyQtAccounts
         # He hasn't installed pip and some of dependencies
@@ -72,15 +81,6 @@ class InstallationWizardTest(SetupFuncTest, SetupMixin):
         # The error appears saying that he need to install pip first
         self.assertTrue(page.errors.visibility)
         self.assertEqual(page.errors.toPlainText(), 'Встановіть пакет pip3!')
-
-    def mock_system(self, res):
-        def wrap(command):
-            time.sleep(0.1)
-            # req = command.replace('pip3 install ', '')
-            # self.to_install.remove(req)
-            # self.patchReqs(self.to_install)
-            return res
-        return wrap
 
     def test_install_button(self):
         # Tom wants to install PyQtAccounts
@@ -128,7 +128,7 @@ class InstallationWizardTest(SetupFuncTest, SetupMixin):
         # tips are hidden
         self.assertFalse(page.reqsTips.visibility)
 
-    @pytest.mark.skip
+class WizardErrorsTest(SetupFuncTest, SetupMixin):
     def test_errors_during_installation(self):
         # Tom wants to install PyQtAccounts
         # He hasn't installed some pip dependencies
@@ -153,3 +153,6 @@ class InstallationWizardTest(SetupFuncTest, SetupMixin):
         print(repr(page.errors.toPlainText()))
         self.assertEqual(page.errors.toPlainText(), INSTALL_ERRORS_TEXT)
         self.assertTrue(page.errors.visibility)
+
+        # Next button is still disabled
+        self.assertFalse(self.next.isEnabled())
