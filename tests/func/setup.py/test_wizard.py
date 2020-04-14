@@ -30,7 +30,11 @@ from tests.base import SetupFuncTest, SetupMixin
 from setup import *
 
 
-class Test(SetupFuncTest, SetupMixin):
+class InstallationWizardTest(SetupFuncTest, SetupMixin):
+    def tearDown(self):
+        super().tearDown()
+        self.wizard.hide()
+
     def test_pages(self):
         self.wizard = InstallationWizard()
         self.next = self.wizard.button(QWizard.NextButton)
@@ -53,16 +57,16 @@ class Test(SetupFuncTest, SetupMixin):
         self.patchReqs(['gitpython', 'pyshortcuts'], ['pip3'])
 
         # So far he proceed to requirements page
-        wizard = InstallationWizard()
-        wizard.show()
-        _next = wizard.button(QWizard.NextButton)
-        _next.click()
+        self.wizard = InstallationWizard()
+        self.wizard.show()
+        self.next = self.wizard.button(QWizard.NextButton)
+        self.next.click()
 
         # next button is unavailable until Toon installs all dependencies
-        self.assertFalse(_next.isEnabled())
+        self.assertFalse(self.next.isEnabled())
 
         # and he presses install button
-        page = wizard.currentPage()
+        page = self.wizard.currentPage()
         page.installButton.click()
 
         # The error appears saying that he need to install pip first
@@ -132,16 +136,16 @@ class Test(SetupFuncTest, SetupMixin):
         self.patchReqs(to_install)
 
         # So he proceed to the requirements page
-        wizard = InstallationWizard()
-        next = wizard.button(QWizard.NextButton)
-        wizard.show()
-        next.click()
+        self.wizard = InstallationWizard()
+        self.next = self.wizard.button(QWizard.NextButton)
+        self.wizard.show()
+        self.next.click()
 
         # installation will be unsuccessful
         self.monkeypatch.setattr('os.system', self.mock_system(True))
 
         # He presses install button
-        page = wizard.currentPage()
+        page = self.wizard.currentPage()
         page.installButton.click()
 
         # Some errors appearing during installation.
