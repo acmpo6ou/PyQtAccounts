@@ -61,6 +61,8 @@ class EditDbTest(DbsTest):
         try:
             os.remove('src/another_database.bin')
             os.remove('src/another_database.db')
+        except RecursionError: # to prevent fatal python error
+            raise
         except Exception:
             pass
 

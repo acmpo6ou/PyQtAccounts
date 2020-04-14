@@ -134,6 +134,8 @@ class FuncTest(BaseTest):
     def check_not_in_list(self, name):
         try:
             self.checkDbInList(name)
+        except RecursionError: # to prevent fatal python error
+            raise
         except:
             pass
         else:

@@ -38,6 +38,8 @@ def export(name, path, parent):
         file.add('src/{}.db'.format(name))
         file.add('src/{}.bin'.format(name))
         file.close()
+    except RecursionError: # to prevent fatal python error
+        raise
     except Exception:
         QMessageBox.critical(parent, 'Помилка!', 'Експорт бази данних '
                                                  'завершився невдачею.')
@@ -69,7 +71,8 @@ def _import(path, parent):
         model.appendRow(item)
         model.sort(0)
         parent.dbs.tips['help'].setText("Виберіть базу данних")
-
+    except RecursionError: # to prevent fatal python error
+        raise
     except Exception as err:
         QMessageBox.critical(parent, 'Помилка!', str(err))
     else:

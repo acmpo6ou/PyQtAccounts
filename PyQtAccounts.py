@@ -189,6 +189,8 @@ def main():
                         '<p>Якщо ні, спробуйте ввести в термінал цю кофманду:</p>'
                         f'<p><b>pip3 install {req}</b></p>')
                 return ErrorWindow(mess, err)
+    except RecursionError: # to prevent fatal python error
+        raise
     except Exception as err:
         mess = 'Вибачте програма повинна припинити роботу через помилку.'
         if os.getenv('TESTING'):
