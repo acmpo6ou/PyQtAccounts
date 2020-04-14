@@ -20,42 +20,41 @@ from PyQt5.QtTest import QTest
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
-import pyfakefs.fake_filesystem_unittest as fs_unit
 from unittest.mock import Mock
 import pytest
 import os
-import io
 
-from tests.base import SetupFuncTest
+from tests.base import UnitTest
 from setup import *
 import git
 
-fs_unit.Patcher.SKIPMODULES = [io, os, git]
-HOME_DIR = '/home/accounts'
 
-
-class Test(SetupFuncTest):
+class InitializeTest(UnitTest):
     def check_progress(self, progress):
         self.progress.append(progress)
 
     def check_result(self, res):
-        self.assertFalse(res)
-        self.assertTrue(os.path.exists(f'{HOME_DIR}/PyQtAccounts/src'))
-        self.assertTrue(os.path.exists(f'{HOME_DIR}/PyQtAccounts/core'))
-        self.assertTrue(os.path.exists(f'{HOME_DIR}/PyQtAccounts/run.sh'))
-        self.assertTrue(os.path.exists(f'{HOME_DIR}/PyQtAccounts/change.log'))
-        self.assertTrue(os.path.exists(f'{HOME_DIR}/PyQtAccounts/PyQtAccounts.py'))
-        self.assertTrue(os.path.exists(f'{HOME_DIR}/PyQtAccounts/README.md'))
-        self.assertTrue(os.path.exists(f'{HOME_DIR}/PyQtAccounts/CREDITS'))
-        self.assertTrue(os.path.exists(f'{HOME_DIR}/PyQtAccounts/COPYING'))
+        self.res = res
 
     def test_initialize_no_errors(self):
         self.progress = []
-        self.monkeypatch.setenv('HOME', HOME_DIR)
 
-        with fs_unit.Patcher(additional_skip_names=[io, os, git]) as p:
-            p.fs.create_dir(HOME_DIR)
-            init = Initialize(HOME_DIR)
-            init.progress.connect(self.check_progress)
-            init.result.connect(self.check_result)
-            init.run()
+        def mock_clone(path, folder, progress):
+            self.assertEqual(path, 'https://github.com/Acmpo6ou/PyQtAccounts')
+            self.assertEqual(folder, '/home/accounts/PyQtAccounts')
+
+            progress.update(None, 0, 120)
+            progress.update(None, 30, 120)
+            progress.update(None, 60, 120)
+            progress.update(None, 90, 120)
+            progress.update(None, 120, 120)
+
+        self.monkeypatch.setattr('git.Repo.clone_from', mock_clone)
+
+        init = Initialize('/home/accounts')
+        init.progress.connect(self.check_progress)
+        init.result.connect(self.check_result)
+        init.run()
+
+        self.assertEqual(self.res, 0)
+        self.assertEqual(self.progress, [0, 25, 50, 75, 100])

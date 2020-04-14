@@ -348,10 +348,6 @@ class InitPage(QWizardPage):
             self.progress.setValue(100)
 
         if self.progress.value() != 100:
-
-            if self._thread and not self._thread.isFinished():
-                self._thread.exit()
-
             thread = QThread(parent=self)
             self.init = Initialize(self.folder)
             self.init.moveToThread(thread)
