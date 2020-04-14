@@ -31,9 +31,6 @@ from setup import *
 
 
 class Test(SetupFuncTest, SetupMixin):
-    def setUp(self):
-        super().setUp()
-
     def test_pages(self):
         self.wizard = InstallationWizard()
         self.next = self.wizard.button(QWizard.NextButton)
