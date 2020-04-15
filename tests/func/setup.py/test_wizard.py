@@ -29,10 +29,6 @@ from setup import *
 
 
 class InstallationWizardTest(SetupFuncTest, SetupMixin):
-    def tearDown(self):
-        super().tearDown()
-        self.wizard.hide()
-
     def test_pages(self):
         self.wizard = InstallationWizard()
         self.next = self.wizard.button(QWizard.NextButton)
@@ -53,4 +49,13 @@ class InstallationWizardTest(SetupFuncTest, SetupMixin):
         self.next.click()
 
         # Next is initialization page
-        self.assertIsInstance(self.wizard.currentPage(), InitPage)
+        page = self.wizard.currentPage()
+        self.assertIsInstance(page, InitPage)
+
+        # Bob initializes program and presses next
+        page.progress.setValue(100)
+        page.completeChanged.emit()
+        self.next.click()
+
+        # Next is finish page
+        self.assertIsInstance(self.wizard.currentPage(), FinishPage)

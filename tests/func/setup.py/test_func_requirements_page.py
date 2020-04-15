@@ -35,6 +35,10 @@ INSTALL_ERRORS_TEXT = (
 
 
 class RequirementsPageTest(SetupFuncTest, SetupMixin):
+    def tearDown(self):
+        super().tearDown()
+        self.wizard.hide()
+
     def test_install_no_pip(self):
         # Toon wants to install PyQtAccounts
         # He hasn't installed pip and some of dependencies
