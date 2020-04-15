@@ -358,7 +358,6 @@ class InitPage(QWizardPage):
             self.init.progress.connect(self.init_progress)
             thread.started.connect(self.init.run)
             thread.start()
-
             self._thread = thread
 
     def check_result(self, res):

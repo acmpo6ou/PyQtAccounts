@@ -59,3 +59,17 @@ class InitPageTest(UnitTest):
 
         self.assertEqual(page.folder, '/home/accounts/myprograms')
         self.assertEqual(page.browseLabel.text(), '/home/accounts/myprograms')
+
+    def test_is_complete(self):
+        page = InitPage()
+        page.progress.setValue(0)
+        self.assertFalse(page.isComplete())
+
+        page.progress.setValue(100)
+        self.assertTrue(page.isComplete())
+
+    def test_init_already(self):
+        self.monkeypatch.setattr('os.listdir', lambda path: ['PyQtAccounts'])
+        page = InitPage()
+        page.initButton.click()
+        self.assertEqual(page.progress.value(), 100)
