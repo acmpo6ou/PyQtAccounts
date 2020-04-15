@@ -333,6 +333,7 @@ class InitPage(QWizardPage):
         self.setLayout(layout)
 
     def browse(self):
+        wizard = self.parent()
         folder = QFileDialog.getExistingDirectory(wizard, 'Installation directory',
                                                   self.folder, QFileDialog.ShowDirsOnly)
         if folder:

@@ -44,3 +44,18 @@ class InitPageTest(UnitTest):
 
         self.assertTrue(page.menuCheckbox.isChecked())
         self.assertTrue(page.desktopCheckbox.isChecked())
+
+    def test_browse(self):
+        def mock_browse(parent, title, folder, dirs_only_flag):
+            assert title == 'Installation directory'
+            assert folder == os.getenv('HOME')
+            assert dirs_only_flag == QFileDialog.ShowDirsOnly
+            return '/home/accounts/myprograms'
+
+        self.monkeypatch.setattr(QFileDialog, 'getExistingDirectory', mock_browse)
+
+        page = InitPage()
+        page.browseButton.click()
+
+        self.assertEqual(page.folder, '/home/accounts/myprograms')
+        self.assertEqual(page.browseLabel.text(), '/home/accounts/myprograms')
