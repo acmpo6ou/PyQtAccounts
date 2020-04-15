@@ -28,6 +28,10 @@ import os
 from tests.base import UnitTest
 from setup import *
 
+INIT_ERROR = ("Помилка ініціалізації!\n"
+              "Відсутнє мережеве з'єднання, або відмовлено у доступі"
+              " на запис у папку інсталяції.")
+
 
 class InitPageTest(UnitTest):
     def test_page(self):
@@ -73,3 +77,15 @@ class InitPageTest(UnitTest):
         page = InitPage()
         page.initButton.click()
         self.assertEqual(page.progress.value(), 100)
+
+
+class FailTest(UnitTest):
+    def test_init_fail_when_no_permissions(self):
+        page = InitPage()
+        page.folder = '/'  # we have no permissions to write in root folder
+        page.initButton.click()
+
+        QTest.qWait(100)
+        self.assertTrue(page.errors.visibility)
+        print(repr(page.errors.toPlainText()))
+        self.assertEqual(page.errors.toPlainText(), INIT_ERROR)

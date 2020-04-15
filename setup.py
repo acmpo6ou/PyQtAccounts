@@ -276,7 +276,7 @@ class Initialize(QObject):
         try:
             git.Repo.clone_from('https://github.com/Acmpo6ou/PyQtAccounts', self.folder,
                                 progress=Progress(self.progress))
-        except RecursionError: # to prevent fatal python error
+        except RecursionError:  # to prevent fatal python error
             raise
         except:
             self.result.emit(1)
