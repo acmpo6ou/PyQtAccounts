@@ -19,6 +19,7 @@
 from PyQt5.QtTest import QTest
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
+import PyQt5.QtCore
 
 import pyfakefs.fake_filesystem_unittest as fs_unit
 from unittest.mock import Mock
@@ -82,6 +83,10 @@ class InitPageTest(UnitTest):
 class FailTest(UnitTest):
     def test_init_fail_when_no_permissions(self):
         page = InitPage()
+        thread = Mock()
+        Initialize.moveToThread = lambda *args: None
+        self.monkeypatch.setattr('PyQt5.QtCore.QThread', lambda *args: thread)
+
         page.folder = '/'  # we have no permissions to write in root folder
         page.initButton.click()
 

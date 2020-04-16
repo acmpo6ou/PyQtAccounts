@@ -57,7 +57,7 @@ class InstallationWizardTest(SetupFuncTest, SetupMixin):
         page.completeChanged.emit()
 
         # we don't want to create shortcuts while testing
-        FinishPage.initializePage = lambda: None
+        FinishPage.initializePage = lambda *args: None
         self.next.click()
 
         # Next is finish page

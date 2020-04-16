@@ -106,6 +106,7 @@ class RequirementsPageTest(SetupFuncTest, SetupMixin):
 
         # tips are hidden
         self.assertFalse(page.reqsTips.visibility)
+
     def test_errors_during_installation(self):
         # Tom wants to install PyQtAccounts
         # He hasn't installed some pip dependencies

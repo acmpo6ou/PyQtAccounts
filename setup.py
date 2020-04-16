@@ -352,12 +352,17 @@ class InitPage(QWizardPage):
 
         if self.progress.value() != 100:
             thread = QThread(parent=self)
-            self.init = Initialize(self.folder)
-            self.init.moveToThread(thread)
-            self.init.result.connect(self.check_result)
-            self.init.progress.connect(self.init_progress)
-            thread.started.connect(self.init.run)
-            thread.start()
+            self.initialize = Initialize(self.folder)
+            self.initialize.moveToThread(thread)
+            self.initialize.result.connect(self.check_result)
+            self.initialize.progress.connect(self.init_progress)
+            thread.started.connect(self.initialize.run)
+
+            # to prevent fatal python error
+            if os.getenv('TESTING'):
+                self.initialize.run()
+            else:
+                thread.start()
             self._thread = thread
 
     def check_result(self, res):
