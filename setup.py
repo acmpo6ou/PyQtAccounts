@@ -358,7 +358,7 @@ class InitPage(QWizardPage):
             self.initialize.progress.connect(self.init_progress)
             thread.started.connect(self.initialize.run)
 
-            # to prevent fatal python error
+            # to prevent fatal python error while testing
             if os.getenv('TESTING'):
                 self.initialize.run()
             else:
