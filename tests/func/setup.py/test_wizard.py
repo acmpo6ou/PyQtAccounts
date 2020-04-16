@@ -55,6 +55,9 @@ class InstallationWizardTest(SetupFuncTest, SetupMixin):
         # Bob initializes program and presses next
         page.progress.setValue(100)
         page.completeChanged.emit()
+
+        # we don't want to create shortcuts while testing
+        FinishPage.initializePage = lambda: None
         self.next.click()
 
         # Next is finish page
