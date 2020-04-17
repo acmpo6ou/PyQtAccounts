@@ -117,6 +117,7 @@ class UpdatesAvailable(QWidget):
     def applyUpdate(self):
         self.hide()
         repo = git.Repo('.')
+        repo.git.stash('save')
         origin = repo.remote()
         origin.pull()
         t = threading.Thread(target=os.system, args=('run.sh',), daemon=True)
