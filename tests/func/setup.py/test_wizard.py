@@ -62,3 +62,6 @@ class InstallationWizardTest(SetupFuncTest, SetupMixin):
 
         # Next is finish page
         self.assertIsInstance(self.wizard.currentPage(), FinishPage)
+
+        # He press finish button
+        self.wizard.button(QWizard.FinishButton).click()
