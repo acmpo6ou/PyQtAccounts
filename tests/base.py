@@ -37,10 +37,6 @@ class BaseTest(unittest.TestCase):
     def monkeypatching(self, monkeypatch):
         self.monkeypatch = monkeypatch
 
-    @pytest.fixture(autouse=True)
-    def bot(self, qtbot):
-        self.qtbot = qtbot
-
     def menu(self, submenu_index, action_index):
         submenu = self.window.menuBar().actions()[submenu_index]
         return submenu.menu().actions()[action_index]
