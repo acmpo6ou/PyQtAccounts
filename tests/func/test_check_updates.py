@@ -57,7 +57,7 @@ class Test(DbsTest):
 
         # We don't actually want to update anything during the tests
         self.assertIsNotNone(self.window.res, 'No update available window was created!')
-        self.window.res.updateButton.click()
+        self.window.res.laterButton.click()
 
         # There is changelog in that dialog
         right_text = '<h4>Що нового:</h4><ul><li>Fixed issues.</li>\n' \
