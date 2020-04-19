@@ -22,11 +22,10 @@ from PyQt5.QtCore import *
 import unittest
 import pytest
 import os
+import setup
 
 from tests.base import UnitTest
 from setup import *
-
-real_replace = str.replace
 
 
 class ReqsTest(UnitTest):
@@ -34,6 +33,20 @@ class ReqsTest(UnitTest):
         reqs = Reqs()
         all_req = set(reqs_pip + reqs_list)
         self.assertFalse(all_req - set(reqs.installed))
+
+    def test_pip_reqs_not_installed(self):
+        to_install = ['setuptools', 'cryptography']
+
+        def mock_testing(req):
+            if req in to_install:
+                raise ImportError
+
+        self.monkeypatch.setattr('setup.testing', mock_testing)
+
+        reqs = Reqs()
+        self.assertEqual(reqs.to_install, to_install)
+        self.assertNotIn('setuptools', reqs.installed)
+        self.assertNotIn('cryptography', reqs.installed)
 
     def test_sys_req_not_installed(self):
         def mock_system(sys_req):
@@ -44,6 +57,7 @@ class ReqsTest(UnitTest):
                     return True
                 else:
                     return False
+
             return wrap
 
         for req in reqs_list:

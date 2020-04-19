@@ -33,6 +33,9 @@ except ImportError:
 reqs_list = ('git', 'pip3', 'xclip')
 reqs_pip = ('setuptools', 'cryptography', 'gitpython', 'pyshortcuts')
 
+# this function is only for testing
+testing = lambda *args: None
+
 
 class Reqs:
     def __init__(self):
@@ -48,6 +51,8 @@ class Reqs:
 
         for req in reqs_pip:
             try:
+                # this function call is only for testing because we can't mock __import__
+                testing(req.replace('gitpython', 'git'))
                 __import__(req.replace('gitpython', 'git'))
             except ImportError:
                 self.to_install.append(req)
@@ -209,7 +214,7 @@ class RequirementsPage(QWizardPage):
         self.errors.setText('')
         self.errors.hide()
 
-        if 'pip3' not in self.reqs.installed:
+        if 'pip3' in self.reqs.cant_install:
             self.errors.show()
             self.errors.setText('Встановіть пакет pip3!')
             return
