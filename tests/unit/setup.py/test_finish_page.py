@@ -32,14 +32,11 @@ fs_unit.Patcher.SKIPNAMES = [pytest]
 from tests.base import UnitTest
 from setup import *
 
-RUN_SH_TEXT = ('export PYTHONPATH="$PYTHONPATH:./"\n'
-               'cd .\n'
-               'python3 ./PyQtAccounts.py')
-
 EXPECTED_RUN_SH_TEXT = (
-    'export PYTHONPATH="$PYTHONPATH:/home/accounts/PyQtAccounts/"\n'
+    '#!/bin/bash\n\n'
     'cd /home/accounts/PyQtAccounts/\n'
-    'python3 ./PyQtAccounts.py'
+    'export PYTHONPATH="$PYTHONPATH:/home/accounts/PyQtAccounts/"\n'
+    'python3 PyQtAccounts.py'
 )
 
 EXPECTED_SHORTCUT_TEXT = (
@@ -72,7 +69,6 @@ class FinishPageTest(UnitTest):
             p.fs.create_dir('/home/accounts/.local/share/applications/')
 
             initPage.folder = '/home/accounts'
-            p.fs.create_file('/home/accounts/PyQtAccounts/run.sh', contents=RUN_SH_TEXT)
 
             # Checkboxes of init page for menu and desktop shortcuts are checked by default
 
@@ -98,7 +94,6 @@ class FinishPageTest(UnitTest):
             p.fs.create_dir('/home/accounts/.local/share/applications/')
 
             initPage.folder = '/home/accounts'
-            p.fs.create_file('/home/accounts/PyQtAccounts/run.sh', contents=RUN_SH_TEXT)
 
             # Checkboxes of init page for menu and desktop shortcuts are checked by default
             initPage.desktopCheckbox.setChecked(False)
@@ -126,7 +121,6 @@ class FinishPageTest(UnitTest):
             p.fs.create_dir('/home/accounts/.local/share/applications/')
 
             initPage.folder = '/home/accounts'
-            p.fs.create_file('/home/accounts/PyQtAccounts/run.sh', contents=RUN_SH_TEXT)
 
             # Checkboxes of init page for menu and desktop shortcuts are checked by default
             initPage.menuCheckbox.setChecked(False)

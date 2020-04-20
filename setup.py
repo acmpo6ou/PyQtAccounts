@@ -429,8 +429,8 @@ class FinishPage(QWizardPage):
                     file.write(menu.replace('.ico', ''))
 
         run = ('#!/bin/bash\n\n'
-               f'cd {cwd}'
-               f'export PYTHONPATH="$PYTHONPATH:{cwd}"'
+               f'cd {cwd}\n'
+               f'export PYTHONPATH="$PYTHONPATH:{cwd}"\n'
                'python3 PyQtAccounts.py')
         with open(cwd + 'run.sh', 'w') as runfile:
             runfile.write(run)
