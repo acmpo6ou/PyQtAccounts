@@ -131,7 +131,7 @@ class InstallationWizard(QWizard):
         super(InstallationWizard, self).__init__(parent)
 
         self.addPage(WelcomePage(self))
-        self.addPage(RequirementsPage(self))
+        self.addPage(RequirementsPage(parent=self))
 
         self.initPage = InitPage(self)
         self.addPage(self.initPage)
@@ -161,6 +161,7 @@ class WelcomePage(QWizardPage):
 
 class PipInstall(QObject):
     result = pyqtSignal(int, str)
+    finish = pyqtSignal()
 
     def __init__(self, reqs):
         QObject.__init__(self)
@@ -170,6 +171,7 @@ class PipInstall(QObject):
         for req in self.reqs.to_install:
             res = os.system('pip3 install ' + req)
             self.result.emit(res, req)
+        self.finish.emit()
 
 
 class RequirementsPage(QWizardPage):
@@ -224,10 +226,14 @@ class RequirementsPage(QWizardPage):
         self.install = PipInstall(self.reqs)
         self.install.moveToThread(thread)
         self.install.result.connect(self.install_progress)
+        self.install.finish.connect(self.install_finish)
         thread.started.connect(self.install.run)
         thread.start()
         self.installLabel.show()
         self.installProgress.show()
+
+        if self._thread and not self._thread.isFinished():
+            self._thread.exit()
         self._thread = thread
 
     def install_progress(self, res, req):
@@ -252,6 +258,9 @@ class RequirementsPage(QWizardPage):
 
         self.completeChanged.emit()
 
+    def install_finish(self):
+        self._thread.exit()
+
     def isComplete(self):
         reqs = Reqs()
         return not (reqs.cant_install or reqs.to_install)
@@ -260,6 +269,7 @@ class RequirementsPage(QWizardPage):
 class Initialize(QObject):
     result = pyqtSignal(int)
     progress = pyqtSignal(int)
+    finish = pyqtSignal()
 
     def __init__(self, folder):
         QObject.__init__(self)
@@ -286,6 +296,7 @@ class Initialize(QObject):
             self.result.emit(1)
         else:
             self.result.emit(0)
+        self.finish.emit()
 
 
 class InitPage(QWizardPage):
@@ -360,13 +371,12 @@ class InitPage(QWizardPage):
             self.initialize.moveToThread(thread)
             self.initialize.result.connect(self.check_result)
             self.initialize.progress.connect(self.init_progress)
+            self.initialize.finish.connect(self.init_finish)
             thread.started.connect(self.initialize.run)
+            thread.start()
 
-            # to prevent fatal python error while testing
-            if os.getenv('TESTING'):
-                self.initialize.run()
-            else:
-                thread.start()
+            if self._thread and not self._thread.isFinished():
+                self._thread.exit()
             self._thread = thread
 
     def check_result(self, res):
@@ -384,6 +394,9 @@ class InitPage(QWizardPage):
 
         if progress >= 100:
             self.completeChanged.emit()
+
+    def init_finish(self):
+        self._thread.exit()
 
 
 class FinishPage(QWizardPage):
