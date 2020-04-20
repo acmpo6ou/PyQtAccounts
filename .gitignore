@@ -132,3 +132,4 @@ dmypy.json
 
 .idea/
 !change.log
+run.sh

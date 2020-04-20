@@ -173,14 +173,13 @@ class PipInstall(QObject):
 
 
 class RequirementsPage(QWizardPage):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, reqs=Reqs()):
         super(RequirementsPage, self).__init__(parent)
         self._thread = None
         self.title = Title('Залежності')
         self.text = QLabel('<pre>PyQtAccounts вимагає наявності\n'
                            'певних пакетів. Ось перелік тих які\n'
                            'встановлені, або не встановленні у вас:</pre>')
-        reqs = Reqs()
         self.reqs = reqs
         self.reqsList = ReqsList(reqs)
         self.reqsTips = ReqsTips(reqs)
@@ -429,10 +428,10 @@ class FinishPage(QWizardPage):
                 with open(home + '/.local/share/applications/PyQtAccounts.desktop', 'w') as file:
                     file.write(menu.replace('.ico', ''))
 
-        run = open(cwd + 'run.sh').read()
-        run = run.replace('cd .', f'cd {cwd}')
-        run = run.replace('export PYTHONPATH="$PYTHONPATH:./"',
-                          f'export PYTHONPATH="$PYTHONPATH:{cwd}"')
+        run = ('#!/bin/bash\n\n'
+               f'cd {cwd}'
+               f'export PYTHONPATH="$PYTHONPATH:{cwd}"'
+               'python3 PyQtAccounts.py')
         with open(cwd + 'run.sh', 'w') as runfile:
             runfile.write(run)
 
