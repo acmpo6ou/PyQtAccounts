@@ -54,11 +54,10 @@ class RequirementsPageTest(UnitTest):
         self.assertFalse(self.page.installButton.isEnabled())
 
         # When some are not installed install button is enabled
-        reqs = Mock()
-        reqs.to_install = ('gitpython', 'pyshortcuts')
-        reqs.installed = ('some', 'packages')
-        reqs.cant_install = ('some', 'packages')
-        self.monkeypatch.setattr('setup.Reqs', lambda: reqs)
+        reqs = Reqs()
+        reqs.to_install = ['gitpython', 'pyshortcuts']
+        reqs.installed.remove('gitpython')
+        reqs.installed.remove('pyshortcuts')
 
-        page = RequirementsPage()
+        page = RequirementsPage(reqs=reqs)
         self.assertTrue(page.installButton.isEnabled())
