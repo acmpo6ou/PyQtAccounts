@@ -475,7 +475,10 @@ class Settings(QDialog):
     def __init__(self, parent):
         QDialog.__init__(self, parent)
         self.setWindowTitle('Settings - PyQtAccounts')
-        self.settings = QSettings('PyTools', 'PyQtAccounts')
+
+        # to avoid test side effects
+        mode = 'PyToolsTest' if os.getenv('TESTING') else 'PyTools'
+        self.settings = QSettings(mode, 'PyQtAccounts')
 
         header = QLabel('<h4>Швидке введення</h4>')
         label = QLabel('Головна база данних:')
