@@ -87,10 +87,7 @@ class Window(QMainWindow):
         splitter.addWidget(dbs)
         self.dbs = dbs
 
-        # to avoid test side effects
-        mode = 'PyToolsTest' if os.getenv('TESTING') else 'PyTools'
-        sets = QSettings(mode, 'PyQtAccounts')
-
+        sets = QSettings('PyTools', 'PyQtAccounts')
         is_main_db = sets.value('advanced/is_main_db', False, type=bool)
         main_db = sets.value('advanced/main_db', '', type=str)
         if is_main_db and main_db in getDbList():

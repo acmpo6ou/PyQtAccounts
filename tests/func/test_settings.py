@@ -19,6 +19,7 @@
 from PyQt5.QtCore import *
 from PyQt5.QtTest import QTest
 import unittest
+import shutil
 import sys
 
 from tests.base import DbsTest
@@ -29,13 +30,15 @@ from PyQtAccounts import *
 class SettingsTest(DbsTest):
     def setUp(self):
         os.environ['TESTING'] = 'True'
-        self.settings = QSettings('PyToolsTest', 'PyQtAccounts')
-        self.old_is_main_db = self.settings.value('advanced/is_main_db', False, type=bool)
-        self.old_main_db = self.settings.value('advanced/main_db', '', type=str)
+        os.environ['HOME'] = '/home/accounts'
+        if not os.path.exists('/dev/shm/accounts'):
+            os.mkdir('/dev/shm/accounts')
+        os.mkdir('/home/accounts/.config')
+        self.settings = QSettings('PyTools', 'PyQtAccounts')
 
     def tearDown(self):
-        self.settings.setValue('advanced/is_main_db', self.old_is_main_db)
-        self.settings.setValue('advanced/main_db', self.old_main_db)
+        if os.path.exists('/dev/shm/accounts'):
+            shutil.rmtree('/dev/shm/accounts')
 
     def test_settings_show_menu(self):
         window = Window()

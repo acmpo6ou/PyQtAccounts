@@ -32,9 +32,7 @@ from urllib.request import urlopen
 
 
 def time_for_updates():
-    # to avoid test side effects
-    mode = 'PyToolsTest' if os.getenv('TESTING') else 'PyTools'
-    settings = QSettings(mode, 'PyQtAccounts')
+    settings = QSettings('PyTools', 'PyQtAccounts')
     frequency = settings.value('updates/frequency', 'always')
 
     if frequency == 'always':

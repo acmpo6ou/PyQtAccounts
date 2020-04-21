@@ -32,7 +32,7 @@ from PyQtAccounts import *
 class ImportExportTest(DbsTest):
     def setUp(self):
         os.environ['TESTING'] = 'True'
-        self.settings = QSettings('PyToolsTest', 'PyQtAccounts')
+        self.settings = QSettings('PyTools', 'PyQtAccounts')
         self.old_is_main_db = self.settings.value('advanced/is_main_db', False, type=bool)
         self.old_main_db = self.settings.value('advanced/main_db', '', type=str)
 
