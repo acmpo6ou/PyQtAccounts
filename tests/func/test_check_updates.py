@@ -29,7 +29,7 @@ import core.updates
 from PyQtAccounts import *
 
 
-class Test(DbsTest):
+class CheckForUpdatesTest(DbsTest):
     def setUp(self):
         super().setUp()
         # third is `Updates` submenu, first is `Check for updates` action
@@ -76,7 +76,7 @@ class Test(DbsTest):
         window = Window()
 
         # A few seconds passes and dialog appears saying that there are updates available
-        QTest.qWait(100)
+        QTest.qWait(200)
         self.assertIsNotNone(window.res, 'No update available window was created!')
         # We don't actually want to update anything during the tests
         window.res.laterButton.click()

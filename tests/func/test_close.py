@@ -27,7 +27,7 @@ from core.utils import *
 from PyQtAccounts import *
 
 
-class CloseTestWhenDatabaseOpened(AccsTest):
+class CloseWhenDatabaseOpenedTest(AccsTest):
     def test_close_when_database_opened_Yes(self):
         self.monkeypatch.setattr(QMessageBox, 'question', self.mess(
             'Увага!',
