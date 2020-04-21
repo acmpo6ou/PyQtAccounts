@@ -15,6 +15,7 @@
 
 # You should have received a copy of the GNU General Public License
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
+import shutil
 
 from PyQt5.QtTest import QTest
 from PyQt5.QtCore import *
@@ -24,17 +25,14 @@ import pytest
 import sys
 import os
 
-from tests.base import DbsTest
+from tests.base import DbsTest, SettingsMixin
 from core.utils import *
 from PyQtAccounts import *
 
 
-class ImportExportTest(DbsTest):
+class ImportExportTest(DbsTest, SettingsMixin):
     def setUp(self):
-        os.environ['TESTING'] = 'True'
-        self.settings = QSettings('PyTools', 'PyQtAccounts')
-        self.old_is_main_db = self.settings.value('advanced/is_main_db', False, type=bool)
-        self.old_main_db = self.settings.value('advanced/main_db', '', type=str)
+        SettingsMixin.setUp(self)
 
         # Any database should be selected
         self.settings.setValue('advanced/is_main_db', False)
@@ -45,11 +43,6 @@ class ImportExportTest(DbsTest):
 
         # first is `File` submenu, second action is `Import database...`
         self.import_db = self.menu(0, 1)
-
-    def tearDown(self):
-        super().tearDown()
-        self.settings.setValue('advanced/is_main_db', self.old_is_main_db)
-        self.settings.setValue('advanced/main_db', self.old_main_db)
 
     def test_import_success(self):
         # Emily wants to import database so she goes to menu File -> Import database...

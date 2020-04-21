@@ -209,11 +209,8 @@ class SettingsMixin:
     def setUp(self):
         os.environ['TESTING'] = 'True'
         os.environ['HOME'] = '/home/accounts'
-        if not os.path.exists('/dev/shm/accounts'):
-            os.mkdir('/dev/shm/accounts')
-        os.mkdir('/home/accounts/.config')
-        self.settings = QSettings('PyTools', 'PyQtAccounts')
-
-    def tearDown(self):
         if os.path.exists('/dev/shm/accounts'):
             shutil.rmtree('/dev/shm/accounts')
+        os.mkdir('/dev/shm/accounts')
+        os.mkdir('/home/accounts/.config')
+        self.settings = QSettings(f'{os.getenv("HOME")}/PyTools', 'PyQtAccounts')

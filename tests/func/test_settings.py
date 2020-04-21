@@ -28,6 +28,8 @@ from PyQtAccounts import *
 
 
 class SettingsTest(SettingsMixin, DbsTest):
+    def tearDown(self):
+        pass
     def test_settings_show_menu(self):
         window = Window()
         edit = window.menuBar().actions()[1]  # second is `Edit` submenu
