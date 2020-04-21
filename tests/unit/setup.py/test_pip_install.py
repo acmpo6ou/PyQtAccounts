@@ -20,7 +20,6 @@ from PyQt5.QtTest import QTest
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
-from pyfakefs import fake_filesystem_unittest
 from unittest.mock import Mock
 import pytest
 import os

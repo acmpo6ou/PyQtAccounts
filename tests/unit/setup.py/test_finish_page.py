@@ -20,14 +20,12 @@ from PyQt5.QtTest import QTest
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
-import pyfakefs.fake_filesystem_unittest as fs_unit
 from unittest.mock import Mock
 import pytest
 import os.path
 import os
 import sys
-
-fs_unit.Patcher.SKIPNAMES = [pytest]
+import shutil
 
 from tests.base import UnitTest
 from setup import *
@@ -51,85 +49,62 @@ EXPECTED_SHORTCUT_TEXT = (
 
 
 class FinishPageTest(UnitTest):
+    def setUp(self):
+        self.page = FinishPage()
+        self.page._parent = Mock()
+        self.page._parent.initPage = InitPage()
+
+        self.initPage = self.page._parent.initPage
+        self.initPage.folder = '/home/accounts'
+
+        self.monkeypatch.setenv('HOME', '/home/accounts')
+        if not os.path.exists('/dev/shm/accounts'):
+            os.mkdir('/dev/shm/accounts')
+        os.mkdir('/home/accounts/PyQtAccounts')
+        os.mkdir('/home/accounts/Desktop')
+        os.makedirs('/home/accounts/.local/share/applications/', exist_ok=True)
+
+    def tearDown(self):
+        if os.path.exists('/dev/shm/accounts'):
+            shutil.rmtree('/dev/shm/accounts')
+
     def test_content(self):
         page = FinishPage()
         self.assertEqual(page.title.text(), '<h4>Finish</h4>')
         self.assertEqual(page.text.text(), 'Успішно установлено PyQtAccounts!')
 
     def test_init_page_menu_and_desktop(self):
-        page = FinishPage()
-        page._parent = Mock()
-        page._parent.initPage = InitPage()
-        initPage = page._parent.initPage
+        # Checkboxes of init page for menu and desktop shortcuts are checked by default
+        self.page.initializePage()
 
-        self.monkeypatch.setenv('HOME', '/home/accounts')
-        with fs_unit.Patcher() as p:
-            p.fs.create_dir('/home/accounts/PyQtAccounts')
-            p.fs.create_dir('/home/accounts/Desktop')
-            p.fs.create_dir('/home/accounts/.local/share/applications/')
-
-            initPage.folder = '/home/accounts'
-
-            # Checkboxes of init page for menu and desktop shortcuts are checked by default
-
-            page.initializePage()
-
-            self.assertEqual(EXPECTED_RUN_SH_TEXT,
-                             open('/home/accounts/PyQtAccounts/run.sh').read())
-            self.assertEqual(EXPECTED_SHORTCUT_TEXT,
-                             open('/home/accounts/Desktop/PyQtAccounts.desktop').read())
-            self.assertEqual(EXPECTED_SHORTCUT_TEXT, open(
-                '/home/accounts/.local/share/applications/PyQtAccounts.desktop').read())
+        self.assertEqual(EXPECTED_RUN_SH_TEXT,
+                         open('/home/accounts/PyQtAccounts/run.sh').read())
+        self.assertEqual(EXPECTED_SHORTCUT_TEXT,
+                         open('/home/accounts/Desktop/PyQtAccounts.desktop').read())
+        self.assertEqual(EXPECTED_SHORTCUT_TEXT, open(
+            '/home/accounts/.local/share/applications/PyQtAccounts.desktop').read())
 
     def test_init_page_menu_no_desktop(self):
-        page = FinishPage()
-        page._parent = Mock()
-        page._parent.initPage = InitPage()
-        initPage = page._parent.initPage
+        # Checkboxes of init page for menu and desktop shortcuts are checked by default
+        self.initPage.desktopCheckbox.setChecked(False)
+        self.page.initializePage()
 
-        self.monkeypatch.setenv('HOME', '/home/accounts')
-        with fs_unit.Patcher() as p:
-            p.fs.create_dir('/home/accounts/PyQtAccounts')
-            p.fs.create_dir('/home/accounts/Desktop')
-            p.fs.create_dir('/home/accounts/.local/share/applications/')
+        self.assertEqual(EXPECTED_RUN_SH_TEXT,
+                         open('/home/accounts/PyQtAccounts/run.sh').read())
 
-            initPage.folder = '/home/accounts'
+        self.assertFalse(os.path.exists('/home/accounts/Desktop/PyQtAccounts.desktop'))
 
-            # Checkboxes of init page for menu and desktop shortcuts are checked by default
-            initPage.desktopCheckbox.setChecked(False)
-
-            page.initializePage()
-
-            self.assertEqual(EXPECTED_RUN_SH_TEXT,
-                             open('/home/accounts/PyQtAccounts/run.sh').read())
-
-            self.assertFalse(os.path.exists('/home/accounts/Desktop/PyQtAccounts.desktop'))
-
-            self.assertEqual(EXPECTED_SHORTCUT_TEXT, open(
-                '/home/accounts/.local/share/applications/PyQtAccounts.desktop').read())
+        self.assertEqual(EXPECTED_SHORTCUT_TEXT, open(
+            '/home/accounts/.local/share/applications/PyQtAccounts.desktop').read())
 
     def test_init_page_desktop_no_menu(self):
-        page = FinishPage()
-        page._parent = Mock()
-        page._parent.initPage = InitPage()
-        initPage = page._parent.initPage
+        # Checkboxes of init page for menu and desktop shortcuts are checked by default
+        self.initPage.menuCheckbox.setChecked(False)
+        self.page.initializePage()
 
-        self.monkeypatch.setenv('HOME', '/home/accounts')
-        with fs_unit.Patcher() as p:
-            p.fs.create_dir('/home/accounts/PyQtAccounts')
-            p.fs.create_dir('/home/accounts/Desktop')
-            p.fs.create_dir('/home/accounts/.local/share/applications/')
-
-            initPage.folder = '/home/accounts'
-
-            # Checkboxes of init page for menu and desktop shortcuts are checked by default
-            initPage.menuCheckbox.setChecked(False)
-
-            page.initializePage()
-
-            self.assertEqual(EXPECTED_RUN_SH_TEXT,
-                             open('/home/accounts/PyQtAccounts/run.sh').read())
-            self.assertEqual(EXPECTED_SHORTCUT_TEXT,
-                             open('/home/accounts/Desktop/PyQtAccounts.desktop').read())
-            self.assertFalse(os.path.exists(
-                '/home/accounts/.local/share/applications/PyQtAccounts.desktop'))
+        self.assertEqual(EXPECTED_RUN_SH_TEXT,
+                         open('/home/accounts/PyQtAccounts/run.sh').read())
+        self.assertEqual(EXPECTED_SHORTCUT_TEXT,
+                         open('/home/accounts/Desktop/PyQtAccounts.desktop').read())
+        self.assertFalse(os.path.exists(
+            '/home/accounts/.local/share/applications/PyQtAccounts.desktop'))

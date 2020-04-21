@@ -21,7 +21,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 import PyQt5.QtCore
 
-import pyfakefs.fake_filesystem_unittest as fs_unit
+
 from unittest.mock import Mock
 import pytest
 import os
