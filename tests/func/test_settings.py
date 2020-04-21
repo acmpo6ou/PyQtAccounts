@@ -22,24 +22,12 @@ import unittest
 import shutil
 import sys
 
-from tests.base import DbsTest
+from tests.base import DbsTest, SettingsMixin
 from core.utils import *
 from PyQtAccounts import *
 
 
-class SettingsTest(DbsTest):
-    def setUp(self):
-        os.environ['TESTING'] = 'True'
-        os.environ['HOME'] = '/home/accounts'
-        if not os.path.exists('/dev/shm/accounts'):
-            os.mkdir('/dev/shm/accounts')
-        os.mkdir('/home/accounts/.config')
-        self.settings = QSettings('PyTools', 'PyQtAccounts')
-
-    def tearDown(self):
-        if os.path.exists('/dev/shm/accounts'):
-            shutil.rmtree('/dev/shm/accounts')
-
+class SettingsTest(SettingsMixin, DbsTest):
     def test_settings_show_menu(self):
         window = Window()
         edit = window.menuBar().actions()[1]  # second is `Edit` submenu

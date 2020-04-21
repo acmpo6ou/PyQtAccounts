@@ -15,6 +15,7 @@
 
 # You should have received a copy of the GNU General Public License
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
+import shutil
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtTest import QTest
@@ -44,26 +45,29 @@ class BaseTest(unittest.TestCase):
 
     def file_dialog(self, result):
         def file_dialog(caption, filter, directory):
-                assert caption == 'Імпортувати базу данних'
-                assert filter == 'Tarball (*.tar)'
-                assert directory == os.getenv('HOME')
-                return result
+            assert caption == 'Імпортувати базу данних'
+            assert filter == 'Tarball (*.tar)'
+            assert directory == os.getenv('HOME')
+            return result
+
         return file_dialog
 
     def save_file_dialog(self, name, result):
         def save_file_dialog(caption, filter, directory):
-                home = os.getenv('HOME')
-                assert caption == 'Експортувати базу данних'
-                assert filter == 'Tarball (*.tar)'
-                assert directory == f'{home}/{name}.tar'
-                return result
+            home = os.getenv('HOME')
+            assert caption == 'Експортувати базу данних'
+            assert filter == 'Tarball (*.tar)'
+            assert directory == f'{home}/{name}.tar'
+            return result
+
         return save_file_dialog
 
     def mess(self, head, text, button=QMessageBox.Ok):
         def mess(parent, this_head, this_text, *args, **kwargs):
-                assert this_head == head
-                assert this_text == text
-                return button
+            assert this_head == head
+            assert this_text == text
+            return button
+
         return mess
 
     @staticmethod
@@ -93,6 +97,7 @@ class UnitTest(BaseTest):
             tags = []
             for i, name in enumerate(['v1.0.0', 'v1.0.2', 'v2.0.6']):
                 tags.append(Tag(name, i))
+
         self.monkeypatch.setattr(git, 'Repo', Repo)
 
 
@@ -131,12 +136,13 @@ class FuncTest(BaseTest):
     def check_not_in_list(self, name):
         try:
             self.checkDbInList(name)
-        except RecursionError: # to prevent fatal python error
+        except RecursionError:  # to prevent fatal python error
             raise
         except:
             pass
         else:
             raise AssertionError("In the list, but it shouldn't be!")
+
 
 class DbsTest(FuncTest):
     def setUp(self):
@@ -150,6 +156,7 @@ class DbsTest(FuncTest):
 
     def checkDbNotInList(self, name):
         self.check_not_in_list(name)
+
 
 class AccsTest(FuncTest):
     def setUp(self, name='database', password='some_password'):
@@ -172,6 +179,7 @@ class AccsTest(FuncTest):
     def checkAccNotInList(self, name):
         self.check_not_in_list(name)
 
+
 class SetupMixin:
     def patchReqs(self, to_install=[], cant_install=[]):
         reqs = Mock()
@@ -193,4 +201,19 @@ class SetupMixin:
             # self.to_install.remove(req)
             # self.patchReqs(self.to_install)
             return res
+
         return wrap
+
+
+class SettingsMixin:
+    def setUp(self):
+        os.environ['TESTING'] = 'True'
+        os.environ['HOME'] = '/home/accounts'
+        if not os.path.exists('/dev/shm/accounts'):
+            os.mkdir('/dev/shm/accounts')
+        os.mkdir('/home/accounts/.config')
+        self.settings = QSettings('PyTools', 'PyQtAccounts')
+
+    def tearDown(self):
+        if os.path.exists('/dev/shm/accounts'):
+            shutil.rmtree('/dev/shm/accounts')

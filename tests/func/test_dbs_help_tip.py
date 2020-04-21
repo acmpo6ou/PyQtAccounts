@@ -23,23 +23,13 @@ import pytest
 import os
 import glob
 
-from tests.base import DbsTest
+from tests.base import DbsTest, SettingsMixin
 import core.utils
 from core.const import *
 from PyQtAccounts import *
 
 
-class HelpTipTest(DbsTest):
-    def setUp(self):
-        os.environ['TESTING'] = 'True'
-        self.settings = QSettings('PyTools', 'PyQtAccounts')
-        self.old_is_main_db = self.settings.value('advanced/is_main_db', False, type=bool)
-        self.old_main_db = self.settings.value('advanced/main_db', '', type=str)
-
-    def tearDown(self):
-        self.settings.setValue('advanced/is_main_db', self.old_is_main_db)
-        self.settings.setValue('advanced/main_db', self.old_main_db)
-
+class HelpTipTest(SettingsMixin, DbsTest):
     def test_no_dbs(self):
         # Ross opens up PyQtAccounts, he has no database yet
         self.monkeypatch.setattr(glob, 'glob', lambda path: [])
