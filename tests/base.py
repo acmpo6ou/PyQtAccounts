@@ -39,6 +39,10 @@ class BaseTest(unittest.TestCase):
     def monkeypatching(self, monkeypatch):
         self.monkeypatch = monkeypatch
 
+    @pytest.fixture(autouse=True)
+    def bot(self, qtbot):
+        self.qbot = qtbot
+
     def menu(self, submenu_index, action_index):
         submenu = self.window.menuBar().actions()[submenu_index]
         return submenu.menu().actions()[action_index]
@@ -205,12 +209,16 @@ class SetupMixin:
         return wrap
 
 
+def init_accounts_folder():
+    os.environ['HOME'] = '/home/accounts'
+    if os.path.exists('/dev/shm/accounts'):
+        shutil.rmtree('/dev/shm/accounts')
+    os.mkdir('/dev/shm/accounts')
+
+
 class SettingsMixin:
     def setUp(self):
         os.environ['TESTING'] = 'True'
-        os.environ['HOME'] = '/home/accounts'
-        if os.path.exists('/dev/shm/accounts'):
-            shutil.rmtree('/dev/shm/accounts')
-        os.mkdir('/dev/shm/accounts')
+        init_accounts_folder()
         os.mkdir('/home/accounts/.config')
         self.settings = QSettings(f'{os.getenv("HOME")}/PyTools', 'PyQtAccounts')

@@ -27,7 +27,7 @@ import os
 import sys
 import shutil
 
-from tests.base import UnitTest
+from tests.base import UnitTest, init_accounts_folder
 from setup import *
 
 EXPECTED_RUN_SH_TEXT = (
@@ -57,9 +57,7 @@ class FinishPageTest(UnitTest):
         self.initPage = self.page._parent.initPage
         self.initPage.folder = '/home/accounts'
 
-        self.monkeypatch.setenv('HOME', '/home/accounts')
-        if not os.path.exists('/dev/shm/accounts'):
-            os.mkdir('/dev/shm/accounts')
+        init_accounts_folder()
         os.mkdir('/home/accounts/PyQtAccounts')
         os.mkdir('/home/accounts/Desktop')
         os.makedirs('/home/accounts/.local/share/applications/', exist_ok=True)

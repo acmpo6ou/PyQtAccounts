@@ -26,7 +26,7 @@ from unittest.mock import Mock
 import pytest
 import os
 
-from tests.base import UnitTest
+from tests.base import UnitTest, init_accounts_folder
 from setup import *
 
 INIT_ERROR = ("Помилка ініціалізації!\n"
@@ -78,6 +78,31 @@ class InitPageTest(UnitTest):
         page = InitPage()
         page.initButton.click()
         self.assertEqual(page.progress.value(), 100)
+
+    def test_init(self):
+        # Tom wants to initialize PyQtAccounts in his home directory
+        init_accounts_folder()
+        page = InitPage()
+        self.assertEqual(page.browseLabel.text(), '/home/accounts')
+
+        # Everything seems fine so he presses `Initialize` button
+        page.initButton.click()
+
+        # some time passes and initialization is complete
+        def isFinished():
+            assert page._thread.isFinished()
+        self.qbot.waitUntil(isFinished, timeout=2000)
+
+        # Progressbar shows 100% and program initialized with all its folder structure
+        self.assertEqual(page.progress.value(), 100)
+        self.assertTrue(os.path.exists('/home/accounts/PyQtAccounts'))
+        self.assertTrue(os.path.exists('/home/accounts/PyQtAccounts/src'))
+        self.assertTrue(os.path.exists('/home/accounts/PyQtAccounts/core'))
+        self.assertTrue(os.path.exists('/home/accounts/PyQtAccounts/COPYING'))
+        self.assertTrue(os.path.exists('/home/accounts/PyQtAccounts/CREDITS'))
+        self.assertTrue(os.path.exists('/home/accounts/PyQtAccounts/change.log'))
+        self.assertTrue(os.path.exists('/home/accounts/PyQtAccounts/setup.py'))
+        self.assertTrue(os.path.exists('/home/accounts/PyQtAccounts/img'))
 
 
 class FailTest(UnitTest):
