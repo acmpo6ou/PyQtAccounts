@@ -292,7 +292,7 @@ class Initialize(QObject):
                                 progress=Progress(self.progress))
         except RecursionError:  # to prevent fatal python error
             raise
-        except:
+        except Exception:
             self.result.emit(1)
         else:
             self.result.emit(0)
@@ -356,10 +356,7 @@ class InitPage(QWizardPage):
             self.browseLabel.setText(folder)
 
     def isComplete(self):
-        if self.progress.value() == 100:
-            return True
-        else:
-            return False
+        return self.progress.value() == 100
 
     def init(self):
         if 'PyQtAccounts' in os.listdir(self.folder):

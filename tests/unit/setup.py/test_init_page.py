@@ -79,6 +79,7 @@ class InitPageTest(UnitTest):
         page.initButton.click()
         self.assertEqual(page.progress.value(), 100)
 
+    # @pytest.mark.skip
     def test_init(self):
         # Tom wants to initialize PyQtAccounts in his home directory
         init_accounts_folder()
@@ -89,9 +90,9 @@ class InitPageTest(UnitTest):
         page.initButton.click()
 
         # some time passes and initialization is complete
-        def isFinished():
+        def is_finished():
             assert page._thread.isFinished()
-        self.qbot.waitUntil(isFinished, timeout=2000)
+        self.qbot.waitUntil(is_finished, timeout=2000)
 
         # Progressbar shows 100% and program initialized with all its folder structure
         self.assertEqual(page.progress.value(), 100)
@@ -108,14 +109,10 @@ class InitPageTest(UnitTest):
 class FailTest(UnitTest):
     def test_init_fail_when_no_permissions(self):
         page = InitPage()
-        thread = Mock()
-        Initialize.moveToThread = lambda *args: None
-        self.monkeypatch.setattr('PyQt5.QtCore.QThread', lambda *args: thread)
-
         page.folder = '/'  # we have no permissions to write in root folder
         page.initButton.click()
 
-        QTest.qWait(100)
-        self.assertTrue(page.errors.visibility)
-        print(repr(page.errors.toPlainText()))
+        def errors_visible():
+            assert page.errors.visibility
+        self.qbot.waitUntil(errors_visible)
         self.assertEqual(page.errors.toPlainText(), INIT_ERROR)
