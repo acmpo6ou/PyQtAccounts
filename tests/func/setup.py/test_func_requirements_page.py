@@ -108,10 +108,12 @@ class RequirementsPageTest(UnitTest, SetupMixin):
         page.installButton.click()
 
         # Some errors appears during installation.
-        QTest.qWait(100)
+        def errors_visible():
+            assert page.errors.visibility
+        self.qbot.waitUntil(errors_visible)
+
         INSTALL_ERRORS_TEXT = (
             'Не вдалося встановити cryptography\n'
             'Не вдалося встановити gitpython\n'
         )
         self.assertEqual(page.errors.toPlainText(), INSTALL_ERRORS_TEXT)
-        self.assertTrue(page.errors.visibility)

@@ -53,10 +53,11 @@ class CheckForUpdatesTest(DbsTest):
 
         # Dialog window appears saying that there are updates available
         self.check.trigger()
-        QTest.qWait(100)
 
         # We don't actually want to update anything during the tests
-        self.assertIsNotNone(self.window.res, 'No update available window was created!')
+        def window_show():
+            assert self.window.res, 'No update available window was created!'
+        self.qbot.waitUntil(window_show)
         self.window.res.laterButton.click()
 
         # There is changelog in that dialog
