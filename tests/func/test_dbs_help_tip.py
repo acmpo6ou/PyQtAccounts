@@ -33,7 +33,7 @@ class HelpTipTest(SettingsMixin, DbsTest):
     def tearDown(self):
         # Supers tearDown method makes inappropriate work, so we override it here
         pass
-    
+
     def test_no_dbs(self):
         # Ross opens up PyQtAccounts, he has no database yet
         self.monkeypatch.setattr(glob, 'glob', lambda path: [])
