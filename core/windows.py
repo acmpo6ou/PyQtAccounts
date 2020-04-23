@@ -25,7 +25,7 @@ import os
 
 from core.widgets import *
 from core.updates import *
-from core.const import *
+import core.const
 from core.utils import *
 from core.getaki import *
 import tarfile
@@ -35,10 +35,10 @@ from core.account_forms import *
 def export(name, path, parent):
     try:
         file = tarfile.open(path, 'w')
-        file.add(f'{SRC_DIR}/{name}.db')
-        file.add(f'{SRC_DIR}/{name}.bin')
+        file.add(f'{core.const.SRC_DIR}/{name}.db')
+        file.add(f'{core.const.SRC_DIR}/{name}.bin')
         file.close()
-    except RecursionError: # to prevent fatal python error
+    except RecursionError:  # to prevent fatal python error
         raise
     except Exception:
         QMessageBox.critical(parent, 'Помилка!', 'Експорт бази данних '
@@ -59,7 +59,7 @@ def _import(path, parent):
 
         if i != 1:
             raise TypeError('Невірний файл!')
-        tar.extractall('.')
+        tar.extractall(core.const.SRC_PATH)
 
         model = parent.dbs.list.model
         _list = parent.dbs.list
@@ -338,7 +338,7 @@ class DbMenuBar(MenuBar):
         password = self.parent.password
         token = encryptDatabase(name, db, password)
 
-        dbfile = f'{SRC_DIR}/{name}.db'
+        dbfile = f'{core.const.SRC_DIR}/{name}.db'
         with open(dbfile, 'wb') as file:
             file.write(token)
 

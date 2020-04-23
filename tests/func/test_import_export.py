@@ -25,8 +25,9 @@ import pytest
 import sys
 import os
 
-from tests.base import DbsTest, SettingsMixin
+from tests.base import DbsTest, SettingsMixin, init_accounts_folder
 from core.utils import *
+import core.const
 from PyQtAccounts import *
 
 
@@ -44,6 +45,11 @@ class ImportExportTest(DbsTest, SettingsMixin):
         # first is `File` submenu, second action is `Import database...`
         self.import_db = self.menu(0, 1)
 
+        init_accounts_folder()
+        os.makedirs('/home/accounts/test/src')
+        self.monkeypatch.setattr('core.const.SRC_DIR', '/home/accounts/test/src')
+        self.monkeypatch.setattr('core.const.SRC_PATH', '/home/accounts/test')
+
     def test_import_success(self):
         # Emily wants to import database so she goes to menu File -> Import database...
         # File dialog appears and she chose her tar file
@@ -59,7 +65,7 @@ class ImportExportTest(DbsTest, SettingsMixin):
 
         # Database appears in the list and on the disk
         self.checkDbInList('import_database')
-        self.assertIn('import_database', getDbList())
+        self.checkDbOnDisk('import_database')
 
     def test_import_doesnt_ends_with_tar(self):
         # Emily wants to import database so she goes to menu File -> Import database...
@@ -76,7 +82,7 @@ class ImportExportTest(DbsTest, SettingsMixin):
 
         # Database appears in the list and on the disk
         self.checkDbInList('import_database')
-        self.assertIn('import_database', getDbList())
+        self.checkDbOnDisk('import_database')
 
     def test_import_fail(self):
         # Tom wants to import database

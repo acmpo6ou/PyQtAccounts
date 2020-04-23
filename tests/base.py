@@ -161,6 +161,10 @@ class DbsTest(FuncTest):
     def checkDbNotInList(self, name):
         self.check_not_in_list(name)
 
+    def checkDbOnDisk(self, name):
+        self.assertTrue(os.path.exists(f'/home/accounts/test/src/{name}.bin'))
+        self.assertTrue(os.path.exists(f'/home/accounts/test/src/{name}.db'))
+
 
 class AccsTest(FuncTest):
     def setUp(self, name='database', password='some_password'):

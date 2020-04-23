@@ -20,6 +20,7 @@ sys_reqs = ('git', 'pip3', 'xclip')
 reqs_pip = ('setuptools', 'cryptography', 'gitpython', 'pyshortcuts')
 
 SRC_DIR = 'src'
+SRC_PATH = '.'
 
 HELP_TIP_DB = ("<pre>Поки що у вас немає жодної бази данних.\n" +
                '{0:<39}\n'.format("Спробуйте:") +
