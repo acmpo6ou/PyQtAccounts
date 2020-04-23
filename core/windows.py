@@ -52,26 +52,26 @@ def _import(path, parent):
     try:
         tar = tarfile.open(path)
         for i, file in enumerate(tar.getmembers()):
-            if not ('.db' in file.name and '.bin' in file.name):
+            if '.db' not in file.name and '.bin' not in file.name:
                 raise TypeError('Невірний файл!')
 
         name = os.path.basename(file.name).replace('.db', '').replace('.bin', '')
 
         if i != 1:
             raise TypeError('Невірний файл!')
-        tar.extractall('src/')
+        tar.extractall('.')
 
         model = parent.dbs.list.model
-        list = parent.dbs.list
+        _list = parent.dbs.list
 
         for item in model.findItems(name):
             model.removeRow(item.row())
 
-        item = QStandardItem(list.icon, name)
+        item = QStandardItem(_list.icon, name)
         model.appendRow(item)
         model.sort(0)
         parent.dbs.tips['help'].setText("Виберіть базу данних")
-    except RecursionError: # to prevent fatal python error
+    except RecursionError:  # to prevent fatal python error
         raise
     except Exception as err:
         QMessageBox.critical(parent, 'Помилка!', str(err))
