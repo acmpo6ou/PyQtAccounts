@@ -20,11 +20,12 @@ import glob
 import git
 import os
 from string import *
+from core.const import *
 
 
 def getDbList():
     return [os.path.basename(db).replace('.db', '') for db in
-            glob.glob('src/*.db')]
+            glob.glob(f'{SRC_DIR}/*.db')]
 
 
 def getAkiList(db):

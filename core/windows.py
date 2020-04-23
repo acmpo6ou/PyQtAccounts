@@ -35,8 +35,8 @@ from core.account_forms import *
 def export(name, path, parent):
     try:
         file = tarfile.open(path, 'w')
-        file.add('src/{}.db'.format(name))
-        file.add('src/{}.bin'.format(name))
+        file.add(f'{SRC_DIR}/{name}.db')
+        file.add(f'{SRC_DIR}/{name}.bin')
         file.close()
     except RecursionError: # to prevent fatal python error
         raise
@@ -338,7 +338,7 @@ class DbMenuBar(MenuBar):
         password = self.parent.password
         token = encryptDatabase(name, db, password)
 
-        dbfile = 'src/' + name + '.db'
+        dbfile = f'{SRC_DIR}/{name}.db'
         with open(dbfile, 'wb') as file:
             file.write(token)
 

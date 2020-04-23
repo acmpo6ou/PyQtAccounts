@@ -19,20 +19,23 @@
 import os
 import base64
 import core.akidump as akidump
+from core.const import *
 
 from cryptography.fernet import Fernet
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
+
 def generateSalt(saltfile):
     salt = os.urandom(16)
     with open(saltfile, 'wb') as file:
         file.write(salt)
 
+
 def openDatabase(dbname, password):
-    dbfile = 'src/' + dbname + '.db'
-    saltfile = 'src/' + dbname + '.bin'
+    dbfile = f'{SRC_DIR}/' + dbname + '.db'
+    saltfile = f'{SRC_DIR}/' + dbname + '.bin'
     with open(saltfile, 'rb') as file:
         salt = file.read()
     kdf = PBKDF2HMAC(
@@ -53,8 +56,9 @@ def openDatabase(dbname, password):
 
     return db
 
+
 def encryptDatabase(dbname, db, password):
-    saltfile = 'src/' + dbname + '.bin'
+    saltfile = f'{SRC_DIR}/' + dbname + '.bin'
 
     with open(saltfile, 'rb') as file:
         salt = file.read()
@@ -71,9 +75,10 @@ def encryptDatabase(dbname, db, password):
     token = f.encrypt(data)
     return token
 
+
 def newDatabase(dbname, password):
-    saltfile = 'src/' + dbname + '.bin'
-    dbfile = 'src/' + dbname + '.db'
+    saltfile = f'{SRC_DIR}/' + dbname + '.bin'
+    dbfile = f'{SRC_DIR}/' + dbname + '.db'
 
     db = {}
     generateSalt(saltfile)
@@ -81,6 +86,7 @@ def newDatabase(dbname, password):
 
     with open(dbfile, 'wb') as file:
         file.write(token)
+
 
 def isEqual(first, second):
     if set(first) != set(second):
