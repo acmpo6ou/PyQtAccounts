@@ -116,21 +116,10 @@ class UpdatesAvailable(QWidget):
 
     def applyUpdate(self):
         self.hide()
-        cwd = os.getcwd()
         repo = git.Repo('.')
-        repo.git.stash('save')
-
         origin = repo.remote()
         origin.pull()
-
-        run = open(cwd + '/run.sh').read()
-        run = run.replace('cd .', f'cd {cwd}')
-        run = run.replace('export PYTHONPATH="$PYTHONPATH:./"',
-                          f'export PYTHONPATH="$PYTHONPATH:{cwd}"')
-        with open(cwd + '/run.sh', 'w') as runfile:
-            runfile.write(run)
-
-        t = threading.Thread(target=os.system, args=(cwd+'/run.sh',), daemon=True)
+        t = threading.Thread(target=os.system, args=('./run.sh',), daemon=True)
         t.start()
         self.parent().close()
 
