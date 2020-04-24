@@ -25,7 +25,7 @@ import pytest
 import sys
 import os
 
-from tests.base import DbsTest, SettingsMixin, init_accounts_folder
+from tests.base import DbsTest, SettingsMixin, init_src_folder
 from core.utils import *
 import core.const
 from PyQtAccounts import *
@@ -45,10 +45,7 @@ class ImportExportTest(DbsTest, SettingsMixin):
         # first is `File` submenu, second action is `Import database...`
         self.import_db = self.menu(0, 1)
 
-        init_accounts_folder()
-        os.makedirs('/home/accounts/test/src')
-        self.monkeypatch.setattr('core.const.SRC_DIR', '/home/accounts/test/src')
-        self.monkeypatch.setattr('core.const.SRC_PATH', '/home/accounts/test')
+        init_src_folder(self.monkeypatch)
 
     def test_import_success(self):
         # Emily wants to import database so she goes to menu File -> Import database...

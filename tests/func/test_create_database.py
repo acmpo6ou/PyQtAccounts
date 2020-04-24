@@ -21,16 +21,16 @@ import pytest
 import sys
 import os
 
-from tests.base import DbsTest
+from tests.base import DbsTest, init_src_folder
 from core.utils import getDbList
 from PyQtAccounts import *
 
 
 class CreateDbTest(DbsTest):
-    '''
-    Next 3 tests are testing does create database form appears whether we click on the
-    `+` button or through Menu -> File -> New database... or Ctrl+N key sequences
-    '''
+    """
+    Next 2 tests are testing does create database form appears whether we click on the
+    `+` button or through Menu -> File -> New database...
+    """
 
     def setUp(self):
         super().setUp()
@@ -43,6 +43,8 @@ class CreateDbTest(DbsTest):
         self.pass_input = self.form.passField.passInput
         self.pass_repeat_input = self.form.passRepeatField.passInput
         self.createButton = self.form.createButton
+
+        init_src_folder(self.monkeypatch)
 
     def test_create_db_click(self):
         self.dbs.panel.addButton.click()
@@ -106,11 +108,7 @@ class CreateDbTest(DbsTest):
         self.checkDbInList('mydatabase')
 
         # And it actually on disk at the `src` folder
-        self.assertIn('mydatabase', getDbList())
-
-        # clean up
-        os.remove('src/mydatabase.db')
-        os.remove('src/mydatabase.bin')
+        self.checkDbOnDisk('mydatabase')
 
     def test_valid_password(self):
         # Tom wants to create new database
@@ -264,8 +262,4 @@ class CreateDbTest(DbsTest):
         self.checkDbInList('somedb')
 
         # And it actually on disk at the `src` folder
-        self.assertIn('somedb', getDbList())
-
-        # clean up
-        os.remove('src/somedb.db')
-        os.remove('src/somedb.bin')
+        self.checkDbOnDisk('somedb')

@@ -220,6 +220,13 @@ def init_accounts_folder():
     os.mkdir('/dev/shm/accounts')
 
 
+def init_src_folder(monkeypatch):
+    init_accounts_folder()
+    os.makedirs('/home/accounts/test/src')
+    monkeypatch.setattr('core.const.SRC_DIR', '/home/accounts/test/src')
+    monkeypatch.setattr('core.const.SRC_PATH', '/home/accounts/test')
+
+
 class SettingsMixin:
     def setUp(self):
         os.environ['TESTING'] = 'True'
