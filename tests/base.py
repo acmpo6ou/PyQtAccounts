@@ -165,6 +165,10 @@ class DbsTest(FuncTest):
         self.assertTrue(os.path.exists(f'/home/accounts/test/src/{name}.bin'))
         self.assertTrue(os.path.exists(f'/home/accounts/test/src/{name}.db'))
 
+    def checkDbNotOnDisk(self, name):
+        self.assertFalse(os.path.exists(f'/home/accounts/test/src/{name}.bin'))
+        self.assertFalse(os.path.exists(f'/home/accounts/test/src/{name}.db'))
+
 
 class AccsTest(FuncTest):
     def setUp(self, name='database', password='some_password'):

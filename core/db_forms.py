@@ -27,6 +27,8 @@ from core.getaki import *
 from core.windows import *
 from core.utils import *
 from core.const import *
+import core.const
+SRC_DIR = core.const.SRC_DIR
 
 from cryptography.exceptions import InvalidSignature
 from cryptography.fernet import InvalidToken
@@ -142,8 +144,8 @@ class EditDbForm(CreateForm):
                                      buttons=QMessageBox.No | QMessageBox.Yes,
                                      defaultButton=QMessageBox.No)
         if action == QMessageBox.Yes:
-            os.remove(f'{SRC_DIR}/{name}.db')
-            os.remove(f'{SRC_DIR}/{name}.bin')
+            os.remove(f'{core.const.SRC_DIR}/{name}.db')
+            os.remove(f'{core.const.SRC_DIR}/{name}.bin')
 
             for item in self.model.findItems(name):
                 self.model.removeRow(item.row())
@@ -162,8 +164,8 @@ class EditDbForm(CreateForm):
         name = validName(self.nameInput.text())
         password = self.passField.passInput.text().encode()
 
-        os.remove(f'{SRC_DIR}/{self.old_name}.db')
-        os.remove(f'{SRC_DIR}/{self.old_name}.bin')
+        os.remove(f'{core.const.SRC_DIR}/{self.old_name}.db')
+        os.remove(f'{core.const.SRC_DIR}/{self.old_name}.bin')
 
         newDatabase(name, password)
         self.clear()

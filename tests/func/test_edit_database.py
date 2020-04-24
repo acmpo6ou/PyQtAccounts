@@ -15,6 +15,7 @@
 
 # You should have received a copy of the GNU General Public License
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
+import shutil
 
 from PyQt5.QtTest import QTest
 from PyQt5.QtCore import *
@@ -24,7 +25,7 @@ import pytest
 import sys
 import os
 
-from tests.base import DbsTest
+from tests.base import DbsTest, init_src_folder
 from core.utils import *
 from PyQtAccounts import *
 
@@ -34,7 +35,7 @@ class EditDbTest(DbsTest):
         super().setUp()
         self.form = self.dbs.forms['edit']
         self.list = self.dbs.list
-        
+
         self.editButton = self.dbs.panel.editButton
 
         self.open_form = self.dbs.forms['open']
@@ -44,27 +45,11 @@ class EditDbTest(DbsTest):
         self.pass_input = self.form.passField.passInput
         self.pass_repeat_input = self.form.passRepeatField.passInput
         self.saveButton = self.form.createButton
-
         self.help = self.dbs.tips['help']
 
-        # pre-saving database
-        self.salt = open('src/database.bin', 'rb').read()
-        self.db = open('src/database.db', 'rb').read()
-
-    def tearDown(self):
-        super().tearDown()
-        # restoring database
-        open('src/database.bin', 'wb').write(self.salt)
-        open('src/database.db', 'wb').write(self.db)
-
-        # cleaning up
-        try:
-            os.remove('src/another_database.bin')
-            os.remove('src/another_database.db')
-        except RecursionError: # to prevent fatal python error
-            raise
-        except Exception:
-            pass
+        init_src_folder(self.monkeypatch)
+        shutil.copy('src/database.db', '/home/accounts/test/src')
+        shutil.copy('src/database.bin', '/home/accounts/test/src')
 
     def openDatabase(self, name='database', password='some_password'):
         self.list.selected(Index(name))
@@ -135,8 +120,9 @@ class EditDbTest(DbsTest):
         # Database name changes in the list
         self.checkDbInList('another_database')
 
-        # And there is no longer `database` in the list
+        # And there is no longer `database` in the list, nor on the disk
         self.checkDbNotInList('database')
+        self.checkDbNotOnDisk('database')
 
         # Tom tries then to open `another_database`
         self.openDatabase('another_database', 'another_password')
@@ -145,7 +131,7 @@ class EditDbTest(DbsTest):
         self.checkOnlyVisible(self.help)
 
         # database renamed on the disk
-        self.assertIn('another_database', getDbList())
+        self.checkDbOnDisk('another_database')
 
         # Database window appears
         win = self.window.windows[1]  # first is main window, second is database one
@@ -159,25 +145,27 @@ class EditDbTest(DbsTest):
         # Then he presses delete button
         # Suddenly Bob changes his mind and presses `No` button in warning dialog that appears
         self.monkeypatch.setattr(QMessageBox, "warning",
-            self.mess('Увага!',
-                      'Ви певні що хочете видалити базу данних <i><b>database</b></i>',
-                      QMessageBox.No))
+                                 self.mess('Увага!',
+                                           'Ви певні що хочете видалити базу '
+                                           'данних <i><b>database</b></i>',
+                                           QMessageBox.No))
         self.form.deleteButton.click()
 
         # Everything is fine database still in the list and exists on the disk
         self.checkDbInList('database')
-        self.assertIn('database', getDbList())
+        self.checkDbOnDisk('database')
 
         # Then he decided to delete database
         self.monkeypatch.setattr(QMessageBox, "warning",
-            self.mess('Увага!',
-                      'Ви певні що хочете видалити базу данних <i><b>database</b></i>',
-                      QMessageBox.Yes))
+                                 self.mess('Увага!',
+                                           'Ви певні що хочете видалити базу данних'
+                                           ' <i><b>database</b></i>',
+                                           QMessageBox.Yes))
         self.form.deleteButton.click()
 
         # And there in no longer database in the list, neither on the disk
         self.checkDbNotInList('database')
-        self.assertNotIn('database', getDbList())
+        self.checkDbNotOnDisk('database')
 
         # Edit form disappears
         self.checkOnlyVisible(self.help)
