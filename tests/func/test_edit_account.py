@@ -22,7 +22,7 @@ import unittest
 import pytest
 import os
 
-from tests.base import AccsTest
+from tests.base import AccsTest, init_accounts_folder, init_src_folder
 from core.utils import *
 from PyQtAccounts import *
 
@@ -45,6 +45,10 @@ class EditAccsTest(AccsTest):
         self.email = self.form.emailInput
         self.date = self.form.dateInput
         self.comment = self.form.commentInput
+
+        init_accounts_folder()
+        init_src_folder(self.monkeypatch)
+        self.copyDatabase('database')
 
     def test_edit_content(self):
         # Lea wants to edit her account, so she chose it in the list and presses edit button
@@ -71,9 +75,9 @@ class EditAccsTest(AccsTest):
         # He then presses delete button
         # Warning message appears and Toon changes his mind pressing `No`
         self.monkeypatch.setattr(QMessageBox, 'warning',
-                self.mess('Увага!',
-                          'Ви певні що хочете видалити акаунт <i><b>mega</b></i>',
-                          QMessageBox.No))
+                                 self.mess('Увага!',
+                                           'Ви певні що хочете видалити акаунт <i><b>mega</b></i>',
+                                           QMessageBox.No))
         self.deleteButton.click()
 
         # account `mega` is still in the list and in the database too
@@ -82,9 +86,9 @@ class EditAccsTest(AccsTest):
 
         # Toon changes his mind again presses delete button and `Yes` in the warning dialog
         self.monkeypatch.setattr(QMessageBox, 'warning',
-                self.mess('Увага!',
-                          'Ви певні що хочете видалити акаунт <i><b>mega</b></i>',
-                          QMessageBox.Yes))
+                                 self.mess('Увага!',
+                                           'Ви певні що хочете видалити акаунт <i><b>mega</b></i>',
+                                           QMessageBox.Yes))
         self.deleteButton.click()
 
         # edit form disappears
