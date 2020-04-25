@@ -82,6 +82,10 @@ class BaseTest(unittest.TestCase):
         assert head == 'Помилка!'
         return QMessageBox.Ok
 
+    def copyDatabase(self, name):
+        shutil.copy(f'tests/src/{name}.db', '/home/accounts/test/src')
+        shutil.copy(f'tests/src/{name}.bin', '/home/accounts/test/src')
+
 
 class UnitTest(BaseTest):
     def patchVersion(self):
@@ -112,8 +116,11 @@ class FuncTest(BaseTest):
         self.dbs = self.window.dbs
 
     def tearDown(self):
-        self.window.destroy = True
-        self.window.close()
+        try:
+            self.window.destroy = True
+            self.window.close()
+        except AttributeError:
+            pass
 
     def check_only_visible(self, elem, parent):
         for form in parent.forms:

@@ -22,7 +22,7 @@ import unittest
 import pytest
 import os
 
-from tests.base import AccsTest
+from tests.base import AccsTest, init_accounts_folder, init_src_folder
 from core.utils import *
 from PyQtAccounts import *
 from tests.func.test_import_export import ImportExportTest
@@ -38,10 +38,9 @@ class DbSaveTest(AccsTest):
         self.name = self.form.nameInput
         self.email = self.form.emailInput
 
-        self.save_db = open('src/import_database.db', 'rb').read()
-
-    def tearDown(self):
-        open('src/import_database.db', 'wb').write(self.save_db)
+        init_accounts_folder()
+        init_src_folder(self.monkeypatch)
+        self.copyDatabase('import_database')
 
     def openDatabase(self):
         window = Window()
@@ -53,7 +52,6 @@ class DbSaveTest(AccsTest):
         pass_input.setText('import_database')
         form.openButton.click()
         win = window.windows[1]
-        accs = win.accs
         return win
 
     def test_save_after_edit(self):
