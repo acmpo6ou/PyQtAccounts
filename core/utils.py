@@ -22,12 +22,11 @@ import os
 from string import *
 from core.const import *
 import core.const
-SRC_DIR = core.const.SRC_DIR
 
 
 def getDbList():
     return [os.path.basename(db).replace('.db', '') for db in
-            glob.glob(f'{SRC_DIR}/*.db')]
+            glob.glob(f'{core.const.SRC_DIR}/*.db')]
 
 
 def getAkiList(db):

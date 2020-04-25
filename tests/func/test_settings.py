@@ -28,9 +28,9 @@ from PyQtAccounts import *
 
 
 class SettingsTest(SettingsMixin, DbsTest):
-    def tearDown(self):
-        # Supers tearDown method makes inappropriate work, so we override it here
-        pass
+    def setUp(self):
+        DbsTest.setUp(self)
+        SettingsMixin.setUp(self)
 
     def test_settings_show_menu(self):
         window = Window()

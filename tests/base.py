@@ -26,6 +26,7 @@ import sys
 import os
 import time
 import setup
+import core.const
 
 from PyQtAccounts import *
 from setup import InstallationWizard
@@ -115,6 +116,15 @@ class FuncTest(BaseTest):
         self.window = Window()
         self.dbs = self.window.dbs
 
+        init_accounts_folder()
+        init_src_folder(self.monkeypatch)
+        self.copyDatabase('main')
+        self.copyDatabase('crypt')
+        self.copyDatabase('a')
+        self.copyDatabase('database')
+        self.copyDatabase('import_database')
+        print(getDbList())
+
     def tearDown(self):
         try:
             self.window.destroy = True
@@ -156,9 +166,6 @@ class FuncTest(BaseTest):
 
 
 class DbsTest(FuncTest):
-    def setUp(self):
-        super().setUp()
-
     def checkOnlyVisible(self, elem):
         self.check_only_visible(elem, self.dbs)
 
@@ -180,6 +187,11 @@ class DbsTest(FuncTest):
 class AccsTest(FuncTest):
     def setUp(self, name='database', password='some_password'):
         super().setUp()
+
+        init_accounts_folder()
+        init_src_folder(self.monkeypatch)
+        self.copyDatabase(name)
+
         form = self.dbs.forms['open']
         self.list = self.dbs.list
         self.pass_input = form.passField.passInput
@@ -241,6 +253,5 @@ def init_src_folder(monkeypatch):
 class SettingsMixin:
     def setUp(self):
         os.environ['TESTING'] = 'True'
-        init_accounts_folder()
         os.mkdir('/home/accounts/.config')
         self.settings = QSettings(f'{os.getenv("HOME")}/PyTools', 'PyQtAccounts')
