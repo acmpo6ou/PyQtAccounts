@@ -24,7 +24,7 @@ import unittest
 import pytest
 import os
 
-from tests.base import AccsTest
+from tests.base import AccsTest, init_accounts_folder, init_src_folder
 from core.utils import *
 from PyQtAccounts import *
 
@@ -34,6 +34,10 @@ class ShowAccTest(AccsTest):
         super().setUp()
         self.form = self.accs.forms['show']
         self.list = self.accs.list
+
+        init_accounts_folder()
+        init_src_folder(self.monkeypatch)
+        self.copyDatabase('database')
 
     def test_show_account(self):
         # Lea wants to take a look at her account, so she clicks on it in the list
