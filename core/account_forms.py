@@ -28,6 +28,8 @@ from core.forms import *
 from core.utils import *
 from core.widgets import *
 from core.const import *
+import core.const
+SRC_DIR = core.const.SRC_DIR
 
 
 class CreateAcc(CreateForm):

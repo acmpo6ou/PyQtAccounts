@@ -21,6 +21,8 @@ import git
 import os
 from string import *
 from core.const import *
+import core.const
+SRC_DIR = core.const.SRC_DIR
 
 
 def getDbList():

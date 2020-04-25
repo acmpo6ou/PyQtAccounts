@@ -26,6 +26,8 @@ import os
 import threading
 
 from core.const import *
+import core.const
+SRC_DIR = core.const.SRC_DIR
 from core.utils import *
 from core.widgets import *
 from urllib.request import urlopen

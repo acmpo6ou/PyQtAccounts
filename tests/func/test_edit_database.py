@@ -48,8 +48,8 @@ class EditDbTest(DbsTest):
         self.help = self.dbs.tips['help']
 
         init_src_folder(self.monkeypatch)
-        shutil.copy('src/database.db', '/home/accounts/test/src')
-        shutil.copy('src/database.bin', '/home/accounts/test/src')
+        shutil.copy('tests/src/database.db', '/home/accounts/test/src')
+        shutil.copy('tests/src/database.bin', '/home/accounts/test/src')
 
     def openDatabase(self, name='database', password='some_password'):
         self.list.selected(Index(name))

@@ -30,6 +30,8 @@ from core.widgets import *
 from core.windows import *
 from core.updates import *
 from core.const import *
+import core.const
+SRC_DIR = core.const.SRC_DIR
 
 
 class Window(QMainWindow):
