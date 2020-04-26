@@ -44,8 +44,6 @@ class CreateDbTest(DbsTest):
         self.pass_repeat_input = self.form.passRepeatField.passInput
         self.createButton = self.form.createButton
 
-        init_src_folder(self.monkeypatch)
-
     def test_create_db_click(self):
         self.dbs.panel.addButton.click()
         self.checkOnlyVisible(self.form)
