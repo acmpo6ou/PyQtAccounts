@@ -30,6 +30,10 @@ from PyQtAccounts import *
 
 
 class HelpTipTest(SettingsMixin, DbsTest):
+    def setUp(self):
+        DbsTest.setUp(self)
+        SettingsMixin.setUp(self)
+
     def test_no_dbs(self):
         # Ross opens up PyQtAccounts, he has no database yet
         self.monkeypatch.setattr(glob, 'glob', lambda path: [])
