@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
 import os
+import stat
 import sys
 
 from PyQt5.QtWidgets import *
@@ -444,6 +445,7 @@ class FinishPage(QWizardPage):
                'python3 PyQtAccounts.py')
         with open(cwd + 'run.sh', 'w') as runfile:
             runfile.write(run)
+        os.chmod(cwd + 'run.sh', 0o755)
 
 
 if __name__ == '__main__':
