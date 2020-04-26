@@ -79,7 +79,7 @@ class InitPageTest(UnitTest):
         page.initButton.click()
         self.assertEqual(page.progress.value(), 100)
 
-    # @pytest.mark.skip
+    @pytest.mark.skip
     def test_init(self):
         # Tom wants to initialize PyQtAccounts in his home directory
         init_accounts_folder()
@@ -92,7 +92,7 @@ class InitPageTest(UnitTest):
         # some time passes and initialization is complete
         def is_finished():
             assert page._thread.isFinished()
-        self.qbot.waitUntil(is_finished, timeout=2000)
+        self.qbot.waitUntil(is_finished, timeout=3000)
 
         # Progressbar shows 100% and program initialized with all its folder structure
         self.assertEqual(page.progress.value(), 100)

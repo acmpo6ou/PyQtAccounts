@@ -25,7 +25,6 @@ import os
 from tests.base import AccsTest, init_accounts_folder, init_src_folder
 from core.utils import *
 from PyQtAccounts import *
-from tests.func.test_import_export import ImportExportTest
 
 
 class DbSaveTest(AccsTest):
