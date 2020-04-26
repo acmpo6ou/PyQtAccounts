@@ -79,7 +79,7 @@ class InitPageTest(UnitTest):
         page.initButton.click()
         self.assertEqual(page.progress.value(), 100)
 
-    @pytest.mark.skip
+    # @pytest.mark.skip
     def test_init(self):
         # Tom wants to initialize PyQtAccounts in his home directory
         init_accounts_folder()
