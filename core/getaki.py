@@ -21,8 +21,6 @@ import base64
 import core.akidump as akidump
 import core.const
 
-SRC_DIR = core.const.SRC_DIR
-
 from cryptography.fernet import Fernet
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes

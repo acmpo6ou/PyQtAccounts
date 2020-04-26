@@ -25,7 +25,7 @@ import pytest
 import sys
 import os
 
-from tests.base import DbsTest, init_src_folder
+from tests.base import DbsTest, init_src_folder, init_accounts_folder
 from core.utils import *
 from PyQtAccounts import *
 
@@ -46,9 +46,6 @@ class EditDbTest(DbsTest):
         self.pass_repeat_input = self.form.passRepeatField.passInput
         self.saveButton = self.form.createButton
         self.help = self.dbs.tips['help']
-
-        init_src_folder(self.monkeypatch)
-        self.copyDatabase('database')
 
     def openDatabase(self, name='database', password='some_password'):
         self.list.selected(Index(name))
@@ -137,6 +134,11 @@ class EditDbTest(DbsTest):
         self.assertTrue(win.visibility)
 
     def test_delete_db(self):
+        init_accounts_folder()
+        init_src_folder(self.monkeypatch)
+        self.copyDatabase('database')
+        self.setUp()
+
         # Bob wants to delete database, so he opens it up and presses edit button
         self.openDatabase()
         self.editButton.click()
@@ -151,6 +153,7 @@ class EditDbTest(DbsTest):
         self.form.deleteButton.click()
 
         # Everything is fine database still in the list and exists on the disk
+        QTest.qWait(2000)
         self.checkDbInList('database')
         self.checkDbOnDisk('database')
 

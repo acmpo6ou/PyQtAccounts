@@ -48,7 +48,8 @@ class BaseTest(unittest.TestCase):
         submenu = self.window.menuBar().actions()[submenu_index]
         return submenu.menu().actions()[action_index]
 
-    def file_dialog(self, result):
+    @staticmethod
+    def file_dialog(result):
         def file_dialog(caption, filter, directory):
             assert caption == 'Імпортувати базу данних'
             assert filter == 'Tarball (*.tar)'
@@ -57,7 +58,8 @@ class BaseTest(unittest.TestCase):
 
         return file_dialog
 
-    def save_file_dialog(self, name, result):
+    @staticmethod
+    def save_file_dialog(name, result):
         def save_file_dialog(caption, filter, directory):
             home = os.getenv('HOME')
             assert caption == 'Експортувати базу данних'
@@ -67,7 +69,8 @@ class BaseTest(unittest.TestCase):
 
         return save_file_dialog
 
-    def mess(self, head, text, button=QMessageBox.Ok):
+    @staticmethod
+    def mess(head, text, button=QMessageBox.Ok):
         def mess(parent, this_head, this_text, *args, **kwargs):
             assert this_head == head
             assert this_text == text
@@ -79,11 +82,13 @@ class BaseTest(unittest.TestCase):
     def mess_showed(*args, **kwargs):
         raise AssertionError('This message showed, but shouldn\'t be!')
 
-    def critical(self, parent, head, text):
+    @staticmethod
+    def critical(parent, head, text):
         assert head == 'Помилка!'
         return QMessageBox.Ok
 
-    def copyDatabase(self, name):
+    @staticmethod
+    def copyDatabase(name):
         shutil.copy(f'tests/src/{name}.db', '/home/accounts/test/src')
         shutil.copy(f'tests/src/{name}.bin', '/home/accounts/test/src')
 
@@ -123,7 +128,6 @@ class FuncTest(BaseTest):
         self.copyDatabase('a')
         self.copyDatabase('database')
         self.copyDatabase('import_database')
-        print(getDbList())
 
     def tearDown(self):
         try:
