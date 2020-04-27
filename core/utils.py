@@ -66,10 +66,12 @@ def validName(name):
     This function returns validated name (i.e. without unallowed characters).
     We need it because we store databases in files called by their name (plus `.db` extension)
     and you cant name files with for example this `/@` characters.
+
     :param name:
     name of database you need to validate.
     :return:
     validated name.
+
     Example of usage:
     >>> validName('hello\/@ it is name')                # all unallowed characters are removed
     'helloitisname'
