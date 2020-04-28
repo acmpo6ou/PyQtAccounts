@@ -16,10 +16,28 @@
 # You should have received a copy of the GNU General Public License
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
 
+"""
+This module provides function to generate random password.
+"""
+
 import random
 import string
 
-def main(symbols = "", length=16):
+
+def main(symbols="", length=16):
+    """
+    This function generates random password using symbols that passed in `symbols` argument.
+    :param symbols:
+    represents symbols that will be included in password:
+    if `d` in symbols then digits will be included
+    if `l` ascii lower case symbols
+    if `u` ascii upper case symbols
+    if `p` punctuation symbols
+    :param length:
+    represents length of password, by default 16
+    :return:
+    password string
+    """
     symbs = ''
     if "d" in symbols:
         symbs += string.digits
