@@ -16,6 +16,10 @@
 # You should have received a copy of the GNU General Public License
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
 
+"""
+This module provides helper functions for PyQtAccounts.
+"""
+
 import glob
 import git
 import os
