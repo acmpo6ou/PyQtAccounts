@@ -180,6 +180,5 @@ class CreateForm(QWidget):
         """
         This method called when user presses `Create` button, it must be implemented in
         subclasses.
-        :return:
         """
         raise NotImplementedError()
