@@ -16,6 +16,10 @@
 # You should have received a copy of the GNU General Public License
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
 
+"""
+This module provides classes for account forms.
+"""
+
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
@@ -29,21 +33,42 @@ from core.utils import *
 from core.widgets import *
 from core.const import *
 import core.const
+
+# This is mostly for testing
 SRC_DIR = core.const.SRC_DIR
 
 
 class CreateAcc(CreateForm):
+    """
+    This is a superclass which specifies CreateForm class to account forms needs.
+    """
     def __init__(self, title, db, helpTip, parent=None):
+        """
+        This constructor creates the form specifying all widgets parameters.
+        :param title:
+        Text of title that will show up when creating form.
+        For example: `Create new account`
+        :param db:
+        Database where we will save account once we create one.
+        :param helpTip:
+        Tip that will be displayed when form is hidden.
+        :param parent:
+        The parent of the form.
+        """
         namePlaceholder = "ім'я акаунта"
-        nameTip = ''
+        nameTip = ''  # there is no name characters validation for account names.
         passTip = ("Якщо ви не хочете придумувати пароль ви можете\n"
-                      "натиснути кнопку 'Згенерувати', аби згенерувати його.")
+                   "натиснути кнопку 'Згенерувати', аби згенерувати його.")
         nameError = 'Акаунт з таким іменем вже існує!'
         CreateForm.__init__(self, title, namePlaceholder, nameError, nameTip, passTip, \
-                                                     helpTip, parent)
+                            helpTip, parent)
         self.hide()
         self.db = db
 
+        # Account create form needs more fields
+        # here we create label and field for
+        # account name (account name and nickname aren't same things!), e-mail, date of birth
+        # and comment to account.
         self.accountLabel = QLabel('Акаунт:')
         self.accountInput = QLineEdit()
         self.accountInput.setPlaceholderText('назва акаунту')
@@ -90,6 +115,9 @@ class CreateAcc(CreateForm):
         self.setLayout(self.mainLayout)
 
     def clear(self):
+        """
+        This method called when we hide form, to clean up all fields.
+        """
         self.accountInput.clear()
         self.nameInput.clear()
         self.emailInput.clear()
@@ -104,6 +132,7 @@ class CreateAcc(CreateForm):
         self.createButton.setEnabled(False)
         self.hide()
         self.helpTip.show()
+
 
 class CreateAccForm(CreateAcc):
     def __init__(self, db, helpTip, parent=None):
@@ -137,7 +166,7 @@ class CreateAccForm(CreateAcc):
         comment = self.commentInput.toPlainText().replace('\n', '\n\n')
 
         account = akidump.Account(accountname, name, email, password, date,
-                                comment)
+                                  comment)
         self.db[accountname] = account
         self.clear()
 
@@ -147,6 +176,7 @@ class CreateAccForm(CreateAcc):
         self.clear()
 
         self.tips['help'].setText("Виберіть акаунт")
+
 
 class EditAccForm(CreateAcc):
     def __init__(self, db, helpTip):
@@ -180,10 +210,10 @@ class EditAccForm(CreateAcc):
             if win.name == self.name:
                 break
         action = QMessageBox.warning(win, 'Увага!',
-                             'Ви певні що хочете видалити акаунт '
-                             '<i><b>{}</b></i>'.format(self.account.account),
-                             buttons=QMessageBox.No | QMessageBox.Yes,
-                             defaultButton=QMessageBox.No)
+                                     'Ви певні що хочете видалити акаунт '
+                                     '<i><b>{}</b></i>'.format(self.account.account),
+                                     buttons=QMessageBox.No | QMessageBox.Yes,
+                                     defaultButton=QMessageBox.No)
         if action == QMessageBox.Yes:
             del self.db[self.account.account]
 
@@ -230,17 +260,18 @@ class EditAccForm(CreateAcc):
         comment = self.commentInput.toPlainText()
 
         account = akidump.Account(accountname, name, email, password, date,
-                                comment)
+                                  comment)
         del self.db[self.old_account]
         self.db[accountname] = account
         self.clear()
 
         for item in self.list.model.findItems(self.old_account):
-             self.list.model.removeRow(item.row())
+            self.list.model.removeRow(item.row())
         item = QStandardItem(self.list.icon, accountname)
         self.list.model.appendRow(item)
         self.list.model.sort(0)
         self.clear()
+
 
 class ShowAccForm(QWidget):
     def __init__(self, db, parent=None):

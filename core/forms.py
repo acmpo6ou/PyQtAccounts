@@ -54,7 +54,7 @@ class CreateForm(QWidget):
         :param helpTip:
         Tip that will be displayed when form is hidden.
         :param parent:
-        The parent of form.
+        The parent of the form.
         """
         QWidget.__init__(self, parent)
         self.hide()
