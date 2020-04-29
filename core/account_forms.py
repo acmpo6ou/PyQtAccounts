@@ -155,7 +155,7 @@ class EditAccForm(CreateAcc):
         self.createButton.setText('Зберегти')
         self.deleteButton = QPushButton('Видалити')
         self.deleteButton.clicked.connect(self.delete)
-        self.buttonsLayot.insertWidget(1, self.deleteButton)
+        self.buttonsLayout.insertWidget(1, self.deleteButton)
 
     def validateName(self, event):
         name = self.accountInput.text()

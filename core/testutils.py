@@ -38,7 +38,7 @@ real_hide = QWidget.hide
 def patched_show(self, *args, **kwargs):
     """
     This function is a patched show method for QWidget.
-    It changes visibility attribute of widget to False, because it become visible when
+    It changes visibility attribute of widget to True, because it become visible when
     we show it.
     """
     self.visibility = True
@@ -46,7 +46,7 @@ def patched_show(self, *args, **kwargs):
     # here we call real show method only when TESTING environment variable is set to False
     # (like in production), but while testing we don't actually want windows to be opened,
     # because it will waste our computation resources and will slow down our tests.
-    # In spite of this sometimes we need to build and show our window during testing, so
+    # However sometimes we need to build and show our window during testing, so
     # in that case those tests that need this must set TESTING to `Func`.
     if not os.getenv('TESTING') or os.getenv('TESTING') == 'Func':
         real_show(self, *args, **kwargs)
@@ -63,7 +63,7 @@ def patched_hide(self, *args, **kwargs):
     # here we call real hide method only when TESTING environment variable is set to False
     # (like in production), but while testing we don't actually want windows to be opened or hidden,
     # because it will waste our computation resources and will slow down our tests.
-    # In spite of this sometimes we need to build, show and hide our window during testing, so
+    # However sometimes we need to build, show and hide our window during testing, so
     # in that case those tests that need this must set TESTING to `Func`.
     if not os.getenv('TESTING') or os.getenv('TESTING') == 'Func':
         real_hide(self)

@@ -26,12 +26,11 @@ from core.widgets import *
 from core.getaki import *
 from core.windows import *
 from core.utils import *
-from core.const import *
 import core.const
-SRC_DIR = core.const.SRC_DIR
-
 from cryptography.exceptions import InvalidSignature
 from cryptography.fernet import InvalidToken
+
+SRC_DIR = core.const.SRC_DIR
 
 
 class CreateDbForm(CreateForm):
@@ -97,7 +96,7 @@ class EditDbForm(CreateForm):
         self.createButton.setText('Зберегти')
         self.deleteButton = QPushButton('Видалити')
         self.deleteButton.clicked.connect(self.delete)
-        self.buttonsLayot.insertWidget(1, self.deleteButton)
+        self.buttonsLayout.insertWidget(1, self.deleteButton)
 
     def setDb(self, index):
         if not index:
