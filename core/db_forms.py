@@ -34,7 +34,18 @@ SRC_DIR = core.const.SRC_DIR
 
 
 class CreateDbForm(CreateForm):
+    """
+    This is a superclass which specifies CreateForm class for create database form needs.
+    """
+
     def __init__(self, helpTip, parent=None):
+        """
+        This constructor creates the form specifying all widgets parameters.
+        :param helpTip:
+        Tip that will be displayed when form is hidden.
+        :param parent:
+        The parent of the form.
+        """
         title = 'Створити базу данних'
         namePlaceholder = "ім'я бази данних"
         nameTip = ("Для імені бази данних підтримуються \n"
@@ -47,18 +58,28 @@ class CreateDbForm(CreateForm):
                             helpTip, parent)
 
     def create(self, event):
+        """
+        This method called when user presses `Create` button.
+        It create database from data that user entered in form and saves it to file called
+        `<database name>.db`, it also creates salt file of the database called `<database
+        name>.bin`.
+        """
+        # Here we get validated name and password, create database and clear form
         name = validName(self.nameInput.text())
         password = self.passField.passInput.text().encode()
         newDatabase(name, password)
         self.clear()
 
+        # here we update database list and help tip
         item = QStandardItem(self.list.icon, name)
         self.list.model.appendRow(item)
         self.list.model.sort(0)
-
         self.tips['help'].setText("Виберіть базу данних")
 
     def validateName(self, event):
+        """
+        This method validates whether name entered in the field and is it unique.
+        """
         name = validName(self.nameInput.text())
         if name in getDbList():
             self.nameError.show()
@@ -78,7 +99,21 @@ class CreateDbForm(CreateForm):
 
 
 class EditDbForm(CreateForm):
+    """
+    This is a superclass which specifies CreateForm class for edit database form needs.
+    """
+
     def __init__(self, tips, windows, parent=None):
+        """
+        This constructor creates the form specifying all widgets parameters appropriately to
+        edit form, it also adds `Delete` button and changes create buttons text to `Save`
+        :param tips:
+        list of all tips
+        :param windows:
+        list of all windows
+        :param parent:
+        parent of the form
+        """
         title = 'Редагувати базу данних'
         namePlaceholder = "ім'я бази данних"
         nameTip = ("Для імені бази данних підтримуються \n"
@@ -101,8 +136,11 @@ class EditDbForm(CreateForm):
     def setDb(self, index):
         if not index:
             return
+        # Here we iterate through all windows and when we find one that matches our name
+        # we stop loop.
         for win in self.windows:
             if win.name == index.data():
+                # Here we saving name of the old database and set all the fields values
                 self.db = win
                 self.old_name = win.name
                 self.nameInput.setText(win.name)
@@ -113,10 +151,15 @@ class EditDbForm(CreateForm):
                 self.show()
                 return
 
+        # if no window for given database exist (i.e. it isn't opened yet) we show edit warning
         hide(self.forms, self.tips)
         self.tips['edit-w'].show()
 
     def validateName(self, event):
+        """
+        This method validates whether name entered in the field and is it unique (but if
+        the name didn't changed it's okay!).
+        """
         name = validName(self.nameInput.text())
         if name in getDbList() and name != self.db.name:
             self.nameError.show()
