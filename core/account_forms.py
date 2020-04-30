@@ -339,7 +339,18 @@ class EditAccForm(CreateAcc):
 
 
 class ShowAccForm(QWidget):
+    """
+    This class is a form that shows account information,
+    such as password, e-mail, date of birth etc.
+    """
     def __init__(self, db, parent=None):
+        """
+        This is a constructor of the form, it creates all widgets (mostly labels).
+        :param db:
+        database that contains given account.
+        :param parent:
+        parent of the form
+        """
         QWidget.__init__(self, parent)
         self.hide()
         self.db = db
@@ -352,14 +363,18 @@ class ShowAccForm(QWidget):
         self.comment = QTextEdit()
         self.comment.setReadOnly(True)
 
+        # Here we make all label selectable so user can select their text and copy it if he wants
+        # Also we set appropriate cursor for labels.
         for label in (self.account, self.name, self.email, self.password,
                       self.date, self.comment):
             label.setTextInteractionFlags(Qt.TextSelectableByMouse)
             label.setCursor(QCursor(Qt.IBeamCursor))
 
+        # Tip about fast copying feature
         self.copyTip = Tip('Ви можете натиснути гарячі клавіші Ctrl+C\n'
                            'аби скопіювати пароль і e-mail одразу.')
 
+        # her we add every form widget to layout
         layout = QVBoxLayout()
         layout.addWidget(self.account)
         layout.addWidget(self.name)
@@ -371,6 +386,11 @@ class ShowAccForm(QWidget):
         self.setLayout(layout)
 
     def setAcc(self, index):
+        """
+        This method changes content of the form accordingly to given account index
+        :param index:
+        index of the account
+        """
         accountname = index.data()
         account = self.db[accountname]
 
@@ -382,6 +402,10 @@ class ShowAccForm(QWidget):
         self.comment.setText('Коментарій: ' + account.comment)
 
     def copyAcc(self):
+        """
+        This method is called when user presses Ctrl+C or through menu: File -> Copy.
+        It copies e-mail to mouse buffer and password to clipboard.
+        """
         # to copy password
         clipboard = QGuiApplication.clipboard()
         clipboard.setText(self.password.text().replace('Пароль: ', ''))
