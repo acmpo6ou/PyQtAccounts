@@ -30,7 +30,7 @@ import PyQtAccounts
 
 class ReqsWarningsTest(UnitTest):
     def test_system_reqs(self):
-        PyQtAccounts.WarningWindow.exec = lambda self: PyQtAccounts.QMessageBox.Ok
+        PyQtAccounts.WarningWindow.exec = lambda *args: PyQtAccounts.QMessageBox.Ok
         def mock_system(sys_req):
             def wrap(command):
                 req = command.replace('which ', '')
@@ -59,7 +59,7 @@ class ReqsWarningsTest(UnitTest):
                 '''.format(req), msg.text())
 
     def test_pip_reqs(self):
-        PyQtAccounts.ErrorWindow.exec = lambda self: PyQtAccounts.QMessageBox.Ok
+        PyQtAccounts.ErrorWindow.exec = lambda *args: PyQtAccounts.QMessageBox.Ok
         def mock_pip(pip_req):
             def wrap():
                 raise ImportError(f'No module named {req}')

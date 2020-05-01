@@ -178,40 +178,62 @@ class EditDbForm(CreateForm):
             self.createButton.setEnabled(True)
 
     def delete(self, event):
+        """
+        This method deletes database showing confirmation dialog.
+        """
         name = self.db.name
-        # first is the main window
+                                     # first is the main window
         action = QMessageBox.warning(self.windows[0], 'Увага!',
                                      'Ви певні що хочете видалити базу данних '
                                      '<i><b>{}</b></i>'.format(name),
                                      buttons=QMessageBox.No | QMessageBox.Yes,
                                      defaultButton=QMessageBox.No)
+
+        # If users answer is `Yes` we delete database
         if action == QMessageBox.Yes:
             os.remove(f'{core.const.SRC_DIR}/{name}.db')
             os.remove(f'{core.const.SRC_DIR}/{name}.bin')
 
+            # and we update database list
             for item in self.model.findItems(name):
                 self.model.removeRow(item.row())
             self.model.sort(0)
             self.clear()
             self.db.ask = False
+
             # to avoid errors that occurs because of close behavior
             self.windows.remove(self.db)
-            self.db.closeEvent = lambda self: None
+            self.db.closeEvent = lambda *args: None
+
+            # and then we close database window
             self.db.close()
 
+            # if there is no databases left we show appropriate tip
             if not getDbList():
                 self.tips['help'].setText(HELP_TIP)
 
     def create(self):
+        """
+        This method more logically would be to name as `save` but it called `create` due to
+        compatibility with superclass.
+        This method called when user presses `Save` button.
+        It deletes old account and replaces it with new one created from data that user entered
+        in form.
+        """
+
+        # Here we get validated name and password
         name = validName(self.nameInput.text())
         password = self.passField.passInput.text().encode()
 
+        # Then we remove old database
         os.remove(f'{core.const.SRC_DIR}/{self.old_name}.db')
         os.remove(f'{core.const.SRC_DIR}/{self.old_name}.bin')
 
+        # And we create new database based on the data of the form
         newDatabase(name, password)
         self.clear()
 
+        # Here we delete old database name from list and add new name to it
         for item in self.model.findItems(self.old_name):
             self.model.removeRow(item.row())
 
@@ -221,23 +243,39 @@ class EditDbForm(CreateForm):
 
         # to avoid errors that occurs because of close behavior
         self.windows.remove(self.db)
-        self.db.closeEvent = lambda self: None
+        self.db.closeEvent = lambda *args: None
+
+        # Then we close database window
         self.db.close()
 
 
 class OpenDbForm(QWidget):
+    """
+    This class represents form that we use to open databases
+    """
     def __init__(self, helpTip, windows, parent=None):
+        """
+        This is constructor of the form, it creates all widgets.
+        :param helpTip:
+        Tip that will be displayed when form is hidden.
+        :param windows:
+        list of all windows
+        :param parent:
+        The parent of the form.
+        """
         QWidget.__init__(self, parent)
         self.hide()
         self.name = None
         self.windows = windows
         self.helpTip = helpTip
 
+        # Here we define title, password label and field of the form
         self.title = Title()
         self.passLabel = QLabel('Пароль:')
         self.passField = PasswordField('введіть пароль')
         self.passField.passInput.returnPressed.connect(self.open)
 
+        # This is error that we show when password is incorrect
         self.incorrectPass = Error('Неправильний пароль!')
         self.incorrectPass.hide()
 
@@ -253,27 +291,45 @@ class OpenDbForm(QWidget):
         layout.addWidget(self.openButton)
 
     def setDb(self, index):
+        """
+        This method called when chose database from the list.
+        :param index:
+        the index of the database being chosen, it stores database name.
+        """
+        # Here we set title according to the name of database being chosen
         self.name = index.data()
         self.title.setText('Відкрити базу данних <i><b>{}</b></i>'.format(self.name))
 
     def open(self):
+        """
+        This method called when user presses `Open` button.
+        It opens database creating its window.
+        :return:
+        """
+        # we obtain name and password of the database
         name = self.name
         password = self.passField.passInput.text().encode()
+
+        # Here we trying to open database
         try:
             db = openDatabase(self.name, password)
         except (InvalidSignature, InvalidToken):
+            # if something goes wrong (i.e. password is incorrect)
+            # we show appropriate error message
             self.incorrectPass.show()
             return
         else:
+            # if everything is alright we hide error message in case if it showed
             self.incorrectPass.hide()
 
-        self.incorrectPass.hide()
+        # then we clear form, hide it and show help tip
         self.name = None
         self.passField.passInput.clear()
-
-        win = DbWindow(self.windows, name, db, password)
-        self.windows.append(win)
-        win.setAttribute(Qt.WA_QuitOnClose)
-
         self.hide()
         self.helpTip.show()
+
+        # and create database window saving it to the windows list
+        win = DbWindow(self.windows, name, db, password)
+        self.windows.append(win)
+        # when main window is closed we close all database windows
+        win.setAttribute(Qt.WA_QuitOnClose)

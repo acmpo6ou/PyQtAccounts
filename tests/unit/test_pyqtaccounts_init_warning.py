@@ -34,7 +34,7 @@ class InitWarningTest(UnitTest):
         self.monkeypatch.setattr('os.listdir', lambda path: [])
 
         # Bob launches PyQtAccounts
-        WarningWindow.exec = lambda self: QMessageBox.Ok
+        WarningWindow.exec = lambda *args: QMessageBox.Ok
         msg = main()
 
         # Warning message appears saying that he need to initialize program
