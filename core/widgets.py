@@ -1,5 +1,25 @@
 #!/usr/bin/env python3
 
+# Copyright (c) 2020 Kolvakh B.
+# This file is part of PyQtAccounts.
+
+# PyQtAccounts is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# PyQtAccounts is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
+
+"""
+This module provides all widget for PyQtAccouts.
+"""
+
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
@@ -10,16 +30,21 @@ from core.utils import *
 
 
 class Tip(QLabel):
+    """
+    This class is a label that customized for tip, it has its own green color and font.
+    """
     def __init__(self, text=''):
         QLabel.__init__(self, text)
 
         font = QFont('Ubuntu Mono', 18)
-
         self.setStyleSheet('color: #37FF91;')
         self.setFont(font)
 
 
 class HelpTip(QLabel):
+    """
+    This class is a label that customized for help tip, it has its own font and centered text.
+    """
     def __init__(self, text=''):
         QLabel.__init__(self, text)
         self.setAlignment(Qt.AlignCenter)
@@ -29,6 +54,9 @@ class HelpTip(QLabel):
 
 
 class WarningTip(HelpTip):
+    """
+    This class is a label that customized for warning, it has its own yellow color.
+    """
     def __init__(self, text=''):
         HelpTip.__init__(self, text)
         self.setStyleSheet('color: #be9117;')
@@ -36,6 +64,9 @@ class WarningTip(HelpTip):
 
 
 class Title(QLabel):
+    """
+    This class is a label that customized as title, it makes it text bold and centered.
+    """
     def __init__(self, text=''):
         text = '<b>{}</b>'.format(text)
         QLabel.__init__(self, text)
@@ -43,23 +74,30 @@ class Title(QLabel):
 
 
 class Error(QLabel):
+    """
+    This class is a label that customized for error, it has its own red color and font.
+    """
     def __init__(self, text=''):
         QLabel.__init__(self, text)
 
         font = QFont('Ubuntu Mono', 18)
-
         self.setStyleSheet('color: #f26666;')
         self.setFont(font)
 
 
 class PasswordField(QHBoxLayout):
+    """
+    This class is a password field that has button which shows and hides password.
+    """
     def __init__(self, placeholder=''):
         QHBoxLayout.__init__(self)
 
+        # the input itself
         self.passInput = QLineEdit()
         self.passInput.setPlaceholderText(placeholder)
         self.passInput.setEchoMode(QLineEdit.Password)
 
+        # button that shows and hides password
         self.showButton = QPushButton()
         self.showButton.setIcon(QIcon('img/show.svg'))
         self.showButton.setIconSize(QSize(25, 25))
@@ -69,6 +107,9 @@ class PasswordField(QHBoxLayout):
         self.addWidget(self.showButton)
 
     def toggleShow(self):
+        """
+        This method called when show-hide button is pressed, it toggles password visibility.
+        """
         if self.passInput.echoMode() == QLineEdit.Password:
             self.passInput.setEchoMode(QLineEdit.Normal)
             self.showButton.setIcon(QIcon('img/hide.svg'))
