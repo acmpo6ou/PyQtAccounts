@@ -108,7 +108,8 @@ class PasswordField(QHBoxLayout):
 
     def toggleShow(self):
         """
-        This method called when show-hide button is pressed, it toggles password visibility.
+        This method called when show-hide button is pressed, it toggles password visibility,
+        and icon shown at the show-hide button.
         """
         if self.passInput.echoMode() == QLineEdit.Password:
             self.passInput.setEchoMode(QLineEdit.Normal)
@@ -119,7 +120,15 @@ class PasswordField(QHBoxLayout):
 
 
 class GenPassDialog(QDialog):
+    """
+    This class is a dialog for password generation.
+    """
     def __init__(self, form):
+        """
+        This is constructor of dialog.
+        :param form:
+        form that contains password fields that dialog will fill when it generates password.
+        """
         QDialog.__init__(self, form.parent())
         self.form = form
         self.setModal(True)
@@ -127,6 +136,7 @@ class GenPassDialog(QDialog):
         self.setWindowTitle('Згенерувати пароль')
         self.resize(700, 300)
 
+        # This is label, tip and spinbox that are define password length
         self.symLabel = QLabel('Довжина пароля: ')
         self.symNum = QSpinBox()
         self.symNum.setMinimum(8)
@@ -137,21 +147,26 @@ class GenPassDialog(QDialog):
         self.symLayout.addWidget(self.symLabel)
         self.symLayout.addWidget(self.symNum)
 
+        # There are 4 sections that create 4 flags and labels, that define what symbols to use
+        # in password
         self.digitsLabel = QLabel('Цифри')
         self.digitsFlag = QCheckBox()
         self.digitsFlag.setChecked(True)
         self.digitsFlag.name = 'd'
         self.digitsLabel.setBuddy(self.digitsFlag)
+
         self.lowerLabel = QLabel('Малі англійські букви')
         self.lowerFlag = QCheckBox()
         self.lowerFlag.setChecked(True)
         self.lowerFlag.name = 'l'
         self.lowerLabel.setBuddy(self.lowerFlag)
+
         self.upperLabel = QLabel('Великі англійські букви')
         self.upperFlag = QCheckBox()
         self.upperFlag.setChecked(True)
         self.upperFlag.name = 'u'
         self.upperLabel.setBuddy(self.upperFlag)
+
         self.punctuationLabel = QLabel('Знаки пунктуації')
         self.punctuationFlag = QCheckBox()
         self.punctuationFlag.setChecked(True)
@@ -189,11 +204,16 @@ class GenPassDialog(QDialog):
         self.setLayout(self.layout)
 
     def generate(self, event):
+        """
+        This method called when user presses `Generate` button, it fills forms password fields
+        with generated password.
+        """
         symbs = ''
         for box in self.digitsFlag, self.upperFlag, self.lowerFlag, self.punctuationFlag:
             flag = box.isChecked()
             if flag:
                 symbs += box.name
+
         password = genpass.main(symbs, self.symNum.value())
         self.form.passField.passInput.setText(password)
         self.form.passRepeatField.passInput.setText(password)
