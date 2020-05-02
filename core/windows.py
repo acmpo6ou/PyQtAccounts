@@ -206,13 +206,14 @@ def selectDb(obj, index):
     obj.index = index
 
     # here we iterate through all windows of the application and if window of database being
-    # chosen already exists we show message that tells that database is already opened.
+    # chosen already exists we show message saying that database is already opened.
     for win in obj.windows:
         if index.data() == win.name:
             hide(obj.forms, obj.tips)
             obj.tips['already-open'].show()
             return
 
+    # if there is no database window opened yet we show open database form.
     obj.forms['open'].setDb(index)
     hide(obj.forms, obj.tips)
     obj.forms['open'].show()
@@ -220,16 +221,31 @@ def selectDb(obj, index):
 
 
 class Dbs(QWidget):
+    """
+    This class is a container for everything that about databases.
+    """
     def __init__(self, forms, windows, tips):
+        """
+        This is constructor that creates database panel and list.
+        :param forms:
+        list of all application forms.
+        :param windows:
+        list of all application windows.
+        :param tips:
+        list of all application tips.
+        """
         super().__init__()
         self.forms = forms
         self.windows = windows
         self.tips = tips
 
+        # here we create database panel and list
         self.panel = Panel(self.add, self.edit)
         self.list = List(sorted(getDbList()), 'img/icon.svg', forms, windows,
                          tips, selectDb)
 
+        # and here we assign some stuff to database forms, such as database list, database model,
+        # tips and forms
         self.forms['edit'].model = self.list.model
         self.forms['edit'].list = self.list
         self.forms['edit'].tips = tips
@@ -244,33 +260,68 @@ class Dbs(QWidget):
         self.setLayout(layout)
 
     def add(self):
+        """
+        This method called when user presses `add` button on the panel.
+        It shows create database form.
+        """
         hide(self.forms, self.tips)
         self.forms['create'].show()
 
     def edit(self):
+        """
+        This method called when user presses `edit` button on the panel.
+        It shows edit database form.
+        """
+        # self.list.index is index that represents currently chosen database at the list
         self.forms['edit'].setDb(self.list.index)
 
 
 def selectAcc(obj, index):
+    """
+    Method that called when user chose account in the list.
+    :param obj:
+    Accs instance
+    :param index:
+    index that represents chosen account.
+    """
+    # here we set account that chosen to show account form and we show this form
     obj.index = index
-
     obj.forms['show'].setAcc(index)
     hide(obj.forms, obj.tips)
     obj.forms['show'].show()
 
 
 class Accs(QWidget):
+    """
+    This class is a container for everything that about accounts.
+    """
     def __init__(self, name, db, forms, tips, windows):
+        """
+        This is constructor that creates account panel and list.
+        :param name:
+        name of the database that contains all accounts.
+        :param db:
+        database dict that contains all accounts.
+        :param forms:
+        list of all application forms.
+        :param windows:
+        list of all application windows.
+        :param tips:
+        list of all application tips.
+        """
         QWidget.__init__(self)
         self.forms = forms
         self.windows = windows
         self.tips = tips
         self.db = db
 
+        # here we create accounts panel and list
         self.panel = Panel(self.add, self.edit)
         self.list = List(sorted(getAkiList(db)), 'img/account.png', forms,
                          windows, tips, selectAcc)
 
+        # and here we assign some stuff to account forms, such as account list, database name
+        # tips, forms and windows
         self.forms['create'].list = self.list
         self.forms['create'].tips = tips
 
@@ -289,19 +340,38 @@ class Accs(QWidget):
         self.setLayout(self.layout)
 
     def add(self):
+        """
+        This method called when user presses `add` button on the panel.
+        It shows create account form.
+        """
         hide(self.forms, self.tips)
         self.forms['create'].show()
 
     def edit(self):
+        """
+        This method called when user presses `edit` button on the panel.
+        It shows edit account form.
+        """
+        # self.list.index is index that represents currently chosen account at the list
         self.forms['edit'].setAcc(self.list.index)
 
 
 class MenuBar(QMenuBar):
+    """
+    This class is superclass for other menu bars (i.e. for main window and database windows menu
+    bars).
+    """
     def __init__(self, parent):
+        """
+        This is a base constructor for menu bars.
+        :param parent:
+        window of the menu bar.
+        """
         QMenuBar.__init__(self, parent)
         self.parent = parent
         self._thread = None
 
+        # here we define every action that all menu bars are using
         self.File = self.addMenu('&File')
         self.quit = self.File.addAction(QIcon('img/quit.svg'), '&Quit',
                                         parent.close, QKeySequence('Ctrl+Q'))
@@ -323,16 +393,28 @@ class MenuBar(QMenuBar):
                             lambda: QMessageBox.aboutQt(parent))
 
     def preferences(self):
+        """
+        This method called when users goes to menu: Edit -> Preferences.
+        It shows settings dialog.
+        """
         self.parent.settings.show()
 
     def checkForUpdates(self):
+        """
+        This method called when user goes to menu: Updates -> Check for updates.
+        It runs process of checking for updates in another thread.
+        """
         def mess(parent, changes, log):
             if changes:
+                # if there are updates we show updates available dialog.
                 res = UpdatesAvailable(parent, log)
             else:
+                # else we show message saying that there are no updates.
                 res = QMessageBox.information(parent, "Оновлення", "Немає оновленнь.")
+            # here we assign resulting dialog to main window, so we can test those dialogs.
             parent.res = res
 
+        # here we create process and start in another thread
         thread = QThread(parent=self)
         updating = Updating()
         updating.moveToThread(thread)
@@ -345,9 +427,20 @@ class MenuBar(QMenuBar):
 
 
 class AppMenuBar(MenuBar):
+    """
+    This class inherits from MenuBar, and it specifies actions that will be in the main window
+    menu bar.
+    """
     def __init__(self, parent):
+        """
+        This is the constructor of menu bar, it adds new actions to menu bar that already created
+        by base constructor.
+        :param parent:
+        main application window
+        """
         MenuBar.__init__(self, parent)
 
+        # here we add actions specific to databases
         self.new = QAction(QIcon('img/list-add.svg'), '&New database...')
         self.new.triggered.connect(parent.dbs.panel.addButton.click)
         self.new.setShortcut(QKeySequence('Ctrl+N'))
@@ -365,33 +458,53 @@ class AppMenuBar(MenuBar):
         self.File.insertAction(self.quit, self.export)
 
     def Import(self):
+        """
+        This method called when user goes to menu: File -> Import database...
+        It asks user about database tarfile that he would like to import then it
+        calls export function with all parameters specified.
+        """
+        # by default we show home directory at the `Chose directory dialog`
         home = os.getenv('HOME')
         path = QFileDialog.getOpenFileName(
             caption='Імпортувати базу данних',
             filter='Tarball (*.tar)',
             directory=home)[0]
+        # if user pressed `cancel` button we abort export, if not we call _import function
         if path:
             _import(path, self.parent)
 
     def Export(self):
+        """
+        This method called when user goes to menu: File -> Export database...
+        It asks user about folder where he would like to extract his database then it calls export
+        function with all parameters specified.
+        """
         try:
+            # here we obtain name of chosen database user wants to export
             name = self.parent.dbs.list.index.data()
         except AttributeError:
+            # if user doesn't chose database we show warning saying that he must chose database
+            # before export
             tips = self.parent.dbs.tips
             forms = self.parent.dbs.forms
             hide(tips, forms)
             tips['export'].show()
             return
 
+        # by default we show home directory at the `Chose directory dialog`
         home = os.getenv('HOME')
         path = QFileDialog.getSaveFileName(
             caption='Експортувати базу данних',
             filter='Tarball (*.tar)',
             directory=f'{home}/{name}.tar')[0]
+
+        # if user pressed `cancel` button we abort export
         if not path:
             return
+        # if user typed name of tarfile without .tad extension we add it to name.
         if not path.endswith('.tar'):
             path += '.tar'
+        # then we call export function
         export(name, path, self.parent)
 
 
