@@ -16,6 +16,10 @@
 # You should have received a copy of the GNU General Public License
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
 
+"""
+This module provides all classes that represent windows or other big elements of program.
+"""
+
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
@@ -33,7 +37,22 @@ from core.account_forms import *
 
 
 def export(name, path, parent):
+    """
+    This function called when user exports database
+    :param name:
+    name of the database being exported
+    :param path:
+    path where database will be exported
+    :param parent:
+    parent for messages
+    """
     try:
+        # here we create tar file that contains database files
+        # tarfile structure:
+        # src
+        # ├── <database name>.bin
+        # └── <database name>.db
+
         file = tarfile.open(path, 'w')
         file.add(f'{core.const.SRC_DIR}/{name}.db')
         file.add(f'{core.const.SRC_DIR}/{name}.bin')
@@ -41,26 +60,42 @@ def export(name, path, parent):
     except RecursionError:  # to prevent fatal python error
         raise
     except Exception:
+        # if there are some errors we show error message
         QMessageBox.critical(parent, 'Помилка!', 'Експорт бази данних '
                                                  'завершився невдачею.')
     else:
+        # if not we show success message
         QMessageBox.information(parent, 'Експорт', 'Успішно експортовано базу '
                                                    'данних <i><b>{}</b></i>'.format(name))
 
 
 def _import(path, parent):
+    """
+    This function called when user tries to import database
+    :param path:
+    path to database tarfile
+    :param parent:
+    parent for messages
+    """
     try:
+        # here we try to extract files from tarfile archive to program directory
         tar = tarfile.open(path)
         for i, file in enumerate(tar.getmembers()):
+            # here we check integrity of the tarfile, if there are any database file missing
+            # we throw an exception
             if '.db' not in file.name and '.bin' not in file.name:
                 raise TypeError('Невірний файл!')
 
+        # here we obtain name of the database through its files names
         name = os.path.basename(file.name).replace('.db', '').replace('.bin', '')
 
+        # here we check whether number of files in archive is 2, if not we throw exception,
+        # because file might be corrupted
         if i != 1:
             raise TypeError('Невірний файл!')
         tar.extractall(core.const.SRC_PATH)
 
+        # and here we update database list
         model = parent.dbs.list.model
         _list = parent.dbs.list
 
@@ -74,21 +109,35 @@ def _import(path, parent):
     except RecursionError:  # to prevent fatal python error
         raise
     except Exception as err:
+        # if there are some errors we show error message
         QMessageBox.critical(parent, 'Помилка!', str(err))
     else:
+        # if not we show success message
         QMessageBox.information(parent, 'Імпорт',
                                 'Успішно імпортовано базу данних <i><b>{}</b></i>'.format(name))
 
 
 class Panel(QHBoxLayout):
+    """
+    This class is a panel for buttons, it has 2 buttons: `add` and `edit`.
+    """
     def __init__(self, add, edit):
+        """
+        This is constructor of the panel.
+        :param add:
+        function that called when user presses `add` button
+        :param edit:
+        function that called when user presses `edit` button
+        """
         QHBoxLayout.__init__(self)
 
+        # this is `add` button it calls add function when user presses it.
         self.addButton = QPushButton()
         self.addButton.setIcon(QIcon('img/list-add.png'))
         self.addButton.setIconSize(QSize(22, 22))
         self.addButton.clicked.connect(add)
 
+        # this is `edit` button it calls edit function when user presses it.
         self.editButton = QPushButton()
         self.editButton.setIcon(QIcon('img/edit.svg'))
         self.editButton.setIconSize(QSize(22, 22))
@@ -99,7 +148,25 @@ class Panel(QHBoxLayout):
 
 
 class List(QListView):
+    """
+    This class is list of accounts or databases.
+    """
     def __init__(self, list, icon, forms, windows, tips, select):
+        """
+        This is constructor of the list.
+        :param list:
+        list of items that will be shown at the list widget.
+        :param icon:
+        icon that will be shown near every item of the list.
+        :param forms:
+        list of all application forms.
+        :param windows:
+        list of all application windows.
+        :param tips:
+        list of all application tips.
+        :param select:
+        method that called when user chose item from list.
+        """
         QListView.__init__(self)
         self.forms = forms
         self.windows = windows
@@ -107,6 +174,7 @@ class List(QListView):
         self.select = select
         self.index = None
 
+        # here we create list model and set this model to listview widget.
         self.icon = QIcon(icon)
         self.model = QStandardItemModel()
         self.setEditTriggers(QAbstractItemView.NoEditTriggers)
@@ -119,17 +187,32 @@ class List(QListView):
         self.clicked.connect(self.selected)
 
     def selected(self, index):
+        """
+        Method that called when user chose item in the list.
+        :param index:
+        index that represents chosen item.
+        """
         self.select(self, index)
 
 
 def selectDb(obj, index):
+    """
+    Method that called when user chose database in the list.
+    :param obj:
+    Dbs instance
+    :param index:
+    index that represents chosen database.
+    """
     obj.index = index
 
+    # here we iterate through all windows of the application and if window of database being
+    # chosen already exists we show message that tells that database is already opened.
     for win in obj.windows:
         if index.data() == win.name:
             hide(obj.forms, obj.tips)
             obj.tips['already-open'].show()
             return
+
     obj.forms['open'].setDb(index)
     hide(obj.forms, obj.tips)
     obj.forms['open'].show()
