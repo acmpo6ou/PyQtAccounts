@@ -509,9 +509,19 @@ class AppMenuBar(MenuBar):
 
 
 class DbMenuBar(MenuBar):
+    """
+    This class is a menu bar for database window.
+    """
     def __init__(self, parent):
+        """
+        This is the constructor of menu bar, it adds new actions to menu bar that already created
+        by base constructor.
+        :param parent:
+        database window
+        """
         MenuBar.__init__(self, parent)
 
+        # here we add actions specific to accounts
         self.new = QAction(QIcon('img/list-add.svg'), '&New account...')
         self.new.triggered.connect(parent.accs.panel.addButton.click)
         self.new.setShortcut(QKeySequence('Ctrl+N'))
@@ -529,29 +539,53 @@ class DbMenuBar(MenuBar):
         self.File.insertAction(self.quit, self.copy)
 
     def Save(self):
+        """
+        This method called when user goes to menu: File -> Save or press Ctrl+S.
+        It saves database on the disk.
+        """
+        # here we obtain database dict, name and password
         db = self.parent.db
         name = self.parent.name
         password = self.parent.password
-        token = encryptDatabase(name, db, password)
 
+        # then we encrypt that database and save it to file
+        token = encryptDatabase(name, db, password)
         dbfile = f'{core.const.SRC_DIR}/{name}.db'
         with open(dbfile, 'wb') as file:
             file.write(token)
 
 
 class DbWindow(QMainWindow):
+    """
+    This class is a database window.
+    """
     def __init__(self, windows, name, db, password):
+        """
+        This is a constructor of window, it initializes all forms, tips and other widgets.
+        :param windows:
+        list of all application windows.
+        :param name:
+        name of the database
+        :param db:
+        dict of the database
+        :param password:
+        password of the database
+        """
         QMainWindow.__init__(self)
         self.resize(1000, 500)
         self.setWindowTitle(name)
         self.setWindowIcon(QIcon('img/account.png'))
         self.name = name
-        self.windows = windows
-        self.ask = True
-
         self.db = db
         self.password = password
+        self.windows = windows
 
+        # this attribute represents whether we would show close confirmation dialog on close or
+        # not, if user has changed something in database we will, if not we wont annoy user with
+        # message.
+        self.ask = True
+
+        # here we create account forms an tips
         helpTip = HelpTip(HELP_TIP_ACCS)
         if getAkiList(db):
             helpTip = HelpTip("Виберіть акаунт")
@@ -572,6 +606,7 @@ class DbWindow(QMainWindow):
         for form in forms:
             splitter.addWidget(forms[form])
 
+        # and here we create accounts panel and list by instantiating Accs class
         accs = Accs(name, db, forms, tips, windows)
         accs.setMaximumWidth(200)
         splitter.addWidget(accs)
@@ -579,6 +614,7 @@ class DbWindow(QMainWindow):
         accs.tips = tips
         self.accs = accs
 
+        # here we create menu bar for window
         self.menu = DbMenuBar(self)
         self.setMenuBar(self.menu)
 
@@ -586,14 +622,21 @@ class DbWindow(QMainWindow):
         self.show()
 
     def closeEvent(self, event):
+        """
+        This method called when user closes database window.
+        """
+        # here we open database that is currently on disk
         name = self.name
         password = self.password
         db = openDatabase(name, password)
 
+        # then we compare database on disk and database in memory, if they differ it means that
+        # user changed database, so we will ask him about unsaved changes
         if isEqual(db, self.db) and self.ask:
             self.windows.remove(self)
             return
 
+        # here we asking user does he sure about exit
         if self.ask:
             action = QMessageBox.question(self, 'Увага!',
                                           'Ви певні що хочете вийти?\n'
@@ -602,17 +645,24 @@ class DbWindow(QMainWindow):
         else:
             action = QMessageBox.Yes
 
+        # if he answers `Yes` (i.e. he is sure) we close window
         if action == QMessageBox.Yes:
             self.windows.remove(self)
         else:
+            # else we ignore event and abort window close
             event.ignore()
 
 
 class About(QDialog):
+    """
+    This class is a About dialog, it appears when user goes to menu: Help -> About or presses F1.
+    This dialog provides all helpful information about PyQtAccounts such as license, credits etc.
+    """
     def __init__(self):
         QDialog.__init__(self)
         self.resize(300, 500)
 
+        # here we create dialog title with icon
         self.title = QLabel('<h3>About PyQtAccounts</h3>')
         self.title.setMinimumWidth(800)
         self.icon = QLabel()
@@ -623,8 +673,10 @@ class About(QDialog):
         self.titleLayout.addWidget(self.icon)
         self.titleLayout.addWidget(self.title)
 
+        # and here we obtain current programs version to use it in about section of dialog
         version = str(getVersion())[1:]  # to prevent the appearance of the `v` symbol
 
+        # this is `about` label, it provides information about PyQtAccounts
         self.about = \
             '''<pre>
 
@@ -647,15 +699,18 @@ class About(QDialog):
         self.aboutLabel = QLabel(self.about)
         self.aboutLabel.setOpenExternalLinks(True)
 
+        # here we load license from COPYING file and set it as text to license label
         self.license = \
             '<pre>{}</pre>'.format(open('COPYING').read())
         self.licenseText = QTextEdit(self.license)
         self.licenseText.setReadOnly(True)
 
+        # here we load credits from COPYING file and set it as text to credits label
         self.credits = \
             '<pre>{}</pre>'.format(open('CREDITS').read())
         self.creditsText = QLabel(self.credits)
 
+        # here we create tab widget, so each label has its own tab
         self.content = QTabWidget()
         self.content.addTab(self.aboutLabel, 'About')
         self.content.addTab(self.licenseText, 'License')
@@ -668,14 +723,27 @@ class About(QDialog):
 
 
 class Settings(QDialog):
+    """
+    This is settings dialog it appears when uer goes to menu: Edit -> Preferences or presses
+    Ctrl+P.
+    """
     def __init__(self, parent):
+        """
+        This is constructor of the dialog.
+        :param parent:
+        main window
+        """
         QDialog.__init__(self, parent)
         self.setWindowTitle('Settings - PyQtAccounts')
+        # here we open user settings that store in his home directory
         self.settings = QSettings(f'{os.getenv("HOME")}/PyTools', 'PyQtAccounts')
 
+        # here we create title and label for main database feature
+        # feature when we auto select main database on startup (database that user chose as main).
         header = QLabel('<h4>Швидке введення</h4>')
         label = QLabel('Головна база данних:')
 
+        # here we create checkbox to switch database feature and combobox to chose main database.
         checkbox = QCheckBox('Показувати форму для введення пароля одразу після запуску')
         checkbox.setChecked(self.settings.value('advanced/is_main_db', False, type=bool))
 
@@ -685,6 +753,7 @@ class Settings(QDialog):
         if main_db:
             dbs.setCurrentText(main_db)
         elif 'main' in getDbList():
+            # by default current is main database
             dbs.setCurrentText('main')
 
         mainLayout = QHBoxLayout()
@@ -715,6 +784,10 @@ class Settings(QDialog):
         self.setLayout(layout)
 
     def save(self):
+        """
+        This method called when user presses `Save` button.
+        """
+        # here we save all settings to file and hide our dialog.
         is_main_db = self.mainDbLayout.checkbox.isChecked()
         self.settings.setValue('advanced/is_main_db', is_main_db)
         main_db = self.mainDbLayout.dbs.currentText()
