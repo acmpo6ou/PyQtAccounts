@@ -15,8 +15,13 @@
 
 # You should have received a copy of the GNU General Public License
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
+
+"""
+This is a PyQtAccounts installation wizard. It installs all pip program dependencies and initializes
+PyQtAccounts, also it creates shortcuts in main menu and on desktop.
+"""
+
 import os
-import stat
 import sys
 
 from PyQt5.QtWidgets import *
@@ -31,6 +36,7 @@ try:
 except ImportError:
     pass
 
+# this is a lists of program dependencies: system (that we can't install through pip) and pip.
 reqs_list = ('git', 'pip3', 'xclip')
 reqs_pip = ('setuptools', 'cryptography', 'gitpython', 'pyshortcuts')
 
@@ -39,37 +45,62 @@ testing = lambda *args: None
 
 
 class Reqs:
+    """
+    This class stores 3 lists:
+    first called `cant_install` - it stores dependencies that we can't install through pip.
+    second called `to_install` - those are dependencies that we need to install with pip.
+    third called `installed` - those that are already installed.
+    """
     def __init__(self):
+        """
+        This constructor creates all lists.
+        """
         self.cant_install = []
         self.to_install = []
         self.installed = []
 
+        # here we iterate through all system dependencies and use `which` shell command
+        # to determine whether it exists or not, if not os.system will return non-zero code
         for req in reqs_list:
             if os.system('which ' + req):
+                # if `which` can't find dependency it will return non-zero status code, it
+                # means that dependency isn't installed so we add it to cant_install list
                 self.cant_install.append(req.replace('pip3', 'python3-pip'))
             else:
+                # else we add it to installed list
                 self.installed.append(req)
 
+        # here we iterate through all pip dependencies and use `__import__` function
+        # to determine whether it installed or not, if not __import__ will raise ImportError
         for req in reqs_pip:
             try:
                 # this function call is only for testing because we can't mock __import__
                 testing(req.replace('gitpython', 'git'))
+                # we need to import `git` but it represents `gitpython` package
                 __import__(req.replace('gitpython', 'git'))
             except ImportError:
+                # if we catch ImportError we add dependency to `to_install` list.
                 self.to_install.append(req)
             else:
+                # else we add it to installed list
                 self.installed.append(req)
 
 
 class ReqsList(QListView):
+    """
+    This is a customized QListView widget, it represents list of dependencies.
+    Icon near every dependency represents whether it installed or not.
+    """
     def __init__(self, reqs):
         QListView.__init__(self)
 
+        # here we create icons and model, also we don't want our list to be editable
         installed = QIcon('/usr/share/icons/Humanity/actions/48/gtk-yes.svg')
         not_installed = QIcon('/usr/share/icons/Humanity/actions/48/stock_not.svg')
         self.model = QStandardItemModel()
         self.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
+        # here we iterate through all 3 lists and add them to list model with appropriate icon
         for req in reqs.installed:
             item = QStandardItem(installed, req)
             self.model.appendRow(item)
@@ -82,19 +113,29 @@ class ReqsList(QListView):
             item = QStandardItem(not_installed, req)
             self.model.appendRow(item)
 
+        # then we set model to list
         self.setModel(self.model)
 
 
 class ReqsTips(QTextEdit):
+    """
+    This class is customized QTextEdit that will show tips about dependencies, for example how to
+    install system and pip dependencies.
+    """
     def __init__(self, reqs):
         QTextEdit.__init__(self)
+        # we don't want our tips to be editable
         self.setReadOnly(True)
 
+        # if `cant_install` and `to_install` lists are empty then every dependency is satisfied
+        # and we show green message saying that all dependencies are installed.
         if not (reqs.cant_install or reqs.to_install):
             tips = '<p style="color: #37FF91;">Всі залежності встановленно!</p>'
         else:
             tips = ''
 
+        # else we iterate through all not installed dependencies (both system and pip)
+        # and we add tips for each dependency saying how to install it.
         if reqs.cant_install:
             tips += '''<p>Будь-ласка встановіть пакети <i><b>{0}</b></i> 
             самостійно.</p>
