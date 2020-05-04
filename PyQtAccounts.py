@@ -16,6 +16,11 @@
 # You should have received a copy of the GNU General Public License
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
 
+"""
+This is the main module of the application, it connects everything into complete program -
+PyQtAccounts.
+"""
+
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
@@ -29,25 +34,39 @@ from core.utils import *
 from core.widgets import *
 from core.windows import *
 from core.updates import *
+
 from core.const import *
 import core.const
+
 SRC_DIR = core.const.SRC_DIR
 
 
 class Window(QMainWindow):
+    """
+    This class is a main window.
+    """
+
     def __init__(self):
+        """
+        This constructor creates everything that application needs.
+        It builds main window of PyQtAccounts.
+        """
         super().__init__()
         self.setWindowTitle("PyQtAccounts - PyQt5")
         self.resize(1000, 500)
         self.show()
 
+        # main window doesn't have a name, this way we can differ it in between other windows.
         self.name = ''
         self.setWindowIcon(QIcon('img/icon.svg'))
+
+        # main window is always the first window
         windows = [self]
         self.windows = windows
         self.destroy = False
         self.res = None
 
+        # here we create all tips
         helpTip = HelpTip(HELP_TIP_DB)
         if getDbList():
             helpTip = HelpTip("Виберіть базу данних")
@@ -67,6 +86,7 @@ class Window(QMainWindow):
             'export': exportTip
         }
 
+        # and here we create all forms
         create_db_form = CreateDbForm(helpTip, parent=self)
         open_db_form = OpenDbForm(helpTip, windows, parent=self)
         edit_db_form = EditDbForm(tips, windows, parent=self)
@@ -76,6 +96,8 @@ class Window(QMainWindow):
             'edit': edit_db_form,
             'open': open_db_form
         }
+
+        # here we instantiate Dbs class and add it to splitter which will split Dbs and forms
         dbs = Dbs(forms, windows, tips)
         dbs.setMaximumWidth(200)
 
@@ -89,22 +111,28 @@ class Window(QMainWindow):
         splitter.addWidget(dbs)
         self.dbs = dbs
 
+        # here we obtain the main database feature settings
         sets = QSettings(f'{os.getenv("HOME")}/PyTools', 'PyQtAccounts')
         is_main_db = sets.value('advanced/is_main_db', False, type=bool)
         main_db = sets.value('advanced/main_db', '', type=str)
+
+        # if user has main database feature turned on we auto select main database
         if is_main_db and main_db in getDbList():
             self.dbs.list.selected(Index(main_db))
 
+        # here we create about dialog and menu bar of the main window
         self.about = About()
-
         menuBar = AppMenuBar(self)
         self.setMenuBar(menuBar)
         self.setCentralWidget(splitter)
 
+        # here we check for updates if it is time to check for them
         if time_for_updates():
             def mess(changes, log):
                 if changes:
                     self.res = UpdatesAvailable(self, log)
+
+            # we start the checking process in another thread to prevent blocking of UI
             thread = QThread(parent=self)
             updating = Updating()
             updating.moveToThread(thread)
@@ -112,11 +140,15 @@ class Window(QMainWindow):
             thread.started.connect(updating.run)
             thread.start()
 
-        settings = Settings(self)
-
-        self.settings = settings
+        # here we create settings dialog
+        self.settings = Settings(self)
 
     def closeEvent(self, event):
+        """
+        This method called when user tries to close window.
+        Here we can warn him about opened databases (i.e. does he really wants to quit
+        because he may be accidentally pressed close button).
+        """
         # Do not show the close confirmation popup if there is no opened
         # databases.
         if len(self.windows) == 1:
@@ -124,6 +156,8 @@ class Window(QMainWindow):
             event.accept()
             return
 
+        # during testing we don't want warning messages so setting destroy attribute to True
+        # we skip those messages, but at production we show confirm message
         if self.destroy:
             action = QMessageBox.Yes
         else:
@@ -133,14 +167,23 @@ class Window(QMainWindow):
             event.ignore()
         else:
             self.visibility = False
+
+            # here we close all database windows together with main window and without
+            # confirmation popups
             for win in self.windows:
                 win.ask = False
                 win.close()
 
 
 class ErrorWindow(QMessageBox):
-    def __init__(self, text, err, parent=None):
+    """
+    This class is a window that we show if program caused some errors.
+    """
+
+    def __init__(self, text, err):
         super().__init__()
+        # here we set window title, icon and text. We also have detailed description which
+        # contains error message.
         self.setWindowTitle('Помилка!')
         self.setIcon(super().Critical)
         self.setDetailedText(str(err))
@@ -149,8 +192,13 @@ class ErrorWindow(QMessageBox):
 
 
 class WarningWindow(QMessageBox):
-    def __init__(self, text, parent=None):
+    """
+    This class is a window that we show if we want to warn user about something.
+    """
+
+    def __init__(self, text):
         super().__init__()
+        # here we set window title, icon and text.
         self.setWindowTitle('Увага!')
         self.setIcon(super().Warning)
         self.setText(text)
@@ -158,7 +206,17 @@ class WarningWindow(QMessageBox):
 
 
 def main():
-    if not '.git' in os.listdir('.'):
+    """
+    This is the main function of PyQtAccounts, it creates main window and handles errors and
+    some problems that are detected on startup.
+    :return:
+    None if there is no errors.
+    Warning or Error window if there are some errors.
+    """
+
+    # here we check whether program is initialized by checking does .git dir exists in program
+    # folder, if it doesn't we show initialization warning
+    if '.git' not in os.listdir('.'):
         return WarningWindow(
             '''
             <h3>Програму не ініціалізовано!</h3>
@@ -168,6 +226,7 @@ def main():
             <p>Система оновлення автоматично перевіряє, завантажує і встановлює оновлення.</p>
             ''')
 
+    # here we check whether all dependencies are installed, if not we show warning
     for req in sys_reqs:
         if os.system(f'which {req}'):
             return WarningWindow('''
@@ -178,11 +237,15 @@ def main():
                 <p>sudo apt install {0}</p>
                 '''.format(req))
 
-
     try:
+        # here we create application window, if any errors occur during lifetime of the program
+        # we will catch them below
         import git
         window = Window()
     except ImportError as err:
+        # if we caught import error it means that not all dependencies are satisfied
+        # so we show error message and give user proper advice about how to install dependencies
+        # that aren't satisfied yet
         for req in reqs_pip:
             if req in err.msg:
                 req = req
@@ -191,24 +254,27 @@ def main():
                         '<p>Якщо ні, спробуйте ввести в термінал цю кофманду:</p>'
                         f'<p><b>pip3 install {req}</b></p>')
                 return ErrorWindow(mess, err)
-    except RecursionError: # to prevent fatal python error
+    except RecursionError:  # to prevent fatal python error
         raise
     except Exception as err:
+        # if there are any other errors we show error message.
         mess = 'Вибачте програма повинна припинити роботу через помилку.'
+        win = ErrorWindow(mess, err)
+
+        # during testing we want to return error window (to test it), so if TESTING is true we do so
         if os.getenv('TESTING'):
-            return ErrorWindow(mess, err)
+            return win
         else:
             raise
 
 
+# here we create application instance and set proper font size, because by default it might be small
 app = QApplication(sys.argv)
-
 app.setStyleSheet('''
 *{
     font-size: 24px;
 }
 ''')
-
 
 if __name__ == '__main__':
     main()
