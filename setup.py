@@ -155,6 +155,9 @@ class ReqsTips(QTextEdit):
 
 
 class Errors(QTextEdit):
+    """
+    This class is a error messages QTextEdit, it has red color of its text.
+    """
     def __init__(self):
         QTextEdit.__init__(self)
         self.setReadOnly(True)
@@ -163,13 +166,23 @@ class Errors(QTextEdit):
 
 
 class Title(QLabel):
+    """
+    This class is a simple QLabel that wraps its text to <h4> tag and centers it.
+    """
     def __init__(self, text=''):
         QLabel.__init__(self, '<h4>{}</h4>'.format(text))
         self.setAlignment(Qt.AlignHCenter)
 
 
 class InstallationWizard(QWizard):
+    """
+    This is main component of the program - installation wizard, it connects all pages together.
+    """
     def __init__(self, parent=None):
+        """
+        This constructor creates all the wizard pages adding all needed attributes to them,
+        also it customizes installation wizard by specifying size and title.
+        """
         super(InstallationWizard, self).__init__(parent)
 
         self.addPage(WelcomePage(self))
@@ -186,11 +199,16 @@ class InstallationWizard(QWizard):
 
 
 class WelcomePage(QWizardPage):
+    """
+    This is the first page of the wizard, it simply greets user.
+    """
     def __init__(self, parent=None):
         super(WelcomePage, self).__init__(parent)
+        # There is an icon of PyQtAccounts on the welcome page.
         self.setPixmap(QWizard.WatermarkPixmap,
                        QPixmap('/usr/share/icons/Mint-X/mimetypes/96/application-pgp-keys.svg'))
 
+        # Greetings
         self.title = Title('<pre>Вітаємо у майстрі встановлення\n PyQtAccounts!</pre>')
         self.text = QLabel('<pre><br>Ми допоможемо вам пройти всі кроки \n'
                            'встановлення.</pre>')
@@ -202,33 +220,61 @@ class WelcomePage(QWizardPage):
 
 
 class PipInstall(QObject):
+    """
+    This object represents the process of installing pip dependencies.
+    """
+    # signals that are emit result of installing and fact that process has ended.
     result = pyqtSignal(int, str)
     finish = pyqtSignal()
 
     def __init__(self, reqs):
+        """
+        Constructor of the process, it saves Reqs instance.
+        :param reqs:
+        Reqs instance that contains to_install list which represents pip dependencies that we
+        need to install.
+        """
         QObject.__init__(self)
         self.reqs = reqs
 
     def run(self):
+        """
+        This method called to start installation process.
+        """
+        # here we iterate trough all not installed pip dependencies and install them emitting
+        # results (i.e. success or failure)
         for req in self.reqs.to_install:
             res = os.system('pip3 install ' + req)
             self.result.emit(res, req)
+
+        # at the end of the loop we emit finish signal to exit thread which contains our process
         self.finish.emit()
 
 
 class RequirementsPage(QWizardPage):
+    """
+    This is a page that contains all information about requirements. Using ReqsList and ReqsTips
+    we show user which dependencies he has installed, which has not and how to install them.
+    It also contains install button to install unsatisfied pip dependencies.
+    """
     def __init__(self, parent=None, reqs=Reqs()):
         super(RequirementsPage, self).__init__(parent)
         self._thread = None
+        # Title and tip of the page
         self.title = Title('Залежності')
         self.text = QLabel('<pre>PyQtAccounts вимагає наявності\n'
                            'певних пакетів. Ось перелік тих які\n'
                            'встановлені, або не встановленні у вас:</pre>')
+
+        # here we create requirements list and tips by instantiating ReqsList and ReqsTips.
+        # also we create errors field for error messages that may occur in process of installation
+        # of pip dependencies.
         self.reqs = reqs
         self.reqsList = ReqsList(reqs)
         self.reqsTips = ReqsTips(reqs)
         self.errors = Errors()
 
+        # here are installation label and progressbar that we show during installation
         installation = QHBoxLayout()
         self.installLabel = QLabel('Інсталяція...')
         self.installProgress = QProgressBar()
@@ -238,6 +284,8 @@ class RequirementsPage(QWizardPage):
         self.installProgress.hide()
         self.progress = 0
 
+        # this is an `Install` button that user can use to install unsatisfied pip dependencies
+        # if user already had satisfied all dependencies this button will be disabled.
         self.installButton = QPushButton("Встановити")
         self.installButton.clicked.connect(self.install)
         if not reqs.to_install:
@@ -254,14 +302,25 @@ class RequirementsPage(QWizardPage):
         self.setLayout(layout)
 
     def install(self, event):
+        """
+        This method called when user presses `Install` button. It validates whether pip is
+        installed and starts installation process.
+        """
+        # here we hide and clear installation errors if they are shown
         self.errors.setText('')
         self.errors.hide()
 
+        # if user hasn't installed pip then we can't perform the installation of pip dependencies
+        # so here we check whether pip installed or not and if its not we show appropriate error.
         if 'pip3' in self.reqs.cant_install:
             self.errors.show()
             self.errors.setText('Встановіть пакет pip3!')
             return
 
+        # here we disable install button to prevent user from pressing it again while last
+        # installation process hasn't finished yet, if we start another thread when last hasn't
+        # finished than we will override it (i.e. it will be destroyed) and it will crash the
+        # program with error `QThread destroyed while thread is still running`.
         self.installButton.setEnabled(False)
 
         thread = QThread(parent=self)
