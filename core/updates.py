@@ -93,7 +93,7 @@ class Updating(QObject):
         origin = repo.remote()
         origin.fetch()
 
-        # we fetch all changes and if there new ones than changes list wouldn't be empty
+        # we fetch all changes and if there new ones then changes list wouldn't be empty
         # also we get changelog which we will show at the updating dialog if there are updates
         changes = list(repo.iter_commits('master..origin/master'))
         changelog = getChangeLog()

@@ -319,7 +319,7 @@ class RequirementsPage(QWizardPage):
 
         # here we disable install button to prevent user from pressing it again while last
         # installation process hasn't finished yet, if we start another thread when last hasn't
-        # finished than we will override it (i.e. it will be destroyed) and it will crash the
+        # finished then we will override it (i.e. it will be destroyed) and it will crash the
         # program with error `QThread destroyed while thread is still running`.
         self.installButton.setEnabled(False)
 
@@ -451,25 +451,49 @@ class Initialize(QObject):
 
 
 class InitPage(QWizardPage):
+    """
+    This page contains `Browse...` widget, progressbar, `Initialize` button, and checkboxes
+    that represent whether user wants to create program shortcuts in system menu and on desktop
+    or not.
+    Initialization page provides everything that we need to clone PyQtAccounts from github
+    repository.
+    """
     def __init__(self, parent=None):
         super(InitPage, self).__init__(parent)
+        # here we define _thread attribute where we will store an instance of our thread in which
+        # we will start initialization progress
         self._thread = None
+
+        # folder attribute which stores directory where we will clone PyQtAccounts
         self.folder = os.getenv('HOME')
+
+        # title of the page, errors field for errors of initialization, progressbar to represent
+        # the process of initializing
         self.title = Title('Ініціалізація')
         self.errors = Errors()
         self.progress = QProgressBar()
 
+        # this is the `Browse...` widget:
+        # label that explains purpose of it (i.e. that here user need to chose the folder
+        #   where we will clone PyQtAccounts)
+        # button that says `Browse...`, the chose folder dialog popups when user clicks it
+        # label that represents path to directory being chosen
         self.initLabel = QLabel('Виберіть папку в яку ви хочете встановити PyQtAccounts:')
         self.browseButton = QPushButton('Browse...')
         self.browseButton.clicked.connect(self.browse)
         self.browseLabel = QLabel(self.folder)
 
+        # here is layout that holds all this together
         browseLayout = QHBoxLayout()
         browseLayout.addWidget(self.browseButton)
         browseLayout.addWidget(self.browseLabel)
+
+        # `Initialize` button that starts initialization process when user clicks it
         self.initButton = QPushButton('Ініціалізувати')
         self.initButton.clicked.connect(self.init)
 
+        # here we define system menu and desktop checkboxes (and helpful labels for them)
+        # that will represent whether to create shortcuts or not
         desktopIcon = QHBoxLayout()
         self.desktopCheckbox = QCheckBox()
         self.desktopCheckbox.setChecked(True)
@@ -499,17 +523,39 @@ class InitPage(QWizardPage):
         self.setLayout(layout)
 
     def browse(self):
+        """
+        This method called when user clicks on the `Browse...` button
+        """
+        # here we obtain installation wizard, it is the parent of the page
         wizard = self.parent()
+
+        # here we show directory dialog with appropriate title and opened directory.
         folder = QFileDialog.getExistingDirectory(wizard, 'Installation directory',
                                                   self.folder, QFileDialog.ShowDirsOnly)
+
+        # if user chose folder we save its path to `folder` attribute of the page and update
+        # text of browse label.
+        # Note: that if user hasn't chose folder (e.g. he pressed `Cancel`) folder will store
+        # an empty string, so in that case we have to do nothing
         if folder:
             self.folder = folder
             self.browseLabel.setText(folder)
 
     def isComplete(self):
+        """
+        This method is called when completeChanged signal emits, here we check progressbar value
+        if it is on 100% then we return True, so `Next` button will become enabled.
+        """
         return self.progress.value() == 100
 
     def init(self):
+        """
+        This method called when user press `Initialize` button, it verifies is everything ready
+        for initialization and if it is then he starts initialization process in another thread.
+        """
+        # if PyQtAccounts folder in the path that is chosen by user already exist then we can't
+        # clone repository there, so we just pretend that initialization is already complete
+        # showing 100% on the progressbar
         if 'PyQtAccounts' in os.listdir(self.folder):
             self.progress.setValue(100)
 
