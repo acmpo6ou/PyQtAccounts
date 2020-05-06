@@ -323,6 +323,7 @@ class RequirementsPage(QWizardPage):
         # program with error `QThread destroyed while thread is still running`.
         self.installButton.setEnabled(False)
 
+        # here we start installation process in another thread to prevent blocking of GUI
         thread = QThread(parent=self)
         self.install = PipInstall(self.reqs)
         self.install.moveToThread(thread)
@@ -333,50 +334,93 @@ class RequirementsPage(QWizardPage):
         self.installLabel.show()
         self.installProgress.show()
 
+        # we must first check does last thread finished yet, if it not we must finish it
+        # before writing another to _thread variable
         if self._thread and not self._thread.isFinished():
             self._thread.exit()
+
+        # here we save our thread to _thread variable otherwise garbage collector will destroy it
+        # (after method returns all its variables are destroyed).
         self._thread = thread
 
     def install_progress(self, res, req):
+        """
+        This method is a progress signal handler, it receives result code of installing each
+        dependency and name of the dependency itself.
+        It shows errors if result code is non-zero and updates progressbar if there is no errors.
+        :param res:
+        result code of the dependency
+        :param req:
+        name of the dependency
+        """
+        # here we update progress attribute which represents current state of installation
         self.progress += 100 / len(self.reqs.to_install)
 
+        # if there are any errors during installation we show appropriate error message
         if res:
             text = self.errors.toPlainText()
             self.errors.setText(text + 'Не вдалося встановити ' + req + '\n')
             self.errors.show()
             return
 
+        # if not we update progressbar and list of requirements
         self.installProgress.setValue(self.progress)
-
         reqs = Reqs()
         self.layout().removeWidget(self.reqsList)
         self.reqsList = ReqsList(reqs)
         self.layout().insertWidget(2, self.reqsList)
 
+        # if progress is greater than or equal 100% then installation has finished.
+        # so here we hide tips and show successful installation label.
         if self.progress >= 100:
             self.installLabel.setText('<p style="color: #37FF91;">Встановлено!</p>')
             self.reqsTips.hide()
 
+        # at the end we emit completeChanged signal to check have we installed everything yet or
+        # we don't, if we have then we will enable `Next` button.
         self.completeChanged.emit()
 
     def install_finish(self):
+        """
+        This method is handler of `finish` signal of the PipInstall process. It simply exits
+        thread to prevent errors such as `QThread destroyed while thread is still running` on exit.
+        """
         self._thread.exit()
 
     def isComplete(self):
+        """
+        This method is handler of completeChanged signal, it simply checks whether every dependency
+        is satisfied or not.
+        :return:
+        if every dependency is satisfied returns True and `Next` button will become available.
+        """
         reqs = Reqs()
         return not (reqs.cant_install or reqs.to_install)
 
 
 class Initialize(QObject):
+    """
+    This object represents the process of downloading the program itself from our github repository.
+    """
+    # signals that are emit result of initialization, fact that process has ended and progress of
+    # initialization (downloading PyQtAccounts from repository).
     result = pyqtSignal(int)
     progress = pyqtSignal(int)
     finish = pyqtSignal()
 
     def __init__(self, folder):
+        """
+        In this constructor we simply save folder where we will download PyQtAccounts.
+        :param folder:
+        path to folder where we will download PyQtAccounts
+        """
         QObject.__init__(self)
         self.folder = folder + '/PyQtAccounts'
 
     def run(self):
+        """
+        This method called to start initialization process.
+        """
         import git
 
         class Progress(git.remote.RemoteProgress):
@@ -389,14 +433,20 @@ class Initialize(QObject):
                 self.progress.emit(progress)
 
         try:
+            # here we trying to clone our stable github repository in folder that user gave us
+            # also we want to track the progress of clone process to show it on progressbar.
             git.Repo.clone_from('https://github.com/Acmpo6ou/PyQtAccounts', self.folder,
                                 progress=Progress(self.progress))
         except RecursionError:  # to prevent fatal python error
             raise
         except Exception:
+            # if there are any errors we emit the non-zero result
             self.result.emit(1)
         else:
+            # else we emit zero result
             self.result.emit(0)
+
+        # at the end we emit that progress is finished to exit it normally
         self.finish.emit()
 
 
