@@ -424,11 +424,30 @@ class Initialize(QObject):
         import git
 
         class Progress(git.remote.RemoteProgress):
+            """
+            This class handles progress of clone operation, it receives number of objects already
+            downloaded and total number of objects, then it calculates how much percents of objects
+            are already downloaded.
+            """
             def __init__(self, progress):
+                """
+                In this constructor we just save `progress` variable.
+                :param progress:
+                signal of initialization progress using which we will emit progress of cloning.
+                """
                 git.remote.RemoteProgress.__init__(self)
                 self.progress = progress
 
             def update(self, op_code, cur_count, max_count=None, message=''):
+                """
+                This method does all calculation of progress percents and emits them using progress
+                signal.
+                :param cur_count:
+                number of objects already downloaded
+                :param max_count:
+                total number of objects
+                """
+                # here we calculate progress percents and emit them using progress signal.
                 progress = cur_count * 100 / max_count
                 self.progress.emit(progress)
 
@@ -559,6 +578,8 @@ class InitPage(QWizardPage):
         if 'PyQtAccounts' in os.listdir(self.folder):
             self.progress.setValue(100)
 
+        # if progress attribute of the page doesn't equals 100 we start initialization process in
+        # another thread
         if self.progress.value() != 100:
             thread = QThread(parent=self)
             self.initialize = Initialize(self.folder)
@@ -569,14 +590,29 @@ class InitPage(QWizardPage):
             thread.started.connect(self.initialize.run)
             thread.start()
 
+            # we must first check does last thread finished yet, if it not we must finish it
+            # before writing another to _thread variable
             if self._thread and not self._thread.isFinished():
                 self._thread.exit()
+
+            # here we save our thread to _thread variable otherwise garbage collector will destroy
+            # it (after method returns all its variables are destroyed).
             self._thread = thread
 
     def check_result(self, res):
+        """
+        This method is handler of the result signal of initialization process, it checks `res`
+        variable, if it contains non-zero code we show appropriate error message.
+        :param res:
+        result code of the initialization process
+        """
+        # here we clear and hide errors field if it already displayed
         self.errors.hide()
         self.errors.setText('')
 
+        # here we check result code and if it is non-zero we show error message advising
+        # user to check his internet connection and rights to write to folder that he defined
+        # as directory in which we clone github repository
         if res:
             self.errors.show()
             self.errors.setText('Помилка ініціалізації!\n'
@@ -584,17 +620,39 @@ class InitPage(QWizardPage):
                                 "запис у папку інсталяції.")
 
     def init_progress(self, progress):
+        """
+        This method is handler of progress signal of the initialization progress.
+        It receives progress in % of initialization process.
+        :param progress:
+        progress of initialization process.
+        """
+        # here we update our progressbar according to received progress
         self.progress.setValue(progress)
 
+        # if progress equals to 100% then we emit completeChanged signal to enable `Next` button
         if progress >= 100:
             self.completeChanged.emit()
 
     def init_finish(self):
+        """
+        This method is handler of `finish` signal of the PipInstall process. It simply exits
+        thread to prevent errors such as `QThread destroyed while thread is still running` on exit.
+        """
         self._thread.exit()
 
 
 class FinishPage(QWizardPage):
+    """
+    This page simply shows message saying that installation is successful (regardless of is it
+    really successful or not though, technically user will not reach this page if installation
+    is unsuccessful). Also page creates shortcuts in system menu and on desktop according to
+    checkbox states on the initialization page, it also creates run.sh file which will initialize
+    environment for PyQtAccounts and will run it.
+    """
     def __init__(self, parent=None):
+        """
+        This constructor simply creates title and success label.
+        """
         super(FinishPage, self).__init__(parent)
 
         self.title = Title('Finish')
@@ -606,12 +664,20 @@ class FinishPage(QWizardPage):
         self.setLayout(layout)
 
     def initializePage(self):
+        """
+        This method called when we show this page, it creates system menu, desktop shortcuts
+        and run.sh script.
+        """
+        # here we obtain states of the shortcuts checkboxes on the initialization page and path
+        # to program folder
         initPage = self._parent.initPage
         cwd = initPage.folder + '/PyQtAccounts/'
         desktop = initPage.desktopCheckbox.isChecked()
         startmenu = initPage.menuCheckbox.isChecked()
 
+        # here we create shortcuts if at least one of shortcut checkboxes are checked
         if desktop or startmenu:
+            # we use make_shortcut function from pyshortcuts module for this.
             make_shortcut(
                 name='PyQtAccounts',
                 script=cwd + '/run.sh',
@@ -623,7 +689,9 @@ class FinishPage(QWizardPage):
                 executable='/bin/bash'
             )
 
-            # fixing .ico icon issue
+            # fixing .ico icon issue, make_shortcut function adds .ico extension to icon path
+            # (i.e. our '/img/icon.svg' becomes '/img/icon.svg.ico'), so we remove .ico from our
+            # icon path
             home = os.getenv('HOME')
             if desktop:
                 desktop = open(home + '/Desktop/PyQtAccounts.desktop').read()
