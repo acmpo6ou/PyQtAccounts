@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
 
-###############################################################################
-# This package contains all unit tests that test PyQtAccounts from programmers
-# point of view.
-###############################################################################
+################################################################################
+# This package contains all functional tests that test PyQtAccounts installation
+# wizard from programmers point of view.
+################################################################################
