@@ -703,16 +703,21 @@ class FinishPage(QWizardPage):
                 with open(home + '/.local/share/applications/PyQtAccounts.desktop', 'w') as file:
                     file.write(menu.replace('.ico', ''))
 
+        # here we create run.sh script which will start our application
         run = ('#!/bin/bash\n\n'
                f'cd {cwd}\n'
                f'export PYTHONPATH="$PYTHONPATH:{cwd}"\n'
                'python3 PyQtAccounts.py')
+
         with open(cwd + 'run.sh', 'w') as runfile:
             runfile.write(run)
+
+        # here we give the script permissions for execution
         os.chmod(cwd + 'run.sh', 0o755)
 
 
 if __name__ == '__main__':
+    # here we create application instance, set normal font size and icon
     app = QApplication(sys.argv)
     app.setStyleSheet('''
     *{
