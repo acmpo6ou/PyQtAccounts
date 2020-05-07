@@ -15,13 +15,18 @@
 
 # You should have received a copy of the GNU General Public License
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
-import shutil
+
+"""
+This module contains test case classes and helpful functions that are used by tests.
+"""
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtTest import QTest
-import unittest
 from unittest.mock import Mock
+
+import unittest
 import pytest
+import shutil
 import sys
 import os
 import time
@@ -33,15 +38,36 @@ from setup import InstallationWizard
 
 
 class BaseTest(unittest.TestCase):
+    """
+    Base test superclass almost all tests are inherit from it.
+    """
     def setUp(self):
+        """
+        This method setts up environment for every test, here we set TESTING environment variable
+        to True, for example adjusted hide and show functions from testutils module use it to
+        determine whether they should construct (or destruct) windows or not. This variable is like
+        a signal for program that it is running under test, this strategy very helpful.
+        """
         os.environ['TESTING'] = 'True'
 
     @pytest.fixture(autouse=True)
     def monkeypatching(self, monkeypatch):
+        """
+        This method is a fixture that defines monkeypatch attribute for test class, because pytest
+        doesn't pass monkeypatch to methods, only to functions.
+        :param monkeypatch:
+        Monkeypatch instance
+        """
         self.monkeypatch = monkeypatch
 
     @pytest.fixture(autouse=True)
     def bot(self, qtbot):
+        """
+        This method is a fixture that defines qbot attribute for test class, because pytest
+        doesn't pass qtbot to methods, only to functions.
+        :param qtbot:
+        QtBot instance
+        """
         self.qbot = qtbot
 
     def menu(self, submenu_index, action_index):
