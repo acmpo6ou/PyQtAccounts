@@ -71,12 +71,38 @@ class BaseTest(unittest.TestCase):
         self.qbot = qtbot
 
     def menu(self, submenu_index, action_index):
+        """
+        This method returns menu action instance (QAction) by given index of submenu and index
+        of menu action.
+        :param submenu_index:
+        index of submenu that contains menu action we want to get, type int
+        :param action_index:
+        index of menu action we want to get, type int
+        :return:
+        menu action, type QAction
+        """
         submenu = self.window.menuBar().actions()[submenu_index]
         return submenu.menu().actions()[action_index]
 
     @staticmethod
-    def file_dialog(result):
+    def import_database_dialog(result):
+        """
+        This method constructs mock function for chose file dialog from QFileDialog module,
+        in this case file dialog that user will use to chose database that program will import.
+        :param result:
+        Result that open file dialog returns, i.e. tuple first element of which is path to file
+        being chosen. Using this parameter we can simulate user respond to dialog.
+        :return:
+        mock function that will mock import database dialog.
+        """
         def file_dialog(caption, filter, directory):
+            """
+            This is a mock function itself, it checks whether arguments being passed are right,
+            and returns, specified in `result`, tuple with path to file which we use to simulate
+            user respond to dialog.
+            :return:
+            tuple first element of which is path to file that fake user is chose
+            """
             assert caption == 'Імпортувати базу данних'
             assert filter == 'Tarball (*.tar)'
             assert directory == os.getenv('HOME')
@@ -85,19 +111,55 @@ class BaseTest(unittest.TestCase):
         return file_dialog
 
     @staticmethod
-    def save_file_dialog(name, result):
-        def save_file_dialog(caption, filter, directory):
+    def export_database_dialog(name, result):
+        """
+        This method constructs mock function for chose folder dialog from QFileDialog module,
+        in this case dialog that user will use to chose folder where program will export database.
+        :param name:
+        name of database that fake user wants export
+        :param result:
+        Result that open directory dialog returns, i.e. tuple first element of which is path to that
+        directory that fake user chose. Using this parameter we can simulate user respond to dialog.
+        :return:
+        mock function that will mock export database dialog.
+        """
+        def export_database_dialog(caption, filter, directory):
+            """
+            This is a mock function itself, it checks whether arguments being passed are right,
+            and returns, specified in `result`, tuple with path to folder which we use to simulate
+            user respond to dialog.
+            :return:
+            tuple first element of which is path to folder that fake user is chose
+            """
             home = os.getenv('HOME')
             assert caption == 'Експортувати базу данних'
             assert filter == 'Tarball (*.tar)'
             assert directory == f'{home}/{name}.tar'
             return result
 
-        return save_file_dialog
+        return export_database_dialog
 
     @staticmethod
     def mess(head, text, button=QMessageBox.Ok):
+        """
+        This method constructs mock function for dialogs from QMessageBox module.
+        :param head:
+        :param text:
+        :param button:
+        Button code that mock function will return when called, that code represents button that
+        user pressed (e.g. QMessageBox.Ok). Using this code we can simulate user clicks on the
+        dialog buttons.
+        :return:
+        mock function that will mock some function from QMessageBox.
+        """
         def mess(parent, this_head, this_text, *args, **kwargs):
+            """
+            This is a mock function itself, it checks whether arguments being passed are right,
+            and returns, specified in `button`, button code that we use to simulate user respond to
+            dialog i.e. button that he click.
+            :return:
+            button code that represents button that fake user clicks as respond to dialog.
+            """
             assert this_head == head
             assert this_text == text
             return button
@@ -106,7 +168,11 @@ class BaseTest(unittest.TestCase):
 
     @staticmethod
     def mess_showed(*args, **kwargs):
-        raise AssertionError('This message showed, but shouldn\'t be!')
+        """
+        This is a mock function that mocks dialogs that shouldn't be showed, if this dialogs are
+        showed something isn't right and we throw exception.
+        """
+        raise AssertionError("This message showed, but shouldn't be!")
 
     @staticmethod
     def critical(parent, head, text):

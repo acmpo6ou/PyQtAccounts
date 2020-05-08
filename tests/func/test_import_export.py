@@ -50,7 +50,7 @@ class ImportExportTest(DbsTest, SettingsMixin):
     def test_import_success(self):
         # Emily wants to import database so she goes to menu File -> Import database...
         # File dialog appears and she chose her tar file
-        file_dialog = self.file_dialog(('tests/func/src/import_database.tar',))
+        file_dialog = self.import_database_dialog(('tests/func/src/import_database.tar',))
         QFileDialog.getOpenFileName = file_dialog
 
         # Success message appears, Emily presses `Ok` button
@@ -67,7 +67,7 @@ class ImportExportTest(DbsTest, SettingsMixin):
     def test_import_doesnt_ends_with_tar(self):
         # Emily wants to import database so she goes to menu File -> Import database...
         # File dialog appears and she chose her tar file which is without extension
-        file_dialog = self.file_dialog(('tests/func/src/import_database',))
+        file_dialog = self.import_database_dialog(('tests/func/src/import_database',))
         QFileDialog.getOpenFileName = file_dialog
 
         # Success message appears, Emily presses `Ok` button
@@ -84,7 +84,7 @@ class ImportExportTest(DbsTest, SettingsMixin):
     def test_import_fail(self):
         # Tom wants to import database
         # File dialog appears and he chose his tar file
-        file_dialog = self.file_dialog(('tests/func/src/corrupted_few_files.tar',))
+        file_dialog = self.import_database_dialog(('tests/func/src/corrupted_few_files.tar',))
         QFileDialog.getOpenFileName = file_dialog
 
         # Error message appears saying that his file is corrupted, so Tom presses `Ok`
@@ -92,7 +92,7 @@ class ImportExportTest(DbsTest, SettingsMixin):
         self.import_db.trigger()
 
         # He then tries to import another database
-        file_dialog = self.file_dialog(('tests/func/src/corrupted_many_files.tar',))
+        file_dialog = self.import_database_dialog(('tests/func/src/corrupted_many_files.tar',))
         QFileDialog.getOpenFileName = file_dialog
 
         # Another error appears with the same message
@@ -113,7 +113,7 @@ class ImportExportTest(DbsTest, SettingsMixin):
 
         # And presses Ctrl+E
         # File dialog appears and she chose path
-        file_dialog = self.save_file_dialog('database', ('tests/func/src/database.tar',))
+        file_dialog = self.export_database_dialog('database', ('tests/func/src/database.tar',))
         QFileDialog.getSaveFileName = file_dialog
 
         # Success message appears
@@ -136,7 +136,7 @@ class ImportExportTest(DbsTest, SettingsMixin):
 
         # And presses Ctrl+E
         # File dialog appears and he chose / path
-        file_dialog = self.save_file_dialog('database', ('/database.tar',))
+        file_dialog = self.export_database_dialog('database', ('/database.tar',))
         QFileDialog.getSaveFileName = file_dialog
 
         # Error message appears saying that export is unsuccessful
