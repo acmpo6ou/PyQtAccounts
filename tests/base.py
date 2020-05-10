@@ -176,57 +176,110 @@ class BaseTest(unittest.TestCase):
 
     @staticmethod
     def critical(parent, head, text):
+        """
+        This is a mock function that mocks critical dialogs (i.e. error dialogs), it simply
+        checks whether title is right (we don't check error message itself) and returns `Ok`
+        button code to emulate dialog. close.
+        """
         assert head == 'Помилка!'
         return QMessageBox.Ok
 
     @staticmethod
     def copyDatabase(name):
+        """
+        This method copies test databases to in memory filesystem, because it is faster to edit
+        them in memory and it prevents collisions.
+        :param name:
+        name of the database which files we want to copy.
+        """
+        # here we copy database .db and .bin files to fake src directory in fake filesystem
         shutil.copy(f'tests/src/{name}.db', '/home/accounts/test/src')
         shutil.copy(f'tests/src/{name}.bin', '/home/accounts/test/src')
 
 
 class UnitTest(BaseTest):
+    """
+    This class is a test case for unit tests, it contains all methods that are specific to
+    them.
+    """
     def patchVersion(self):
+        """
+        This function is used to mock some classes from git module which getVersion function
+        uses to identify which version of PyQtAccounts is installed.
+        """
         class Tag:
+            """
+            This is a double of Tag class from git module.
+            """
             def __init__(self, name, date):
+                """
+                In this constructor we save tags name and fake date of its creation.
+                :param name:
+                name of the tag
+                :param date:
+                date of tags creation, it is not necessarily for this parameter to be real date,
+                it can be any number.
+                """
                 self.name = name
                 self.commit = Mock()
                 self.commit.committed_datetime = date
 
             def __str__(self):
+                """
+                This method simulates __str__ from real Tag class.
+                :return:
+                tags name
+                """
                 return self.name
 
         class Repo:
+            """
+            This is a mock for Repo class from git module, we use it create fake tags for
+            repository.
+            """
             def __init__(self, *args):
+                """
+                In constructor we simply do nothing.
+                """
                 pass
 
+            # here we create fake tags using Tag mock class.
             tags = []
             for i, name in enumerate(['v1.0.0', 'v1.0.2', 'v2.0.6']):
+                # tag will have its name from the list and `i` variable will represent
+                # its date of creation. getVersion sorts tags by its date but its actually
+                # doesn't matter will it be real date or just number.
                 tags.append(Tag(name, i))
 
+        # here we monkeypatch Repo class
         self.monkeypatch.setattr(git, 'Repo', Repo)
 
 
 class FuncTest(BaseTest):
+    """
+    This class is a test case for functional tests, it contains all methods that are specific to
+    them. It is a superclass for DbsTest and AccsTest.
+    """
     def setUp(self):
+        """
+        This method sets up everything specific for functional tests.
+        """
         super().setUp()
+        # here we create application main window and dbs instance which both DbsTest and AccsTest
+        # are using.
         self.window = Window()
         self.dbs = self.window.dbs
 
+        # here we initialize fake /home/accounts folder and fake src directory in it
         init_accounts_folder()
         init_src_folder(self.monkeypatch)
+
+        # here we copy all test databases into test src folder.
         self.copyDatabase('main')
         self.copyDatabase('crypt')
         self.copyDatabase('a')
         self.copyDatabase('database')
         self.copyDatabase('import_database')
-
-    def tearDown(self):
-        try:
-            self.window.destroy = True
-            self.window.close()
-        except AttributeError:
-            pass
 
     def check_only_visible(self, elem, parent):
         for form in parent.forms:

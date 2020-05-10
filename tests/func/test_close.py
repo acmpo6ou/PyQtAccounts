@@ -53,12 +53,6 @@ class CloseTest(FuncTest):
         self.window.close()
         self.assertFalse(self.window.visibility)
 
-    def test_destroy_window(self):
-        self.window.destroy = True
-        self.monkeypatch.setattr(QMessageBox, 'question', self.mess_showed)
-        self.window.close()
-        self.assertFalse(self.window.visibility)
-
     def close_from_menu(self):
         # First is `File` submenu, last is `Quit` action
         self.monkeypatch.setattr(QMessageBox, 'question', self.mess_showed)

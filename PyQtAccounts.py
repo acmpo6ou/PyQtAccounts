@@ -63,7 +63,6 @@ class Window(QMainWindow):
         # main window is always the first window
         windows = [self]
         self.windows = windows
-        self.destroy = False
         self.res = None
 
         # here we create all tips
@@ -156,14 +155,11 @@ class Window(QMainWindow):
             event.accept()
             return
 
-        # during testing we don't want warning messages so setting destroy attribute to True
-        # we skip those messages, but at production we show confirm message
-        if self.destroy:
-            action = QMessageBox.Yes
-        else:
-            action = QMessageBox.question(self, 'Увага!', 'Ви певні що хочете вийти?')
+        # here we show confirm message
+        action = QMessageBox.question(self, 'Увага!', 'Ви певні що хочете вийти?')
 
         if action == QMessageBox.No:
+            # if user answered no we do nothing (i.e ignore close event)
             event.ignore()
         else:
             self.visibility = False
