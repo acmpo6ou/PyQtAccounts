@@ -239,17 +239,14 @@ class UnitTest(BaseTest):
             """
             def __init__(self, *args):
                 """
-                In constructor we simply do nothing.
+                In constructor we simply create fake tags using Tag mock class.
                 """
-                pass
-
-            # here we create fake tags using Tag mock class.
-            tags = []
-            for i, name in enumerate(['v1.0.0', 'v1.0.2', 'v2.0.6']):
-                # tag will have its name from the list and `i` variable will represent
-                # its date of creation. getVersion sorts tags by its date but its actually
-                # doesn't matter will it be real date or just number.
-                tags.append(Tag(name, i))
+                self.tags = []
+                for i, name in enumerate(['v1.0.0', 'v1.0.2', 'v2.0.6']):
+                    # tag will have its name from the list and `i` variable will represent
+                    # its date of creation. getVersion sorts tags by its date but its actually
+                    # doesn't matter will it be real date or just number.
+                    self.tags.append(Tag(name, i))
 
         # here we monkeypatch Repo class
         self.monkeypatch.setattr(git, 'Repo', Repo)
@@ -282,36 +279,77 @@ class FuncTest(BaseTest):
         self.copyDatabase('import_database')
 
     def check_only_visible(self, elem, parent):
+        """
+        This method is used to check that `elem` parameter is the only visible widget in parent
+        (e.g Dbs or Accs instance) and other elements in parent are hidden.
+        Note: that you should not call this method directly, DbsTest and AccsTest will implement
+        checkOnlyVisible method that will call check_only_visible with specified parent parameter.
+        :param elem:
+        tip or form that we want to check on visibility.
+        :param parent:
+        Dbs or Accs instance which contains forms and tips (and elem as well).
+        """
+        # here we check every form of parent:
+        # if this form is elem we check whether it is visible
+        # if form isn't elem we check whether it is hidden
         for form in parent.forms:
             if parent.forms[form] == elem:
                 self.assertTrue(parent.forms[form].visibility)
                 continue
             self.assertFalse(parent.forms[form].visibility)
 
+        # here we check every tip of parent:
+        # if this tip is elem we check whether it is visible
+        # if tip isn't elem we check whether it is hidden
         for tip in parent.tips:
             if parent.tips[tip] == elem:
                 self.assertTrue(parent.tips[tip].visibility)
                 continue
             self.assertFalse(parent.tips[tip].visibility)
 
-    def check_in_list(self, name, parent):
+    @staticmethod
+    def check_in_list(name, parent):
+        """
+        This function checks whether given element is in the list of parent.
+        Note: that you should not call this method directly, DbsTest and AccsTest will implement
+        their method that will call check_in_list with specified parent parameter.
+        :param name:
+        name of the element (e.g. database or account).
+        :param parent:
+        Dbs or Accs instance which contains list.
+        """
+        # here we obtain the model of the parents list
         model = parent.list.model
+
+        # then we iterate trough every index of the model if we don't find index data of which
+        # equal to given `name` parameter then we throw AssertionError with appropriate message
         for i in range(model.rowCount()):
             index = model.item(i)
             if index.text() == name:
                 break
         else:
-            raise AssertionError('Not in the list!')
+            raise AssertionError(f'{name} not in the list of {parent}!')
 
-    def check_not_in_list(self, name):
+    def check_not_in_list(self, name, parent):
+        """
+        This function checks whether given element is NOT in the list of parent.
+        Note: that you should not call this method directly, DbsTest and AccsTest will implement
+        their method that will call check_not_in_list with specified parent parameter.
+        :param name:
+        name of the element (e.g. database or account).
+        :param parent:
+        Dbs or Accs instance which contains list.
+        """
         try:
-            self.checkDbInList(name)
-        except RecursionError:  # to prevent fatal python error
-            raise
-        except:
+            # here we to check is given element IS in the list
+            self.check_in_list(name, parent)
+        except AssertionError:
+            # if AssertionError caught then it is OK, element is NOT in the list, so we do nothing
             pass
         else:
-            raise AssertionError("In the list, but it shouldn't be!")
+            # and if there is no exceptions then element IS in the list and it is not right, so we
+            # throw AssertionError with appropriate message
+            raise AssertionError(f"{name} is IN the list of {parent}, but it shouldn't be!")
 
 
 class DbsTest(FuncTest):
@@ -322,7 +360,7 @@ class DbsTest(FuncTest):
         self.check_in_list(name, self.dbs)
 
     def checkDbNotInList(self, name):
-        self.check_not_in_list(name)
+        self.check_not_in_list(name, self.dbs)
 
     def checkDbOnDisk(self, name):
         self.assertTrue(os.path.exists(f'/home/accounts/test/src/{name}.bin'))
@@ -357,7 +395,7 @@ class AccsTest(FuncTest):
         self.check_in_list(name, self.accs)
 
     def checkAccNotInList(self, name):
-        self.check_not_in_list(name)
+        self.check_not_in_list(name, self.accs)
 
 
 class SetupMixin:
