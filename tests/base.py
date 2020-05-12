@@ -172,7 +172,9 @@ class BaseTest(unittest.TestCase):
         This is a mock function that mocks dialogs that shouldn't be showed, if this dialogs are
         showed something isn't right and we throw exception.
         """
-        raise AssertionError("This message showed, but shouldn't be!")
+        raise AssertionError(f"The message showed, but it shouldn't be!\n"
+                             f"Args: {args}\n"
+                             f"Kwargs: {kwargs}")
 
     @staticmethod
     def critical(parent, head, text):
@@ -353,53 +355,138 @@ class FuncTest(BaseTest):
 
 
 class DbsTest(FuncTest):
+    """
+    This class is a test case for everything that about databases.
+    """
     def checkOnlyVisible(self, elem):
+        """
+        This method is used to check that `elem` parameter is the only visible widget in Dbs
+        instance and other elements in Dbs are hidden.
+        It calls check_only_visible with specified parent parameter (Dbs instance).
+        :param elem:
+        tip or form that we want to check on visibility.
+        """
         self.check_only_visible(elem, self.dbs)
 
     def checkDbInList(self, name):
+        """
+        This method is used to check whether given database is in the database list.
+        It calls check_in_list method with specified `parent` parameter (Dbs instance).
+        :param name:
+        name of the database
+        """
         self.check_in_list(name, self.dbs)
 
     def checkDbNotInList(self, name):
+        """
+        This method is used to check whether given database is NOT in the database list.
+        It calls check_not_in_list method with specified `parent` parameter (Dbs instance).
+        :param name:
+        name of the database
+        """
         self.check_not_in_list(name, self.dbs)
 
     def checkDbOnDisk(self, name):
+        """
+        This method is used to check whether files of given database are on the disk or not.
+        :param name:
+        name of the database
+        """
+        # here we check existence of database file and saltfile in the test src directory.
         self.assertTrue(os.path.exists(f'/home/accounts/test/src/{name}.bin'))
         self.assertTrue(os.path.exists(f'/home/accounts/test/src/{name}.db'))
 
     def checkDbNotOnDisk(self, name):
+        """
+        This method is used to check whether files of given database are NOT on the disk or they
+        are.
+        :param name:
+        name of the database
+        """
+        # here we check inexistence of database file and saltfile in the test src directory.
         self.assertFalse(os.path.exists(f'/home/accounts/test/src/{name}.bin'))
         self.assertFalse(os.path.exists(f'/home/accounts/test/src/{name}.db'))
 
 
 class AccsTest(FuncTest):
+    """
+    This class is a test case for everything that about accounts.
+    """
     def setUp(self, name='database', password='some_password'):
+        """
+        This method is called before each accounts test, it opens test database because in
+        account tests we need to test accounts and accounts are stored in database.
+        :param name:
+        name of the database we which contains our test accounts, by default we open `database`
+        but in some cases we need to open another one.
+        :param password:
+        password to database specified in name parameter, by default it is `some_password` (i.e.
+        password to `database`).
+        """
         super().setUp()
 
+        # Here we initialize accounts and src test folders (i.e. that are in fake file
+        # system). Then we copy database specified in `name` parameter to test src directory.
         init_accounts_folder()
         init_src_folder(self.monkeypatch)
         self.copyDatabase(name)
 
+        # here we open database
         form = self.dbs.forms['open']
         self.list = self.dbs.list
         self.pass_input = form.passField.passInput
         self.list.selected(Index(name))
         self.pass_input.setText(password)
         form.openButton.click()
+
+        # and here we save database window and accs instance
         self.win = self.window.windows[1]
         self.accs = self.win.accs
 
     def checkOnlyVisible(self, elem):
+        """
+        This method is used to check that `elem` parameter is the only visible widget in Accs
+        instance and other elements in Accs are hidden.
+        It calls check_only_visible with specified parent parameter (Accs instance).
+        :param elem:
+        tip or form that we want to check on visibility.
+        """
         self.check_only_visible(elem, self.accs)
 
     def checkAccInList(self, name):
+        """
+        This method is used to check whether given account is in the account list.
+        It calls check_in_list method with specified `parent` parameter (Accs instance).
+        :param name:
+        name of the account
+        """
         self.check_in_list(name, self.accs)
 
     def checkAccNotInList(self, name):
+        """
+        This method is used to check whether given account is NOT in the account list.
+        It calls check_not_in_list method with specified `parent` parameter (Accs instance).
+        :param name:
+        name of the account
+        """
         self.check_not_in_list(name, self.accs)
 
 
 class SetupMixin:
+    """
+    This mixin is provides some helpful methods that are about setup.py module (i.e. installation
+    wizard).
+    """
     def patchReqs(self, to_install=[], cant_install=[]):
+        """
+        This method is used to monkeypatch Reqs class from setup.py module. Reqs is class that
+        represents dependencies that are installed or not installed.
+        :param to_install:
+        fake list of pip dependencies that we need to install
+        :param cant_install:
+        fake list of system dependencies that are not installed
+        """
+        # here we create fake reqs instance
         reqs = Mock()
         reqs.installed = ['git', 'pip3', 'xclip',
                           'setuptools', 'cryptography', 'gitpython', 'pyshortcuts']
