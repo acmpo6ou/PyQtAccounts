@@ -486,38 +486,82 @@ class SetupMixin:
         :param cant_install:
         fake list of system dependencies that are not installed
         """
-        # here we create fake reqs instance
+        # here we create fake reqs instance and assign fake to_install and cant_install
+        # lists to it, also we assign list of all requirements to installed attribute
+        # below you can find out more about why we doing it
         reqs = Mock()
-        reqs.installed = ['git', 'pip3', 'xclip',
-                          'setuptools', 'cryptography', 'gitpython', 'pyshortcuts']
+        reqs.installed = list(core.const.sys_reqs) + list(core.const.reqs_pip)
         reqs.to_install = to_install
         reqs.cant_install = cant_install
 
+        # here we delete all requirements that are in the `to_install` and `cant_install`
+        # lists from `installed` list to simulate more realistic behavior because every dependency
+        # that is nor in the `to_install` and `cant_install` lists is `installed` and must be in the
+        # `installed` list
         for req in cant_install + to_install:
             reqs.installed.remove(req)
 
+        # finally we monkey patch Reqs class to always return our fake reqs instance
         self.monkeypatch.setattr('setup.Reqs', lambda: reqs)
 
     @staticmethod
     def mock_system(res):
+        """
+        This method constructs fake function for monkeypatching `system` from `os` module.
+        :param res:
+        result code that fake os.system will return on exit
+        :return:
+        fake function for monkeypatching os.system library function
+        """
         def wrap(command):
+            """
+            This function is a test double for os.system. It simulates work and returns exit
+            code specified in `res` parameter from outer function.
+            :param command:
+            command that os.system takes, here we don't use it.
+            :return:
+            exit code specified in `res` parameter from outer function
+            """
+            # here we simulate work and return exit code
             time.sleep(0.1)
-            # req = command.replace('pip3 install ', '')
-            # self.to_install.remove(req)
-            # self.patchReqs(self.to_install)
             return res
 
         return wrap
 
 
 def init_accounts_folder():
+    """
+    This function sets up fake, in memory filesystem that we use in tests to avoid test collisions,
+    operations of writing to disk (our program during tests will write to files that are in memory,
+    not on real disk).
+    We use /dev/shm which on Linux is filesystem allocated in memory.
+    """
+    # here we redefine our HOME env variable to `/home/accounts`, so during testing PyQtAccounts
+    # will think that user home directory is /home/accounts and will perform all write operation
+    # according to that path.
+    # NOTE: that /home/accounts must be symbolic link to /dev/shm/accounts, so all write
+    # operations will be redirected from /home/accounts to /dev/shm/accounts folder which is
+    # located in memory filesystem.
     os.environ['HOME'] = '/home/accounts'
+
+    # here we check whether /dev/shm/accounts already exists, if so we delete it to clean up
+    # files that are created by previous test
     if os.path.exists('/dev/shm/accounts'):
         shutil.rmtree('/dev/shm/accounts')
+
+    # then we create fresh `accounts` folder in /dev/shm/
     os.mkdir('/dev/shm/accounts')
 
 
 def init_src_folder(monkeypatch):
+    """
+    This function creates fake src directory (/home/accounts/test/src) in fake filesystem and
+    redirects all PyQtAccounts writing from `src` to `/home/accounts/test/src` using
+    monkeypatching (not symbolic link), because we cant create symbolic link instead of `src`
+    directory -- we will push it to our github repository and users will download broken program.
+    :param monkeypatch:
+    any monkeypatch instance to perform monkeypatching
+    """
     init_accounts_folder()
     os.makedirs('/home/accounts/test/src')
     monkeypatch.setattr('core.const.SRC_DIR', '/home/accounts/test/src')
