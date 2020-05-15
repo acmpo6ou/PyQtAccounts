@@ -57,11 +57,10 @@ class AboutTest(UnitTest):
         """
         This method tests does version displays right in about section.
         """
-        # here using patchVersion method we monkeypatch getVersion function from utils.py module
+        # Tom has PyQtAccounts v2.0.6 installed
         self.patchVersion()
 
-        # then we create `about` dialog and check whether version is displayed correctly in its
-        # `about` section
+        # he opens about dialog and sees correct version number `Version 2.0.6` in about section
         about = About()
         self.assertIn('Version 2.0.6', about.about)
 
