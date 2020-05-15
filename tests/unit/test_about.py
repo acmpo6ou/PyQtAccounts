@@ -16,6 +16,10 @@
 # You should have received a copy of the GNU General Public License
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
 
+"""
+This test module contains all unit tests for `about` dialog of PyQtAccounts.
+"""
+
 from PyQt5.QtTest import QTest
 from PyQt5.QtCore import *
 from unittest.mock import Mock
@@ -30,31 +34,69 @@ import git
 
 
 class AboutTest(UnitTest):
+    """
+    This class contains all unit tests for `about` dialog of PyQtAccounts.
+    """
     def setUp(self):
+        """
+        In this method we simply pre-saving built in open function, because we will replace it
+        with ours during tests.
+        """
         super().setUp()
         self.open = open
 
     def tearDown(self):
+        """
+        In this method we restore built in open function from our `open` attribute where we
+        pre-save it.
+        """
         super().tearDown()
         __builtins__['open'] = self.open
 
     def test_about_version(self):
+        """
+        This method tests does version displays right in about section.
+        """
+        # here using patchVersion method we monkeypatch getVersion function from utils.py module
         self.patchVersion()
+
+        # then we create `about` dialog and check whether version is displayed correctly in its
+        # `about` section
         about = About()
         self.assertIn('Version 2.0.6', about.about)
 
     def test_license_credits(self):
+        """
+        This method tests does license and credits loads correctly from their files.
+        :return:
+        """
         def mock_open(path, *args, **kwargs):
+            """
+            This function is a test double for open built in function.
+            :param path:
+            path to file we want to open
+            :return:
+            fake file descriptor if function was called by PyQtAccounts about dialog else real
+            file descriptor (using our pre-saved open function)
+            """
+            # here we check whether function was called by PyQtAccounts about dialog or not
             file = Mock()
+            # if it was we check what file does about dialog wants to load LICENSE or CREDITS and
+            # return him appropriate fake file descriptor
             if path == 'COPYING':
                 file.read.return_value = 'This is a License.'
             elif path == 'CREDITS':
                 file.read.return_value = 'Here are credits.'
             else:
+                # if function was called by another code (i.e. not about dialogs) we return real
+                # file descriptor
                 file = self.open(path, *args, **kwargs)
             return file
+
+        # here we patch open function with our fake one and create about dialog
         __builtins__['open'] = mock_open
         about = About()
 
+        # then we check license and credits sections of about dialog
         self.assertEqual(about.licenseText.toPlainText(), 'This is a License.')
         self.assertEqual(about.creditsText.text(), '<pre>Here are credits.</pre>')
