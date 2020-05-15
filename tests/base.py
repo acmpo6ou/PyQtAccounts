@@ -189,7 +189,7 @@ class BaseTest(unittest.TestCase):
     @staticmethod
     def copyDatabase(name):
         """
-        This method copies test databases to in memory filesystem, because it is faster to edit
+        This method copies test databases to in-memory filesystem, because it is faster to edit
         them in memory and it prevents collisions.
         :param name:
         name of the database which files we want to copy.
@@ -270,7 +270,6 @@ class FuncTest(BaseTest):
         self.dbs = self.window.dbs
 
         # here we initialize fake /home/accounts folder and fake src directory in it
-        init_accounts_folder()
         init_src_folder(self.monkeypatch)
 
         # here we copy all test databases into test src folder.
@@ -427,7 +426,6 @@ class AccsTest(FuncTest):
 
         # Here we initialize accounts and src test folders (i.e. that are in fake file
         # system). Then we copy database specified in `name` parameter to test src directory.
-        init_accounts_folder()
         init_src_folder(self.monkeypatch)
         self.copyDatabase(name)
 
@@ -531,7 +529,7 @@ class SetupMixin:
 
 def init_accounts_folder():
     """
-    This function sets up fake, in memory filesystem that we use in tests to avoid test collisions,
+    This function sets up fake, in-memory filesystem that we use in tests to avoid test collisions,
     operations of writing to disk (our program during tests will write to files that are in memory,
     not on real disk).
     We use /dev/shm which on Linux is filesystem allocated in memory.
@@ -562,14 +560,32 @@ def init_src_folder(monkeypatch):
     :param monkeypatch:
     any monkeypatch instance to perform monkeypatching
     """
+    # here we call init_accounts_folder to initialize `accounts` in-memory folder
     init_accounts_folder()
+
+    # then we create `src` directory in the `test` directory which we create in the `accounts`
+    # folder
     os.makedirs('/home/accounts/test/src')
+
+    # here using monkeypatching we change constants from core.const module which represent
+    # path of `src` directory and path of where it stored to appropriate test paths
     monkeypatch.setattr('core.const.SRC_DIR', '/home/accounts/test/src')
     monkeypatch.setattr('core.const.SRC_PATH', '/home/accounts/test')
 
 
 class SettingsMixin:
+    """
+    This mixin provides setUp method which creates fake settings file for PyQtAccounts.
+    """
     def setUp(self):
+        """
+        This method creates fake settings file for PyQtAccounts.
+        """
+        # this env variable is to ensure that we in testing mode
         os.environ['TESTING'] = 'True'
+
+        # here we create fake .config directory where will be fake settings file.
         os.mkdir('/home/accounts/.config')
+
+        # and here we create settings instance that points to fake settings file
         self.settings = QSettings(f'{os.getenv("HOME")}/PyTools', 'PyQtAccounts')

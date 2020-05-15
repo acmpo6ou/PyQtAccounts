@@ -37,7 +37,6 @@ class DbSaveTest(AccsTest):
         self.name = self.form.nameInput
         self.email = self.form.emailInput
 
-        init_accounts_folder()
         init_src_folder(self.monkeypatch)
         self.copyDatabase('import_database')
 

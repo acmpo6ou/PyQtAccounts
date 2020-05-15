@@ -134,7 +134,6 @@ class EditDbTest(DbsTest):
         self.assertTrue(win.visibility)
 
     def test_delete_db(self):
-        init_accounts_folder()
         init_src_folder(self.monkeypatch)
         self.copyDatabase('database')
         self.setUp()

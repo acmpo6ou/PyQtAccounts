@@ -35,7 +35,7 @@ class ImportExportTest(DbsTest, SettingsMixin):
     def setUp(self):
         SettingsMixin.setUp(self)
 
-        # Any database should be selected
+        # Any database shouldn't be selected
         self.settings.setValue('advanced/is_main_db', False)
         super().setUp()
 

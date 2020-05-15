@@ -60,10 +60,10 @@ class Reqs:
         self.installed = []
 
         # here we iterate through all system dependencies and use `which` shell command
-        # to determine whether it exists or not, if not os.system will return non-zero code
+        # to determine whether it exists or not, if not os.system will return nonzero code
         for req in reqs_list:
             if os.system('which ' + req):
-                # if `which` can't find dependency it will return non-zero status code, it
+                # if `which` can't find dependency it will return nonzero status code, it
                 # means that dependency isn't installed so we add it to cant_install list
                 self.cant_install.append(req.replace('pip3', 'python3-pip'))
             else:
@@ -347,7 +347,7 @@ class RequirementsPage(QWizardPage):
         """
         This method is a progress signal handler, it receives result code of installing each
         dependency and name of the dependency itself.
-        It shows errors if result code is non-zero and updates progressbar if there is no errors.
+        It shows errors if result code is nonzero and updates progressbar if there is no errors.
         :param res:
         result code of the dependency
         :param req:
@@ -459,7 +459,7 @@ class Initialize(QObject):
         except RecursionError:  # to prevent fatal python error
             raise
         except Exception:
-            # if there are any errors we emit the non-zero result
+            # if there are any errors we emit the nonzero result
             self.result.emit(1)
         else:
             # else we emit zero result
@@ -602,7 +602,7 @@ class InitPage(QWizardPage):
     def check_result(self, res):
         """
         This method is handler of the result signal of initialization process, it checks `res`
-        variable, if it contains non-zero code we show appropriate error message.
+        variable, if it contains nonzero code we show appropriate error message.
         :param res:
         result code of the initialization process
         """
@@ -610,7 +610,7 @@ class InitPage(QWizardPage):
         self.errors.hide()
         self.errors.setText('')
 
-        # here we check result code and if it is non-zero we show error message advising
+        # here we check result code and if it is nonzero we show error message advising
         # user to check his internet connection and rights to write to folder that he defined
         # as directory in which we clone github repository
         if res:

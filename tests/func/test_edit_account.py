@@ -46,7 +46,6 @@ class EditAccsTest(AccsTest):
         self.date = self.form.dateInput
         self.comment = self.form.commentInput
 
-        init_accounts_folder()
         init_src_folder(self.monkeypatch)
         self.copyDatabase('database')
 
