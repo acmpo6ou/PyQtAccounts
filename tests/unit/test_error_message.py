@@ -16,6 +16,10 @@
 # You should have received a copy of the GNU General Public License
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
 
+"""
+This module tests PyQtAccounts error messages.
+"""
+
 from PyQt5.QtTest import QTest
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
@@ -29,11 +33,20 @@ import PyQtAccounts
 
 
 class ErrorMsgTest(UnitTest):
+    """
+    This class tests PyQtAccounts error messages.
+    """
     def test_error_message(self):
+        """
+        This test tests ErrorWindow class.
+        """
+        # here we change `exec` method ErrorWindow dialog to prevent dialogs appearing during test
         PyQtAccounts.ErrorWindow.exec = lambda *args: PyQtAccounts.QMessageBox.Ok
+
         # There is an error in the program
         def mock_Window():
             raise Exception('Error message!')
+
         self.monkeypatch.setattr('PyQtAccounts.Window', mock_Window)
 
         # Emily launches PyQtAccounts
