@@ -28,16 +28,26 @@ from core.widgets import PasswordField
 
 
 class PasswordFieldTest(UnitTest):
+    """
+    This class contains all unit tests for PasswordFieldTest class.
+    """
     def test_show_hide(self):
+        # here we create password field specifying placeholder (`enter password`)
         field = PasswordField('enter password')
-        showButton = field.showButton
-        passInput = field.passInput
+        showButton = field.showButton  # password visibility toggle button
+        passInput = field.passInput    # password field itself
 
+        # Bob has password field that says `enter password`, also when Bob types something in
+        # that field password is invisible
         self.assertEqual('enter password', passInput.placeholderText())
         self.assertEqual(QLineEdit.Password, passInput.echoMode())
 
+        # Bob then toggles password visibility pressing special button near the field
         showButton.click()
+        # password is visible now
         self.assertEqual(QLineEdit.Normal, passInput.echoMode())
 
+        # Bob then hides password pressing special button near the field again
         showButton.click()
+        # password is invisible now
         self.assertEqual(QLineEdit.Password, passInput.echoMode())
