@@ -21,11 +21,18 @@ import pytest
 import os
 
 from tests.base import UnitTest
-from core.windows import _import, export
+from core.windows import _import
 
 
 class ImportTest(UnitTest):
+    """
+    This class contains all unit tests about import.
+    """
     def test_bin_and_db_files_in_tar(self):
+        """
+        This test tests whether _import function raises TypeError if we try to import corrupted
+        database archive.
+        """
         # When no .db and .bin files in tar
         self.assertRaises(TypeError, _import, 'src/corrupted_no_db_no_bin.tar')
 
