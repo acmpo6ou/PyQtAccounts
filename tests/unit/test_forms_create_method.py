@@ -27,10 +27,18 @@ from core.forms import CreateForm
 
 
 class FormsCreateTest(UnitTest):
+    """
+    This class tests `create` abstract method of CreateForm.
+    """
     def test_create_method_not_implemented(self):
+        # here we create subclass of CreateForm
         class MyForm(CreateForm):
             def __init__(self):
                 pass
 
+        # and here we instantiate it
         form = MyForm()
+
+        # then we try to call `create` method which must be implemented in MyForm class but it's
+        # not, so NotImplementedError occurs
         self.assertRaises(NotImplementedError, form.create)
