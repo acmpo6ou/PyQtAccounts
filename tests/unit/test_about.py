@@ -62,7 +62,7 @@ class AboutTest(UnitTest):
 
         # he opens about dialog and sees correct version number `Version 2.0.6` in about section
         about = About()
-        self.assertIn('Version 2.0.6', about.about)
+        self.assertIn('Version 2.0.6', about.about, 'Version number in about dialog is incorrect!')
 
     def test_license_credits(self):
         """
@@ -97,5 +97,7 @@ class AboutTest(UnitTest):
         about = About()
 
         # then we check license and credits sections of about dialog
-        self.assertEqual(about.licenseText.toPlainText(), 'This is a License.')
-        self.assertEqual(about.creditsText.text(), '<pre>Here are credits.</pre>')
+        self.assertEqual(about.licenseText.toPlainText(), 'This is a License.',
+                         'License text is incorrectly loaded!')
+        self.assertEqual(about.creditsText.text(), '<pre>Here are credits.</pre>',
+                         'Credits text is incorrectly loaded!')

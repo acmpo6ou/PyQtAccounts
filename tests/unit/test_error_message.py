@@ -53,7 +53,8 @@ class ErrorMsgTest(UnitTest):
         msg = PyQtAccounts.main()
 
         # The error message appears saying that program must shutdown itself due to the error
-        self.assertEqual('Помилка!', msg.windowTitle())
+        self.assertEqual('Помилка!', msg.windowTitle(), 'Error window title is incorrect!')
         self.assertEqual('Вибачте програма повинна припинити роботу через помилку.',
-                         msg.text())
-        self.assertEqual('Error message!', msg.detailedText())
+                         msg.text(), 'Error window message is incorrect!')
+        self.assertEqual('Error message!', msg.detailedText(),
+                         'Error window details are incorrect!')

@@ -58,7 +58,8 @@ class ChangelogTest(UnitTest):
                      '<li>Changelog tested now.</li>\n' \
                      '<li>Other updates.</li>\n' \
                      '</ul>'
-        self.assertEqual(right_text, log.changelogLabel.text())
+        self.assertEqual(right_text, log.changelogLabel.text(),
+                         'Changelog label in ShowChangelog dialog is incorrect!')
 
         # clean up
         # here we restore pre-saved `open` function
