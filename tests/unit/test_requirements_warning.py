@@ -29,10 +29,25 @@ import PyQtAccounts
 
 
 class ReqsWarningsTest(UnitTest):
+    """
+    This class tests Reqs class from setup.py module.
+    """
     def test_system_reqs(self):
+        """
+        This test tests system requirements (i.e. those that we can't install
+        without root privileges).
+        """
+        # here we overide `exec` method of WarningWindow to prevent it from
+        # appearing.
         PyQtAccounts.WarningWindow.exec = lambda *args: PyQtAccounts.QMessageBox.Ok
         def mock_system(sys_req):
+            """
+            This function constructs test double of os.system
+            """
             def wrap(command):
+                """
+                This is test double itself
+                """
                 req = command.replace('which ', '')
                 assert req in PyQtAccounts.sys_reqs
                 if req == sys_req:
@@ -52,7 +67,7 @@ class ReqsWarningsTest(UnitTest):
             self.assertEqual('Увага!', msg.windowTitle())
             self.assertEqual('''
                 <h3>Не всі пакети встановлено!</h3>
-                <p>Пакет {0} не встановлено, без певних пакетів PyQtAccounts буде працювати 
+                <p>Пакет {0} не встановлено, без певних пакетів PyQtAccounts буде працювати
                 некоректно!</p>
                 <p>Встановіть {0} такою командою:</p>
                 <p>sudo apt install {0}</p>

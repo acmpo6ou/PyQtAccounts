@@ -30,8 +30,8 @@ class ImportTest(UnitTest):
     """
     def test_bin_and_db_files_in_tar(self):
         """
-        This test tests whether _import function raises TypeError if we try to import corrupted
-        database archive.
+        This test tests whether _import function raises TypeError when we try
+        to import corrupted database archive.
         """
         # When no .db and .bin files in tar
         self.assertRaises(TypeError, _import, 'src/corrupted_no_db_no_bin.tar')

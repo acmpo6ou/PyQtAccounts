@@ -28,7 +28,16 @@ from PyQtAccounts import *
 
 
 class InitWarningTest(UnitTest):
+    """
+    This test class tests warning that appears when user hasn't initialized
+    PyQtAccounts. In that case program will crash on startup, so we first show
+    appropriate warning to inform user.
+    """
     def test_init_warning(self):
+        """
+        This test tests whether warning appears when user hasn't initialized
+        PyQtAccounts.
+        """
         # Bob doesn't know about initialization of PyQtAccounts yet.
         # He has download zip file from github and there is no .git directory in that archive
         self.monkeypatch.setattr('os.listdir', lambda path: [])
@@ -39,7 +48,8 @@ class InitWarningTest(UnitTest):
 
         # Warning message appears saying that he need to initialize program
         # by downloading setup.py installation wizard from github repository
-        self.assertEqual(msg.windowTitle(), 'Увага!')
+        self.assertEqual(msg.windowTitle(), 'Увага!',
+                         'Warning message title is incorrect!')
         self.assertEqual(
             msg.text(),
             '''
@@ -48,9 +58,13 @@ class InitWarningTest(UnitTest):
             <p>Запустіть його і пройдіть всі кроки інсталяції.</p>
             <p>Ініціалізація потрібна, аби система оновлення PyQtAccounts працювала.</p>
             <p>Система оновлення автоматично перевіряє, завантажує і встановлює оновлення.</p>
-            ''')
+            ''', 'Warning message is incorrect!')
 
     def test_no_init_warning(self):
+        """
+        This test tests that warning does not appear when user has PyQtAccounts
+        initialized.
+        """
         # Tom has installed PyQtAccounts using setup.py installation wizard
         # So there is .git directory in program directory
         self.monkeypatch.setattr('os.listdir', lambda path: ['.git'])
@@ -58,5 +72,6 @@ class InitWarningTest(UnitTest):
         # Tom launches PyQtAccounts
         msg = main()
 
-        # There is now messages about initialization
-        self.assertIsNone(msg)
+        # There is no messages about initialization
+        self.assertIsNone(msg, 'Initialization message is shown but should not'
+                               ' appear!')

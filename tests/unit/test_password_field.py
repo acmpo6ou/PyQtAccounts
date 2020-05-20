@@ -16,6 +16,10 @@
 # You should have received a copy of the GNU General Public License
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
 
+'''
+This module provides all unit tests that about PasswordField class.
+'''
+
 from PyQt5.QtTest import QTest
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
@@ -32,22 +36,30 @@ class PasswordFieldTest(UnitTest):
     This class contains all unit tests for PasswordFieldTest class.
     """
     def test_show_hide(self):
+        """
+        This test tests toggle password visibility button.
+        """
         # here we create password field specifying placeholder (`enter password`)
         field = PasswordField('enter password')
         showButton = field.showButton  # password visibility toggle button
         passInput = field.passInput    # password field itself
 
-        # Bob has password field that says `enter password`, also when Bob types something in
-        # that field password is invisible
-        self.assertEqual('enter password', passInput.placeholderText())
-        self.assertEqual(QLineEdit.Password, passInput.echoMode())
+        # Bob has password field that says `enter password`, also when Bob
+        # types something in that field password is invisible
+        self.assertEqual('enter password', passInput.placeholderText(),
+                         'Password field placeholder is incorrect!')
+        self.assertEqual(QLineEdit.Password, passInput.echoMode(),
+                         "Password must be invisible!")
 
-        # Bob then toggles password visibility pressing special button near the field
+        # Bob then toggles password visibility pressing special button near the
+        # field
         showButton.click()
         # password is visible now
-        self.assertEqual(QLineEdit.Normal, passInput.echoMode())
+        self.assertEqual(QLineEdit.Normal, passInput.echoMode(),
+                         'Password must be visible!')
 
         # Bob then hides password pressing special button near the field again
         showButton.click()
         # password is invisible now
-        self.assertEqual(QLineEdit.Password, passInput.echoMode())
+        self.assertEqual(QLineEdit.Password, passInput.echoMode(),
+                         'Password must be invisible!')
