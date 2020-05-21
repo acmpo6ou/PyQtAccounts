@@ -40,38 +40,49 @@ class ReqsWarningsTest(UnitTest):
         # here we overide `exec` method of WarningWindow to prevent it from
         # appearing.
         PyQtAccounts.WarningWindow.exec = lambda *args: PyQtAccounts.QMessageBox.Ok
-        def mock_system(sys_req):
+        def mock_system(command):
             """
-            This function constructs test double of os.system
+            This is test double of os.system function.
             """
-            def wrap(command):
-                """
-                This is test double itself
-                """
-                req = command.replace('which ', '')
-                assert req in PyQtAccounts.sys_reqs
-                if req == sys_req:
-                    return True
-                else:
-                    return False
-            return wrap
+            # here we check does command argument is right, it must be
+            # some-thing like this: `which <dependency name>`.
+            # So first we crop `which ` and then we check whether the rest
+            # is a system dependency.
+            req = command.replace('which ', '')
+            assert req in PyQtAccounts.sys_reqs, \
+                'Requirement in os.system call is not a system requirement!'
 
-        for req in PyQtAccounts.sys_reqs:
-            # Lea hasn't install any of PyQtAccounts system dependencies
-            self.monkeypatch.setattr('os.system', mock_system(req))
+            # here we check requirement that is passed to our fake
+            # os.system
+            if req == sys_req:
+                # if it is `git` then we return
+                # nonzero exit code to simulate error in 'which' command
+                # that checks whether requirement is installed or not, so
+                # PyQtAccounts will think that we don't have `git`
+                # installed.
+                return True
+            else:
+                # else if it is not `git` we return zero
+                # exit code to simulate that no errors were occure in
+                # `which` command
+                return False
 
-            # So she launches the program
-            msg = PyQtAccounts.main()
+        # Lea hasn't install `git` which is a PyQtAccounts system dependency
+        self.monkeypatch.setattr('os.system', mock_system)
 
-            # Warning message appears saying that she needs to install some dependencies
-            self.assertEqual('Увага!', msg.windowTitle())
-            self.assertEqual('''
-                <h3>Не всі пакети встановлено!</h3>
-                <p>Пакет {0} не встановлено, без певних пакетів PyQtAccounts буде працювати
-                некоректно!</p>
-                <p>Встановіть {0} такою командою:</p>
-                <p>sudo apt install {0}</p>
-                '''.format(req), msg.text())
+        # So she launches the program
+        msg = PyQtAccounts.main()
+
+        # Warning message appears saying that she needs to install `git` to
+        # make program work
+        self.assertEqual('Увага!', msg.windowTitle())
+        self.assertEqual('''
+            <h3>Не всі пакети встановлено!</h3>
+            <p>Пакет {0} не встановлено, без певних пакетів PyQtAccounts буде працювати
+            некоректно!</p>
+            <p>Встановіть {0} такою командою:</p>
+            <p>sudo apt install {0}</p>
+            '''.format('git'), msg.text())
 
     def test_pip_reqs(self):
         PyQtAccounts.ErrorWindow.exec = lambda *args: PyQtAccounts.QMessageBox.Ok
