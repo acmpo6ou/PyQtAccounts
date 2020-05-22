@@ -30,7 +30,8 @@ import PyQtAccounts
 
 class ReqsWarningsTest(UnitTest):
     """
-    This class tests Reqs class from setup.py module.
+    This class tests Reqs class from setup.py module and warinigs that must
+    appear if user has not installed some of dependencies.
     """
     def test_system_reqs(self):
         """
@@ -54,56 +55,66 @@ class ReqsWarningsTest(UnitTest):
 
             # here we check requirement that is passed to our fake
             # os.system
-            if req == sys_req:
-                # if it is `git` then we return
-                # nonzero exit code to simulate error in 'which' command
-                # that checks whether requirement is installed or not, so
-                # PyQtAccounts will think that we don't have `git`
-                # installed.
+            if req == 'git':
+                # if it is `git` then we return nonzero exit code to simulate
+                # error in 'which' command that checks whether requirement is
+                # installed or not, so PyQtAccounts will think that we don't
+                # have `git` installed.
                 return True
             else:
                 # else if it is not `git` we return zero
-                # exit code to simulate that no errors were occure in
+                # exit code to simulate that no errors were occur in
                 # `which` command
                 return False
 
         # Lea hasn't install `git` which is a PyQtAccounts system dependency
         self.monkeypatch.setattr('os.system', mock_system)
 
-        # So she launches the program
+        # So she launches the program, main function returns a WarningWindow
+        # instance that appeared during programs lifetime.
+
         msg = PyQtAccounts.main()
 
         # Warning message appears saying that she needs to install `git` to
         # make program work
         self.assertEqual('Увага!', msg.windowTitle())
-        self.assertEqual('''
-            <h3>Не всі пакети встановлено!</h3>
-            <p>Пакет {0} не встановлено, без певних пакетів PyQtAccounts буде працювати
-            некоректно!</p>
-            <p>Встановіть {0} такою командою:</p>
-            <p>sudo apt install {0}</p>
-            '''.format('git'), msg.text())
+        print(repr(msg.text()))
+        self.assertEqual(
+            (
+                '\n                '
+                '<h3>Не всі пакети встановлено!</h3>'
+                '\n                '
+                '<p>Пакет git не встановлено, без певних пакетів PyQtAccounts '
+                'буде працювати \n                некоректно!</p>\n'
+                '                <p>Встановіть git такою командою:</p>\n'
+                '                <p>sudo apt install git</p>\n                '
+            ),
+            msg.text())
 
     def test_pip_reqs(self):
+        """
+        This test tests pip requirements warnings. Those that popup when user
+        hasn't installed some of pip dependencies.
+        """
+        # here we override `exec` method of ErrorWindow to prevent it from
+        # appearing
         PyQtAccounts.ErrorWindow.exec = lambda *args: PyQtAccounts.QMessageBox.Ok
-        def mock_pip(pip_req):
-            def wrap():
-                raise ImportError(f'No module named {req}')
-            return wrap
+        def mock_pip():
+            raise ImportError('No module named cryptography!')
 
-        for req in PyQtAccounts.reqs_pip:
-            req = req
-            # Toon hasn't install any of PyQtAccounts pip dependencies
-            self.monkeypatch.setattr('PyQtAccounts.Window', mock_pip(req))
+        # Toon hasn't installed cryptography which is a PyQtAccounts pip
+        # dependency
+        self.monkeypatch.setattr('PyQtAccounts.Window', mock_pip)
 
-            # So he launches the program
-            msg = PyQtAccounts.main()
+        # So he launches the program, main function returns an ErrorWindow
+        # instance that appeared during programs lifetime.
+        msg = PyQtAccounts.main()
 
-            # Error message appears saying that he might hasn't installed some dependencies
-            self.assertEqual('Помилка!', msg.windowTitle())
-            mess = ('<p>Здається не всі бібліотеки встановлені.</p>'
-                    f'<p>Переконайтеся що ви встановили бібліотеку {req}.</p>'
-                    '<p>Якщо ні, спробуйте ввести в термінал цю кофманду:</p>'
-                    f'<p><b>pip3 install {req}</b></p>')
-            self.assertEqual(mess, msg.text())
-            self.assertEqual(f'No module named {req}', msg.detailedText())
+        # Error message appears saying that he hasn't installed `cryptography`
+        self.assertEqual('Помилка!', msg.windowTitle())
+        mess = ('<p>Здається не всі бібліотеки встановлені.</p>'
+                f'<p>Переконайтеся що ви встановили бібліотеку cryptography.</p>'
+                '<p>Якщо ні, спробуйте ввести в термінал цю кофманду:</p>'
+                f'<p><b>pip3 install cryptography</b></p>')
+        self.assertEqual(mess, msg.text())
+        self.assertEqual('No module named cryptography!', msg.detailedText())
