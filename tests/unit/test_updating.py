@@ -29,25 +29,66 @@ from core.updates import *
 
 
 class UpdatingTest(UnitTest):
+    """
+    This test class provides all unit tests for updating.
+    """
     def setUp(self):
+        """
+        Here we simulate changelog by monkeypatching `getChangelog` function,
+        which provides changelog.
+        """
         super().setUp()
-        self.monkeypatch.setattr('core.updates.getChangeLog', lambda: ['Some changelog'])
+        self.monkeypatch.setattr('core.updates.getChangeLog',
+                                 lambda: ['Some changelog'])
 
     @staticmethod
     def mock_iter_commits(revision):
+        """
+        This is a test double of `iter_commits` method for Repo class.
+        It simulates existance of commits, which is a signal for program that
+        there are updates available, also this method is a generator.
+        :param revision:
+        parameter that we pass to iter_commits method, it represents revision
+        """
         yield 'Some commits'
 
     @staticmethod
     def mock_iter_no_commits(revision):
+        """
+        This is a test double of `iter_commits` method for Repo class.
+        It simulates INEXISTANCE of commits, which is a signal for program that
+        there is no updates available, also this method is a generator.
+        :param revision:
+        parameter that we pass to iter_commits method, it represents revision
+        """
+        # we return once function is called, so it will generate an empty list
+        # of commints
         return
+        # we need yield to make this function generator
         yield
 
     def test_there_are_commits(self):
+        """
+        This test tests programs behavior when trere are new commits in programs
+        github repository. In short it tests appearence of UpdatesAcailable
+        dialog when there are new commits (i.e. there are updates).
+        """
+        # here we create fake of Repo class with fake iter_commits method which
+        # will generate list of new commits.
         mock_Repo = Mock()
         mock_Repo.iter_commits = self.mock_iter_commits
         self.monkeypatch.setattr('git.Repo', lambda *args: mock_Repo)
 
         def check_result(changes, log):
+            """
+            This function will check cnagelog and `changes` variable that are
+            emited by Updating process (which checks for updates).
+            :param changes:
+            represents are there updates available
+            :param log:
+            represents changlog which is obtained by Updating process using
+            getChangelog function (which we monkeypatched).
+            """
             assert changes
             assert log == ['Some changelog']
 
