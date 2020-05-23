@@ -77,7 +77,8 @@ class ReqsWarningsTest(UnitTest):
 
         # Warning message appears saying that she needs to install `git` to
         # make program work
-        self.assertEqual('Увага!', msg.windowTitle())
+        self.assertEqual('Увага!', msg.windowTitle(),
+                         'Title of requirements warning message is incorrect!')
         print(repr(msg.text()))
         self.assertEqual(
             (
@@ -89,7 +90,7 @@ class ReqsWarningsTest(UnitTest):
                 '                <p>Встановіть git такою командою:</p>\n'
                 '                <p>sudo apt install git</p>\n                '
             ),
-            msg.text())
+            msg.text(), 'Requirements warning message is incorrect!')
 
     def test_pip_reqs(self):
         """
@@ -111,10 +112,12 @@ class ReqsWarningsTest(UnitTest):
         msg = PyQtAccounts.main()
 
         # Error message appears saying that he hasn't installed `cryptography`
-        self.assertEqual('Помилка!', msg.windowTitle())
+        self.assertEqual('Помилка!', msg.windowTitle(),
+                         'Title of error message is incorrect!')
         mess = ('<p>Здається не всі бібліотеки встановлені.</p>'
                 f'<p>Переконайтеся що ви встановили бібліотеку cryptography.</p>'
                 '<p>Якщо ні, спробуйте ввести в термінал цю кофманду:</p>'
                 f'<p><b>pip3 install cryptography</b></p>')
-        self.assertEqual(mess, msg.text())
-        self.assertEqual('No module named cryptography!', msg.detailedText())
+        self.assertEqual(mess, msg.text(), 'Error message is incorrect!')
+        self.assertEqual('No module named cryptography!', msg.detailedText(),
+                         'Detailed text of error message is incorrect!')
