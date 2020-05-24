@@ -70,7 +70,7 @@ class UpdatingTest(UnitTest):
     def test_there_are_commits(self):
         """
         This test tests programs behavior when trere are new commits in programs
-        github repository. In short it tests appearence of UpdatesAcailable
+        github repository. In short, it tests appearence of UpdatesAcailable
         dialog when there are new commits (i.e. there are updates).
         """
         # here we create fake of Repo class with fake iter_commits method which
@@ -89,25 +89,41 @@ class UpdatingTest(UnitTest):
             represents changlog which is obtained by Updating process using
             getChangelog function (which we monkeypatched).
             """
-            assert changes
-            assert log == ['Some changelog']
+            assert changes, 'Changes must be True, because there are updates available!'
+            assert log == ['Some changelog'], 'Incorrect changelog!'
 
+        # here we create instance of Updating process, connect check_result as signal handler of
+        # result and run the process
         updating = Updating()
         updating.result.connect(check_result)
         updating.run()
 
     def test_there_are_no_commits(self):
-        self.monkeypatch.setattr('core.updates.getChangeLog', lambda: ['Some changelog'])
-
+        """
+        This test tests program behavior when there are no new commits in programs github 
+        repository (i.e. there are no updates).
+        """
+        # here we create test double of Repo class with fake iter_commits method which will 
+        # simulate inexistance of new commits.
         mock_Repo = Mock()
         mock_Repo.iter_commits = self.mock_iter_no_commits
         self.monkeypatch.setattr('git.Repo', lambda *args: mock_Repo)
-        print(list(mock_Repo.iter_commits('')))
 
         def check_result(changes, log):
-            assert not changes
-            assert log == ['Some changelog']
+            """
+            This function will check cnagelog and `changes` variable that are
+            emited by Updating process (which checks for updates).
+            :param changes:
+            represents are there updates available
+            :param log:
+            represents changlog which is obtained by Updating process using
+            getChangelog function (which we monkeypatched).
+            """
+            assert not changes, 'Changes must be False, because there are no updates available!'
+            assert log == ['Some changelog'], 'Incorrect changelog!'
 
+        # here we create instance of Updating process, connect check_result as signal handler of
+        # result and run the process
         updating = Updating()
         updating.result.connect(check_result)
         updating.run()
