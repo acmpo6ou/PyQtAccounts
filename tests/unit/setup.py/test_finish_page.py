@@ -30,6 +30,7 @@ import shutil
 from tests.base import UnitTest, init_accounts_folder
 from setup import *
 
+# this constant represents text of run.sh file that PyQtAccounts installation wizard must generate.
 EXPECTED_RUN_SH_TEXT = (
     '#!/bin/bash\n\n'
     'cd /home/accounts/PyQtAccounts/\n'
@@ -37,6 +38,7 @@ EXPECTED_RUN_SH_TEXT = (
     'python3 PyQtAccounts.py'
 )
 
+# this constant represents text of shortcut of either menu or desktop.
 EXPECTED_SHORTCUT_TEXT = (
     '[Desktop Entry]\n'
     'Name=PyQtAccounts\n'
@@ -49,24 +51,36 @@ EXPECTED_SHORTCUT_TEXT = (
 
 
 class FinishPageTest(UnitTest):
+    """
+    This class provides all tests for FinishPage class of installation wizard.
+    """
     def setUp(self):
+        # here we create FinishPage instance and fake parent which will contain InitPage instance.
         self.page = FinishPage()
         self.page._parent = Mock()
         self.page._parent.initPage = InitPage()
 
+        # here we assign in-memory folder `/home/accounts` to folder attribute which represents
+        # folder where installation wizard will clone PyQtAccounts.
         self.initPage = self.page._parent.initPage
         self.initPage.folder = '/home/accounts'
 
+        # here we initialize in-memory filesystem and create some folders in it such as:
+        # folder of program itself, Desktop folder and folder where menu shortcut will be created
         init_accounts_folder()
         os.mkdir('/home/accounts/PyQtAccounts')
         os.mkdir('/home/accounts/Desktop')
         os.makedirs('/home/accounts/.local/share/applications/', exist_ok=True)
 
     def tearDown(self):
+        # here we clean up our in-memory filesystem by deleting accounts folder entirely.
         if os.path.exists('/dev/shm/accounts'):
             shutil.rmtree('/dev/shm/accounts')
 
     def test_content(self):
+        """
+        Here we test content of FinishPage: title and success label.
+        """
         page = FinishPage()
         self.assertEqual(page.title.text(), '<h4>Finish</h4>')
         self.assertEqual(page.text.text(), 'Успішно установлено PyQtAccounts!')
