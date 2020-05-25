@@ -29,18 +29,33 @@ import os
 from tests.base import UnitTest, init_accounts_folder
 from setup import *
 
-INIT_ERROR = ("Помилка ініціалізації!\n"
-              "Відсутнє мережеве з'єднання, або відмовлено у доступі"
-              " на запис у папку інсталяції.")
+# this is text of initialization error message
+INIT_ERROR = (
+    "Помилка ініціалізації!\n"
+    "Відсутнє мережеве з'єднання, або відмовлено у доступі"
+    " на запис у папку інсталяції."
+)
 
 
 class InitPageTest(UnitTest):
+    """
+    This test class provides all tests for initialization page.
+    """
     def test_page(self):
+        """
+        This test tests page itself.
+        """
+        # here we set environment variable to fake in-memory folder and create
+        # initialization page
         self.monkeypatch.setenv('HOME', '/home/accounts')
         page = InitPage()
 
-        self.assertIsNone(page._thread)
-        self.assertEqual(page.folder, '/home/accounts')
+        # here we check some default attributes of init page.
+        self.assertIsNone(page._thread, 
+                          '_thread must be set to None when constructing instance')
+        self.assertEqual(page.folder, '/home/accounts',
+                         'folder attribute of InitPage must be set to'
+                         '`/home/accounts` by default!')
 
         self.assertEqual(page.title.text(), '<h4>Ініціалізація</h4>')
         self.assertEqual(page.initLabel.text(),
