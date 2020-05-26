@@ -57,38 +57,88 @@ class InitPageTest(UnitTest):
                          'folder attribute of InitPage must be set to'
                          '`/home/accounts` by default!')
 
-        self.assertEqual(page.title.text(), '<h4>Ініціалізація</h4>')
+        self.assertEqual(page.title.text(), '<h4>Ініціалізація</h4>',
+                         'Page title is incorrect!')
         self.assertEqual(page.initLabel.text(),
-                         'Виберіть папку в яку ви хочете встановити PyQtAccounts:')
-        self.assertEqual(page.browseLabel.text(), '/home/accounts')
+                         'Виберіть папку в яку ви хочете встановити PyQtAccounts:',
+                         'Browse tip is incorrect!')
+        self.assertEqual(page.browseLabel.text(), '/home/accounts', 'Browse label is incorrect!')
 
-        self.assertTrue(page.menuCheckbox.isChecked())
-        self.assertTrue(page.desktopCheckbox.isChecked())
+        self.assertTrue(page.menuCheckbox.isChecked(),
+                        'Menu shortcut checkbox at initialization page must be checked!')
+        self.assertTrue(page.desktopCheckbox.isChecked(),
+                        'Desktop shortcut checkbox at initialization page must be checked!')
 
     def test_browse(self):
+        """
+        This test tests browse widget of init page.
+        """
         def mock_browse(parent, title, folder, dirs_only_flag):
-            assert title == 'Installation directory'
-            assert folder == os.getenv('HOME')
+            """
+            This function is a mock for for getExistingDirectory from QFileDialog.
+            We use it to prevent directory dialog from appearing during testing, also to check
+            parameters that are passed to directory dialog function.
+            :param parent:
+            parent of directory dialog
+            :param title:
+            title of dialog
+            :param folder:
+            default folder that dialog shows
+            :param dirs_only_flag:
+            flag that forces dialog to show directories only
+            :return:
+            path to fake directory that we simulate is chosen by user
+            """
+            # here we check parameters listed above
+            assert title == 'Installation directory', 'Directory dialog title is incorrect.'
+            assert folder == os.getenv('HOME'), 'Default directory of directory dialog must be ' \
+                                                'a home folder (i.e. /home/accounts)!'
             assert dirs_only_flag == QFileDialog.ShowDirsOnly
             return '/home/accounts/myprograms'
 
+        # here we patch getExistingDirectory
         self.monkeypatch.setattr(QFileDialog, 'getExistingDirectory', mock_browse)
 
+        # then we create init page and click on button of browse widget
         page = InitPage()
         page.browseButton.click()
 
-        self.assertEqual(page.folder, '/home/accounts/myprograms')
-        self.assertEqual(page.browseLabel.text(), '/home/accounts/myprograms')
+        # here we check does `folder` attribute and label of browse widget have changed to
+        # directory hat we chose in dialog
+        self.assertEqual(page.folder, '/home/accounts/myprograms',
+                         'folder of init page is incorrect, must change after we chose another'
+                         ' in browse dialog!')
+        self.assertEqual(page.browseLabel.text(), '/home/accounts/myprograms',
+                         'folder of browse label is incorrect, must change after we chose another'
+                         ' in browse dialog!')
 
     def test_is_complete(self):
+        """
+        The `Next` button of installation wizard must be enabled only if initialization is
+        complete, this test tests such behavior.
+        """
+        # here we create init page then set progress value to 0% (just to be sure that init
+        # process is not complete)
         page = InitPage()
         page.progress.setValue(0)
-        self.assertFalse(page.isComplete())
+        # then we check that `Next` button is disabled
+        self.assertFalse(page.isComplete(), '`Next` button must be disabled when init progress is'
+                                            'not complete!')
 
+        # here we set progress to 100% (i.e. to represent that init process is complete
         page.progress.setValue(100)
-        self.assertTrue(page.isComplete())
+        # then we check is `Next` button enabled
+        self.assertTrue(page.isComplete(), '`Next` button must be enabled when init progress is'
+                                           'complete!')
 
     def test_init_already(self):
+        """
+        This test tests installation wizards behavior when program already installed in specified
+        by user folder, in such cases we must set init process progressbar to 100% and enable
+        `Next` button.
+        """
+        # here we monkeypatch os.listdir so it will return `PyQtAccounts` in list of current
+        # directory and program will think that PyQtAccounts is already installed
         self.monkeypatch.setattr('os.listdir', lambda path: ['PyQtAccounts'])
         page = InitPage()
         page.initButton.click()
