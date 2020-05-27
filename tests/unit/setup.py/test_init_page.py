@@ -140,11 +140,18 @@ class InitPageTest(UnitTest):
         # here we monkeypatch os.listdir so it will return `PyQtAccounts` in list of current
         # directory and program will think that PyQtAccounts is already installed
         self.monkeypatch.setattr('os.listdir', lambda path: ['PyQtAccounts'])
+
+        # then we create init page and click init button
         page = InitPage()
         page.initButton.click()
-        self.assertEqual(page.progress.value(), 100)
 
-    # @pytest.mark.skip
+        # here we check that progressbar displays 100% now
+
+        # here we check that progressbar displays 100% now
+        self.assertEqual(page.progress.value(), 100,
+                         'Progressbar must display 100% when program is already installed and '
+                         'user clicks on initialize button!')
+
     def test_init(self):
         # Tom wants to initialize PyQtAccounts in his home directory
         init_accounts_folder()
@@ -170,14 +177,22 @@ class InitPageTest(UnitTest):
         self.assertTrue(os.path.exists('/home/accounts/PyQtAccounts/setup.py'))
         self.assertTrue(os.path.exists('/home/accounts/PyQtAccounts/img'))
 
-
-class FailTest(UnitTest):
     def test_init_fail_when_no_permissions(self):
+        """
+        This test tests how installation wizard would react when user tries to install program
+        somewhere where we don't have permissions to write. In that case program must show
+        appropriate error message.
+        """
+        # Tom wants to install PyQtAccounts in `/` folder
         page = InitPage()
         page.folder = '/'  # we have no permissions to write in root folder
+
+        # so he presses init button
         page.initButton.click()
 
+        # error message appears saying that he has no permission to write in `/` folder
         def errors_visible():
-            assert page.errors.visibility
+            assert page.errors.visibility, "Initialization error message is not displayed!"
         self.qbot.waitUntil(errors_visible)
-        self.assertEqual(page.errors.toPlainText(), INIT_ERROR)
+        self.assertEqual(page.errors.toPlainText(), INIT_ERROR, 'Error message of initialization '
+                                                                'is incorrect!')
