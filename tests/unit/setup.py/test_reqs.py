@@ -29,15 +29,33 @@ from setup import *
 
 
 class ReqsTest(UnitTest):
+    """
+    This class provides all unit tests for Reqs class.
+    """
     def test_all_reqs_installed(self):
+        """
+        This test tests Reqs when all requirements are satisfied.
+        """
         reqs = Reqs()
         all_req = set(reqs_pip + reqs_list)
         self.assertFalse(all_req - set(reqs.installed))
 
     def test_pip_reqs_not_installed(self):
+        """
+        This test tests Reqs when some requirements are not satisfied.
+        """
+        # these requirements aren't installed
         to_install = ['setuptools', 'cryptography']
 
         def mock_testing(req):
+            """
+            This function is a fake for our testing function from setup.py that called by Reqs
+            when it tries to check what requirements are satisfied and what are not,
+            it uses __import__ function but we don't mock it because it can cause strange errors
+            as __import__ function is used widely by other python modules.
+            :param req:
+            :return:
+            """
             if req in to_install:
                 raise ImportError
 
