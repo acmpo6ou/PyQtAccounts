@@ -94,18 +94,38 @@ class InitializeTest(UnitTest):
         init.run()
 
         # finally we check results
-        self.assertEqual(self.res, 0)
-        self.assertEqual(self.progress, [0, 25, 50, 75, 100])
+        self.assertEqual(self.res, 0, 'Initialization process emitted nonzero result but it should'
+                                      'be zero!')
+        self.assertEqual(self.progress, [0, 25, 50, 75, 100], 'Progress of clone is incorrect!')
 
     def test_initialize_errors(self):
+        """
+        This test tests process behavior when there are errors during initialization.
+        """
         def mock_clone(path, folder, progress):
+            """
+            This function is a test double of clone_from method from Repo class.
+            It simply raises an error simulating errors during initialization procces.
+            :param path:
+            path of PyQtAccounts github repository.
+            :param folder:
+            path to folder where we will clone programs repository
+            :param progress:
+            signal which we will emit to send progress of cloning
+            """
             raise Exception('Error!')
 
+        # here we monkeypatch clone_from method of Repo class
         self.monkeypatch.setattr('git.Repo.clone_from', mock_clone)
 
+        # then we create Initialize process, connect it signals to appropriate signal handlers
+        # and start process
         init = Initialize('/home/accounts')
         init.progress.connect(self.check_progress)
         init.result.connect(self.check_result)
         init.run()
 
-        self.assertEqual(self.res, 1)
+        # finally we check that process has emitted nonzero result
+        self.assertEqual(self.res, 1, 'Initialization process emitted zero result but it should'
+                                      'emit a nonzero one since there are errors occur during the '
+                                      'process.')
