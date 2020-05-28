@@ -30,18 +30,44 @@ import setup
 
 
 class TestPipInstall(UnitTest, SetupMixin):
+    """
+    This test tests PiPInstall process.
+    """
     def check_result(self, res, req):
+        """
+        This method is a signal handler for PipInstall process.
+        :param res:
+        code result of installation
+        :param req:
+        name of requirement that we tried to install
+        """
+        # here we check that result is a zero code and here we append requirement to reqs list
+        # for further check on correctness
         self.assertFalse(res)
         self.reqs.append(req)
 
     def test_pip_install(self):
+        """
+        This test tests PipInstall process.
+        """
+        # this is a list where we will collect names of requirements that we will try to install
         self.reqs = []
 
+        # here we patch os.system function which will always return zero status code simulation
+        # that there is no errors occur during installation process
         self.monkeypatch.setattr('os.system', lambda command: False)
+
+        # and here we patch Reqs class with patchReqs method from SetupMixin, so it will simulate
+        # that gitpython and cryptography aren't installed
         self.patchReqs(['gitpython', 'cryptography'])
 
+        # then we create PipInstall process, connect it signals to appropriate signal handlers
+        # and start it
         install = setup.PipInstall(setup.Reqs())
         install.result.connect(self.check_result)
         install.run()
 
-        self.assertEqual(self.reqs, ['gitpython', 'cryptography'])
+        # finally we check that reqs that process emitted are those that it tried to install
+        self.assertEqual(self.reqs, ['gitpython', 'cryptography'],
+                         'Requirements that PipInstall process emitted and those that it tried to '
+                         'install differ!')
