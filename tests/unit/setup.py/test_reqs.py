@@ -42,7 +42,7 @@ class ReqsTest(UnitTest):
 
     def test_pip_reqs_not_installed(self):
         """
-        This test tests Reqs when some requirements are not satisfied.
+        This test tests Reqs when some pip requirements are not satisfied.
         """
         # these requirements aren't installed
         to_install = ['setuptools', 'cryptography']
@@ -52,34 +52,66 @@ class ReqsTest(UnitTest):
             This function is a fake for our testing function from setup.py that called by Reqs
             when it tries to check what requirements are satisfied and what are not,
             it uses __import__ function but we don't mock it because it can cause strange errors
-            as __import__ function is used widely by other python modules.
+            as __import__ function is widely used by other python modules.
             :param req:
-            :return:
+            name of requirement we want to check
             """
+            # here we check if requirement is in the list of requirements that are not
+            # satisfied (created above) if yes, then we raise ImportError to simulate that this
+            # requirements is not satisfied
             if req in to_install:
                 raise ImportError
 
+        # here we patch `testing` function
         self.monkeypatch.setattr('setup.testing', mock_testing)
 
+        # and here we create Reqs instance and check its lists on correctness
         reqs = Reqs()
-        self.assertEqual(reqs.to_install, to_install)
-        self.assertNotIn('setuptools', reqs.installed)
-        self.assertNotIn('cryptography', reqs.installed)
+        self.assertEqual(reqs.to_install, to_install,
+                         'to_install list of Reqs is incorrect, must contain `setuptools` and '
+                         '`cryptography`!')
+        self.assertNotIn('setuptools', reqs.installed,
+                         'installed list of Reqs is incorrect, must not contain `setuptools`!')
+        self.assertNotIn('cryptography', reqs.installed,
+                         'installed list of Reqs is incorrect, must not contain `cryptography`!')
 
     def test_sys_req_not_installed(self):
-        def mock_system(sys_req):
-            def wrap(command):
-                req = command.replace('which ', '')
-                assert req in reqs_list
-                if req == sys_req:
-                    return True
-                else:
-                    return False
+        """
+        This test tests Reqs when some system reqs are not installed.
+        """
+        # these requirements aren't installed
+        cant_install = ['git', 'xclip']
 
-            return wrap
+        def mock_system(command):
+            """
+            This function is a test double of os.system, we use it to simulate that some
+            requirements are not satisfied.
+            :param command:
+            command that we use to check whether system requirements is satisfied or not.
+            Here is the commend form:
+            which <requirement name>
+            """
+            # here we extract requirement name from command by deleting `which ` part:
+            req = command.replace('which ', '')
 
-        for req in reqs_list:
-            self.monkeypatch.setattr('os.system', mock_system)
-            reqs = Reqs()
-            self.assertNotIn(req, reqs.installed)
-            self.assertIn(req.replace('pip3', 'python3-pip'), reqs.cant_install)
+            # here we check if requirement is in the list of requirements that are not
+            # satisfied (created above) if yes, then we return nonzero code to simulate that
+            # this requirement is not satisfied
+            if req in cant_install:
+                return True
+            else:
+                # every other requirement is satisfied so we return zero exit code
+                return False
+
+        # here we patch `os.system` function
+        self.monkeypatch.setattr('os.system', mock_system)
+
+        # and here we create Reqs instance and check its lists on correctness
+        reqs = Reqs()
+        self.assertEqual(reqs.cant_install, cant_install,
+                         'to_install list of Reqs is incorrect, must contain `git` and '
+                         '`xclip`!')
+        self.assertNotIn('git', reqs.installed,
+                         'installed list of Reqs is incorrect, must not contain `git`!')
+        self.assertNotIn('xclip', reqs.installed,
+                         'installed list of Reqs is incorrect, must not contain `xclip`!')
