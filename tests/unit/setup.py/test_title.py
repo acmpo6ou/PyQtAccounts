@@ -29,6 +29,11 @@ from setup import *
 
 class TitleTest(UnitTest):
     def test_title(self):
+        """
+        This test tests title.
+        """
         title = Title('Title text!')
-        self.assertEqual('<h4>Title text!</h4>', title.text())
-        self.assertEqual(Qt.AlignHCenter, title.alignment())
+        self.assertEqual('<h4>Title text!</h4>', title.text(),
+                         'Title text is incorrect!')
+        self.assertEqual(Qt.AlignHCenter, title.alignment(),
+                         'Title is not centered!')
