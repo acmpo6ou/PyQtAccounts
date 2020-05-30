@@ -133,3 +133,9 @@ dmypy.json
 .idea/
 !change.log
 run.sh
+
+# vim swap files
+*.swp
+*.swo
+*~
+.*.sw*
