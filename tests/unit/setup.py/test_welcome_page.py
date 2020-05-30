@@ -28,19 +28,29 @@ from setup import *
 
 
 class WelcomePageTest(UnitTest):
+    """
+    This test class provides all unit tests for WelcomePage.
+    """
     def test_welcome_page(self):
+        """
+        This test tests content of WelcomePage.
+        """
         page = WelcomePage()
         # There is an icon at the welcome page
         icon = page.pixmap(QWizard.WatermarkPixmap).toImage()
-        expected_icon = QImage('/usr/share/icons/Mint-X/mimetypes/96/application-pgp-keys.svg')
-        self.assertEqual(icon, expected_icon)
+        expected_icon = QImage(
+            '/usr/share/icons/Mint-X/mimetypes/96/application-pgp-keys.svg')
+        self.assertEqual(icon, expected_icon,
+                         'Image on WelcomePage is incorrect!')
 
         # And title that welcomes you
         title = page.title.text()
         expected_title = '<h4><pre>Вітаємо у майстрі встановлення\n PyQtAccounts!</pre></h4>'
-        self.assertEqual(title, expected_title)
+        self.assertEqual(title, expected_title,
+                         'Title on WelcomePage is incorrect!')
 
         # There is also text that describes installation wizard
         text = page.text.text()
         expected_text = '<pre><br>Ми допоможемо вам пройти всі кроки \nвстановлення.</pre>'
-        self.assertEqual(text, expected_text)
+        self.assertEqual(text, expected_text,
+                         'Message on WelcomePage is incorrect!')
