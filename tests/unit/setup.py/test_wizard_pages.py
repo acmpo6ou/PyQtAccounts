@@ -29,11 +29,22 @@ from setup import *
 
 
 def test_wizard_pages_order():
+    """
+    This test tests installation wizard pages order.
+    """
+    # here we define environment variable TESTING because it is a simple test
+    # (i.e. it not inherit this behavior from parent).
     os.environ['TESTING'] = 'True'
 
+    # here we create InstallationWizard and specify order of its pages in pages
+    # variable
     wizard = InstallationWizard()
     pages = (WelcomePage, RequirementsPage, InitPage, FinishPage)
 
+    # then by iterating trough all pages of wizard we check whether they are in
+    # correct order
     for page_id in wizard.pageIds():
         page = wizard.page(page_id)
-        assert isinstance(page, pages[page_id])
+        assert isinstance(
+            page, pages[page_id],
+            'Order of pages in InstallationWizard is incorrect!')
