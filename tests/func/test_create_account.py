@@ -27,7 +27,13 @@ from PyQtAccounts import *
 
 
 class CreateAccTest(AccsTest):
+    """
+    This test class provides all functional tests about creating accounts.
+    """
     def setUp(self):
+        """
+        Here we reassign some widely used variables. 
+        """
         super().setUp()
         self.form = self.accs.forms['create']
 
@@ -44,20 +50,34 @@ class CreateAccTest(AccsTest):
         self.createButton = self.form.createButton
 
     def checkNameErrors(self):
-        self.assertFalse(self.nameError.visibility)
-        self.assertFalse(self.nameFilledError.visibility)
+        """
+        This is a method which will check for name errors.
+        """
+        self.assertFalse(self.nameError.visibility,
+                         'Name error is visible when it shouldn\'t be!')
+        self.assertFalse(
+            self.nameFilledError.visibility,
+            'Name filled error is visible when it shouldn\'t be!')
 
     def test_create_account_click(self):
+        """
+        This test tests opening of create account form by clicking on `+` button.
+        """
         self.accs.panel.addButton.click()
         self.checkOnlyVisible(self.form)
 
     def test_create_account_menu(self):
-        file = self.win.menuBar().actions()[0]  # first is `File` submenu
-        new_db = file.menu().actions()[0]  # first action is `New account...`
-        new_db.trigger()
+        """
+        This test tests opening of create account form through menu.
+        """
+        # first is `File` submenu, first action is `New account...`
+        self.menu(0, 0)
         self.checkOnlyVisible(self.form)
 
     def test_validate_name(self):
+        """
+        This test tests name validation.
+        """
         # Tom wants to create account, for now there is no errors
         self.accs.panel.addButton.click()
         self.checkNameErrors()
@@ -72,45 +92,73 @@ class CreateAccTest(AccsTest):
         QTest.keyClicks(self.account_name, 'il')
 
         # The error message appears saying that account with such name exists
-        self.assertTrue(self.nameError.visibility)
+        self.assertTrue(
+            self.nameError.visibility,
+            'Error message does not appears when name of database that'
+            'already exists is in name field!')
 
         # He then types `2` to account name field
         QTest.keyClicks(self.account_name, '2')
 
         # The error message disappears
-        self.assertFalse(self.nameError.visibility)
+        self.assertFalse(
+            self.nameError.visibility,
+            'Name error does not disappear when name of database'
+            'that already exists is no longer in the name field!')
 
         # Toon then erases account name
         self.account_name.setText('')
 
         # Another error message appears saying that he must feel account name field
-        self.assertTrue(self.nameFilledError.visibility)
+        self.assertTrue(
+            self.nameFilledError.visibility,
+            'The error message does not appears when name field of'
+            'create account form is not filled!')
 
         # Toon then types `someaccount` to name field
         self.account_name.setText('someaccount')
 
         # The error message disappears
-        self.assertFalse(self.nameFilledError.visibility)
+        self.assertFalse(
+            self.nameFilledError.visibility,
+            'The filled error message does not disappears when name field of'
+            'create account form is filled!')
 
     def test_create_button_enabled(self):
-        # Bob wants to create new account, create button disabled
+        """
+        This tests tests whether create button is enabled or not in certain
+        cases.
+        """
+        # Bob wants to create new account, create is button disabled
         self.accs.panel.addButton.click()
-        self.assertFalse(self.createButton.isEnabled())
+        self.assertFalse(
+            self.createButton.isEnabled(),
+            'Create button is not disabled when create form is just'
+            'opened!')
 
         # He fills account name field and create button is still disabled
         self.account_name.setText('someaccount')
-        self.assertFalse(self.createButton.isEnabled())
+        self.assertFalse(
+            self.createButton.isEnabled(),
+            'Create button is not disabled when password fields'
+            'aren\'t filled!')
 
         # He then fills password fields
         self.pass_input.setText('some_password')
         self.pass_repeat_input.setText('some_password')
 
         # Create button enables now
-        self.assertTrue(self.createButton.isEnabled())
+        self.assertTrue(
+            self.createButton.isEnabled(),
+            'Create button is not enabled when name and password'
+            'fields of create account form are filled!')
 
         # Bob then erases name field, create button disables
         self.account_name.setText('')
-        self.assertFalse(self.createButton.isEnabled())
+        self.assertFalse(
+            self.createButton.isEnabled(),
+            'Create button is not enabled when name field is'
+            'cleared!')
 
         # He then types `gmail` at the name field and create button is still disabled
         self.account_name.setText('gmail')
