@@ -74,12 +74,27 @@ class CloseWhenDatabaseOpenedTest(AccsTest):
             'confirmation dialog!')
 
     def test_close_when_no_database_opened(self):
+        """
+        This test tests close event of main window when there is no database
+        window opened. 
+        """
+        # Lea closes PyQtAccounts window when there is no database opened, when
+        # she does this no confirmation popup is appearing.
         self.monkeypatch.setattr(QMessageBox, 'question', self.mess_showed)
         self.window.close()
-        self.assertFalse(self.window.visibility)
+
+        # window simply closes
+        self.assertFalse(self.window.visibility, 'Main window isn\'t closed!')
 
     def close_from_menu(self):
+        """
+        This test tests close event of main window through menu and when there
+        is no database opened.
+        """
+        # Emily closes PyQtAccounts through menu:
         # First is `File` submenu, last is `Quit` action
         self.monkeypatch.setattr(QMessageBox, 'question', self.mess_showed)
         self.menu(0, -1).trigger()
-        self.assertFalse(self.window.visibility)
+
+        # window is closed now
+        self.assertFalse(self.window.visibility, 'Main window isn\'t closed!')
