@@ -30,23 +30,41 @@ from PyQtAccounts import *
 
 
 class HelpTipTest(SettingsMixin, DbsTest):
+    """
+    This test class tests help tip of main window.
+    """
     def setUp(self):
-        DbsTest.setUp(self)
-        SettingsMixin.setUp(self)
+        """
+        Here we do some setup.
+        """
+        DbsTest.setUp(self)  # this test is about databases
+        SettingsMixin.setUp(self)  # help tip depends on settings
 
     def test_no_dbs(self):
+        """
+        This test tests help tip when user has no databases.
+        """
         # Ross opens up PyQtAccounts, he has no database yet
         self.monkeypatch.setattr(glob, 'glob', lambda path: [])
         window = Window()
 
         # There is help tip saying how he can create new database
         tip = window.dbs.tips['help']
-        self.assertEqual(tip.text(), HELP_TIP_DB)
+        self.assertEqual(
+            tip.text(), HELP_TIP_DB,
+            'Help tip in main window has incorrect value when user'
+            'has no databases!')
 
     def test_has_dbs(self):
+        """
+        This test tests help tip when user has databases.
+        """
         # Emily opens up PyQtAccounts, she has some databases
         window = Window()
 
         # There is help tip saying that she need to chose database
         tip = window.dbs.tips['help']
-        self.assertEqual(tip.text(), "Виберіть базу данних")
+        self.assertEqual(
+            tip.text(), "Виберіть базу данних",
+            'Help tip in main window has incorrect value when user'
+            'has databases!')
