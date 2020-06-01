@@ -162,24 +162,37 @@ class CreateDbTest(DbsTest):
         QTest.keyClicks(self.pass_repeat_input, 'password123')
 
         # The error disappears
-        self.assertFalse(self.passEqError.visibility)
+        self.assertFalse(
+            self.passEqError.visibility,
+            'The error message does not disappear when all '
+            'password fields are filled!')
 
         # He then erase both password fields
         self.pass_input.setText('')
         self.pass_repeat_input.setText('')
 
         # Another error appears saying that he needs to fill password fields
-        self.assertTrue(self.passFilledError.visibility)
+        self.assertTrue(
+            self.passFilledError.visibility,
+            'The error message does not appear when password fields'
+            'are erased!')
 
         # Tom fills them again
         QTest.keyClicks(self.pass_input, 'password123')
         QTest.keyClicks(self.pass_repeat_input, 'password123')
 
         # End there is no errors
-        self.assertFalse(self.passEqError.visibility)
-        self.assertFalse(self.passFilledError.visibility)
+        self.assertFalse(
+            self.passEqError.visibility,
+            'Password error appears when both passwords are equal!')
+        self.assertFalse(
+            self.passFilledError.visibility,
+            'Password filled error appears when both passwords are filled!')
 
     def test_generate_pass(self):
+        """
+        This test tests password generation.
+        """
         # Ross wants to create new database
         self.dbs.panel.addButton.click()
 
@@ -190,31 +203,52 @@ class CreateDbTest(DbsTest):
 
         # The generate password dialog appears
         dialog = self.form.dialog
-        self.assertTrue(dialog.visibility)
+        self.assertTrue(
+            dialog.visibility,
+            'The generate password dialog does not appear when user'
+            'presses generate button!')
 
         # He lefts everything as it is and press the `generate` button of the dialog
         dialog.buttonGenerate.click()
 
         # Randomly generated password appears in both password fields of create database form
-        self.assertIsNot(self.pass_input.text(), '')
-        self.assertIsNot(self.pass_repeat_input.text(), '')
-        self.assertEqual(self.pass_input.text(), self.pass_repeat_input.text())
+        self.assertIsNot(
+            self.pass_input.text(), '',
+            'First password field is empty but must contain '
+            'generated password!')
+        self.assertIsNot(
+            self.pass_repeat_input.text(),
+            'Second password field is empty but must contain '
+            'generated password!')
+        self.assertEqual(
+            self.pass_input.text(), self.pass_repeat_input.text(),
+            'Second and first password fields must be equal after '
+            'password generation!')
 
     def test_create_button_enabled(self):
+        """
+        This test tests whether create button is enabled or not in certain
+        cases.
+        """
         # Lea wants to create new database, so she opens up PyQtAccounts
         # and presses the `+` button
         self.dbs.panel.addButton.click()
 
         # The create database form appears and `create` button is disabled
         create = self.createButton
-        self.assertFalse(create.isEnabled())
+        self.assertFalse(
+            create.isEnabled(),
+            'Create button of create database form does not '
+            'disabled when form is just showed!')
 
         # She types database name in the name input
-
         QTest.keyClicks(self.name, 'somedb')
 
         # The `create` button is still disabled
-        self.assertFalse(create.isEnabled())
+        self.assertFalse(
+            create.isEnabled(),
+            'Create button of create database form does not '
+            'disabled when password fields are empty!')
 
         # She then generates password via `generate` button
         gen = self.form.generateButton
@@ -223,48 +257,74 @@ class CreateDbTest(DbsTest):
         dialog.buttonGenerate.click()
 
         # `create` button enables now
-        self.assertTrue(create.isEnabled())
+        self.assertTrue(
+            create.isEnabled(),
+            'Create button of create database form does not '
+            'enabled when name and password fields are filled'
+            'correctly!')
 
         # Lea then changes name of the database to `main` which is already taken
         self.name.setText('main')
 
         # `create` button disables
-        self.assertFalse(create.isEnabled())
+        self.assertFalse(
+            create.isEnabled(),
+            'Create button of create database form does not '
+            'disabled when name field contains name of database'
+            'that already exists!')
 
         # She then erases name input
         self.name.setText('')
 
         # `create` button is still disabled
-        self.assertFalse(create.isEnabled())
+        self.assertFalse(
+            create.isEnabled(),
+            'Create button of create database form does not '
+            'disabled when name field is empty!')
 
         # Lea types old name again
         self.name.setText('somedb')
 
         # `create` button enables now
-        self.assertTrue(create.isEnabled())
+        self.assertTrue(
+            create.isEnabled(),
+            'Create button of create database form does not '
+            'enabled when name field is no longer empty!')
 
         # She changes password in the first field to something else
         # so both passwords aren't equal
         self.pass_input.setText('some_password')
 
         # `create` button disables again
-        self.assertFalse(create.isEnabled())
+        self.assertFalse(
+            create.isEnabled(),
+            'Create button of create database form does not '
+            'disabled when password fields aren\'t equal!')
 
         # Lea then erases all password fields
         self.pass_input.setText('')
         self.pass_repeat_input.setText('')
 
         # `create` button is still disabled
-        self.assertFalse(create.isEnabled())
+        self.assertFalse(
+            create.isEnabled(),
+            'Create button of create database form does not '
+            'disabled when password fields are empty!')
 
         # and she generates password again
         self.pass_input.setText('some_password')
         self.pass_repeat_input.setText('some_password')
 
         # `create` button enables
-        self.assertTrue(create.isEnabled())
+        self.assertTrue(
+            create.isEnabled(),
+            'Create button of create database form does not '
+            'enabled when password fields are no longer empty!')
 
     def test_cancel_button(self):
+        """
+        This test tests `Cancel` button of create database form.
+        """
         dbs = self.dbs
         # Emily accidentally presses the `+` button
         dbs.panel.addButton.click()
@@ -277,6 +337,9 @@ class CreateDbTest(DbsTest):
         self.checkOnlyVisible(tip)
 
     def test_create_button(self):
+        """
+        This test tests create button of create database form.
+        """
         # Toon wants to create new database
         self.dbs.panel.addButton.click()
 
