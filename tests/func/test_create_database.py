@@ -28,11 +28,12 @@ from PyQtAccounts import *
 
 class CreateDbTest(DbsTest):
     """
-    Next 2 tests are testing does create database form appears whether we click on the
-    `+` button or through Menu -> File -> New database...
+    This test class provides all functional tests about creating databases.
     """
-
     def setUp(self):
+        """
+        Here we reassign some widely used variables. 
+        """
         super().setUp()
         self.form = self.dbs.forms['create']
         self.name = self.form.nameInput
@@ -45,10 +46,16 @@ class CreateDbTest(DbsTest):
         self.createButton = self.form.createButton
 
     def test_create_db_click(self):
+        """
+        This test tests opening of create database form by clicking on `+` button.
+        """
         self.dbs.panel.addButton.click()
         self.checkOnlyVisible(self.form)
 
     def test_create_db_menu(self):
+        """
+        This test tests opening of create database form through menu.
+        """
         # first is `File` submenu,  first action is `New database...`
         new_db = self.menu(0, 0)
         new_db.trigger()
@@ -63,34 +70,56 @@ class CreateDbTest(DbsTest):
         QTest.keyClicks(self.name, 'cry')
 
         # There is now errors appearing
-        self.assertFalse(self.nameError.visibility)
+        self.assertFalse(
+            self.nameError.visibility,
+            'The error message appears when name field of'
+            'create database form does not contains name of database that'
+            'already exists!')
 
         # He then types `pt` at the name input, so the name in the input (`crypt`)
         # is the same as the name of database he already has
         QTest.keyClicks(self.name, 'pt')
 
         # The error message appears saying that the database with such name already exists.
-        self.assertTrue(self.nameError.visibility)
+        self.assertTrue(
+            self.nameError.visibility,
+            'The error message does not appears when name field of'
+            'create database form contains name of database that'
+            'already exists!')
 
         # Then Bob types `2` to change name from `crypt` to `crypt2`
         QTest.keyClick(self.name, '2')
 
         # The error message disappears
-        self.assertFalse(self.nameError.visibility)
+        self.assertFalse(
+            self.nameError.visibility,
+            'The error message does not disappear when name field '
+            'no longer contains name of the database that already'
+            'exists!')
 
         # He then erases the name input
         self.name.setText('')
 
         # Another error appears saying that he needs to fill name field
-        self.assertTrue(self.nameFilledError.visibility)
+        self.assertTrue(
+            self.nameFilledError.visibility,
+            'The error message does not appear when name field of'
+            'create database form is erased!')
 
         # Bob then fills it with `somedatabase`
         self.name.setText('somedatabase')
 
         # The error message disappears
-        self.assertFalse(self.nameFilledError.visibility)
+        self.assertFalse(
+            self.nameFilledError.visibility,
+            'The error message does not disappear when name field'
+            'is no longer empty!')
 
     def test_name_symbols_validation(self):
+        """
+        This test tests how name symbols validation works, name symbols
+        validation removes unallowed characters from database name.
+        """
         # Toon wants to create database
         self.dbs.panel.addButton.click()
 
@@ -102,18 +131,21 @@ class CreateDbTest(DbsTest):
         self.pass_repeat_input.setText('something')
         self.createButton.click()
 
-        # `mydatabase` appears at the database list, cleaned name without any unallowed symbols
+        # `mydatabase` appears at the database list, cleaned name without any unallowed
+        # symbols
         self.checkDbInList('mydatabase')
 
         # And it actually on disk at the `src` folder
         self.checkDbOnDisk('mydatabase')
 
     def test_valid_password(self):
+        """
+        This test tests password validation.
+        """
         # Tom wants to create new database
         self.dbs.panel.addButton.click()
 
         # First he types name
-
         QTest.keyClicks(self.name, 'somedb')
 
         # Then he types password to first password input
@@ -121,7 +153,10 @@ class CreateDbTest(DbsTest):
 
         # The error message appears saying that both passwords aren't equal,
         # because first input is filled and the second is not
-        self.assertTrue(self.passEqError.visibility)
+        self.assertTrue(
+            self.passEqError.visibility,
+            'The error message does not appear when one of password'
+            'fields is filled but another is not!')
 
         # Tom then fills second password field with the same password
         QTest.keyClicks(self.pass_repeat_input, 'password123')
