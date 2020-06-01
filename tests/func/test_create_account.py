@@ -71,7 +71,7 @@ class CreateAccTest(AccsTest):
         This test tests opening of create account form through menu.
         """
         # first is `File` submenu, first action is `New account...`
-        self.menu(0, 0)
+        self.menu(0, 0).trigger()
         self.checkOnlyVisible(self.form)
 
     def test_validate_name(self):
@@ -94,7 +94,7 @@ class CreateAccTest(AccsTest):
         # The error message appears saying that account with such name exists
         self.assertTrue(
             self.nameError.visibility,
-            'Error message does not appears when name of database that'
+            'Error message does not appears when name of account that'
             'already exists is in name field!')
 
         # He then types `2` to account name field
@@ -103,7 +103,7 @@ class CreateAccTest(AccsTest):
         # The error message disappears
         self.assertFalse(
             self.nameError.visibility,
-            'Name error does not disappear when name of database'
+            'Name error does not disappear when name of account'
             'that already exists is no longer in the name field!')
 
         # Toon then erases account name
