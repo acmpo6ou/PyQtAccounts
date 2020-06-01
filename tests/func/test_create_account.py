@@ -162,31 +162,49 @@ class CreateAccTest(AccsTest):
 
         # He then types `gmail` at the name field and create button is still disabled
         self.account_name.setText('gmail')
-        self.assertFalse(self.createButton.isEnabled())
+        self.assertFalse(
+            self.createButton.isEnabled(),
+            'Create button is not disabled when name of account '
+            'that already exists is typed in name field!')
 
         # Then Bob changes it to `Gmail`, create button enables
         self.account_name.setText('Gmail')
-        self.assertTrue(self.createButton.isEnabled())
+        self.assertTrue(
+            self.createButton.isEnabled(),
+            'Create button is not enabled when name field no longer'
+            'contains name of account that already exists!')
 
         # He then changes password in first field to `pass`
         self.pass_input.setText('pass')
 
         # Create button disables
-        self.assertFalse(self.createButton.isEnabled())
+        self.assertFalse(
+            self.createButton.isEnabled(),
+            'Create button is not disabled when password fields'
+            'contain different passwords!')
 
         # Bob then erases both passwords and create button is still disabled
         self.pass_input.setText('')
         self.pass_repeat_input.setText('')
-        self.assertFalse(self.createButton.isEnabled())
+        self.assertFalse(
+            self.createButton.isEnabled(),
+            'Create button is not disabled when password fields '
+            'are both erased!')
 
         # Bob then fills them again
         self.pass_input.setText('pass')
         self.pass_repeat_input.setText('pass')
 
         # And create button enables now
-        self.assertTrue(self.createButton.isEnabled())
+        self.assertTrue(
+            self.createButton.isEnabled(),
+            'Create button is not enabled when password fields are'
+            'both filled with same password!')
 
     def test_create_button(self):
+        """
+        This test tests create button of create form.
+        """
         # Lea wants to create account
         self.accs.panel.addButton.click()
 
@@ -208,11 +226,18 @@ class CreateAccTest(AccsTest):
         self.checkAccInList('someaccount')
 
         # And it is in the database and has all keys and values
-        self.assertIn('someaccount', self.win.db)
+        self.assertIn('someaccount', self.win.db,
+                      'Account has not appeared in database after creation!')
         acc = self.win.db['someaccount']
-        self.assertEqual('someaccount', acc.account)
-        self.assertEqual('somename', acc.name)
-        self.assertEqual(b'some_password', acc.password)
-        self.assertEqual('example@gmail.com', acc.email)
-        self.assertEqual('01.01.2000', acc.date)
-        self.assertEqual('Comment of account.', acc.comment)
+        self.assertEqual('someaccount', acc.account,
+                         'account field of created account is incorrect!')
+        self.assertEqual('somename', acc.name,
+                         'name field of created account is incorrect!')
+        self.assertEqual(b'some_password', acc.password,
+                         'password field of created account is incorrect!')
+        self.assertEqual('example@gmail.com', acc.email,
+                         'email field of created account is incorrect!')
+        self.assertEqual('01.01.2000', acc.date,
+                         'date field of created account is incorrect!')
+        self.assertEqual('Comment of account.', acc.comment,
+                         'comment field of created account is incorrect!')
