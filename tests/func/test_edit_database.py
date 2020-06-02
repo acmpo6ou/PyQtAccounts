@@ -31,7 +31,13 @@ from PyQtAccounts import *
 
 
 class EditDbTest(DbsTest):
+    """
+    This test class provides all functional tests for edit database form.
+    """
     def setUp(self):
+        """
+        Here we reassign some widely used variables. 
+        """
         super().setUp()
         self.form = self.dbs.forms['edit']
         self.list = self.dbs.list
@@ -48,11 +54,18 @@ class EditDbTest(DbsTest):
         self.help = self.dbs.tips['help']
 
     def openDatabase(self, name='database', password='some_password'):
+        """
+        This method is used for opening database automatically.
+        """
         self.list.selected(Index(name))
         self.open_pass_input.setText(password)
         self.open_form.openButton.click()
 
     def test_edit_db_warning(self):
+        """
+        Here we test warning that appears when we want to edit database that is
+        not opened yet.
+        """
         # Toon wants to edit database so he chose one from the list and presses edit button
         self.list.selected(Index('database'))
         self.editButton.click()
@@ -73,6 +86,9 @@ class EditDbTest(DbsTest):
         self.checkOnlyVisible(self.form)
 
     def test_name_validation(self):
+        """
+        This test tests name validation when we edit database.
+        """
         # Lea wants to edit database, so she opens one
         self.openDatabase()
 
@@ -80,9 +96,18 @@ class EditDbTest(DbsTest):
         self.editButton.click()
 
         # In the name and password fields she sees database name and password appropriately
-        self.assertEqual('database', self.name.text())
-        self.assertEqual('some_password', self.pass_input.text())
-        self.assertEqual('some_password', self.pass_repeat_input.text())
+        self.assertEqual(
+            'database', self.name.text(),
+            'Name field of edit database form is filled with'
+            'incorrect data!')
+        self.assertEqual(
+            'some_password', self.pass_input.text(),
+            'Password field of edit database form is filled with'
+            'incorrect data!')
+        self.assertEqual(
+            'some_password', self.pass_repeat_input.text(),
+            'Second password field of edit database form is filled with'
+            'incorrect data!')
 
         # Lea changes database name to `another_database` then
         self.name.setText('another_database')
@@ -91,11 +116,20 @@ class EditDbTest(DbsTest):
         self.name.setText('database')
 
         # And there is no errors
-        self.assertFalse(self.form.nameError.visibility)
-        self.assertFalse(self.form.nameFilledError.visibility)
+        self.assertFalse(
+            self.form.nameError.visibility,
+            'Error message appears when user has changed name in name'
+            'field to old database name!')
+        self.assertFalse(
+            self.form.nameFilledError.visibility,
+            'Error filled message appears when name field of edit'
+            'database form is filled!')
 
         # Save button is still enabled
-        self.assertTrue(self.saveButton.isEnabled())
+        self.assertTrue(
+            self.saveButton.isEnabled(),
+            'Save button is disabled when user has changed name in name'
+            'field to old database name!')
 
     def test_save_button(self):
         # Tom wants to edit database
@@ -130,7 +164,8 @@ class EditDbTest(DbsTest):
         self.checkDbOnDisk('another_database')
 
         # Database window appears
-        win = self.window.windows[1]  # first is main window, second is database one
+        win = self.window.windows[
+            1]  # first is main window, second is database one
         self.assertTrue(win.visibility)
 
     def test_delete_db(self):
@@ -144,11 +179,11 @@ class EditDbTest(DbsTest):
 
         # Then he presses delete button
         # Suddenly Bob changes his mind and presses `No` button in warning dialog that appears
-        self.monkeypatch.setattr(QMessageBox, "warning",
-                                 self.mess('Увага!',
-                                           'Ви певні що хочете видалити базу '
-                                           'данних <i><b>database</b></i>',
-                                           QMessageBox.No))
+        self.monkeypatch.setattr(
+            QMessageBox, "warning",
+            self.mess(
+                'Увага!', 'Ви певні що хочете видалити базу '
+                'данних <i><b>database</b></i>', QMessageBox.No))
         self.form.deleteButton.click()
 
         # Everything is fine database still in the list and exists on the disk
@@ -157,11 +192,11 @@ class EditDbTest(DbsTest):
         self.checkDbOnDisk('database')
 
         # Then he decided to delete database
-        self.monkeypatch.setattr(QMessageBox, "warning",
-                                 self.mess('Увага!',
-                                           'Ви певні що хочете видалити базу данних'
-                                           ' <i><b>database</b></i>',
-                                           QMessageBox.Yes))
+        self.monkeypatch.setattr(
+            QMessageBox, "warning",
+            self.mess(
+                'Увага!', 'Ви певні що хочете видалити базу данних'
+                ' <i><b>database</b></i>', QMessageBox.Yes))
         self.form.deleteButton.click()
 
         # And there in no longer database in the list, neither on the disk
