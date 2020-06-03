@@ -132,6 +132,9 @@ class EditDbTest(DbsTest):
             'field to old database name!')
 
     def test_save_button(self):
+        """
+        Here we test save button.
+        """
         # Tom wants to edit database
         self.openDatabase()
         self.editButton.click()
@@ -166,9 +169,14 @@ class EditDbTest(DbsTest):
         # Database window appears
         win = self.window.windows[
             1]  # first is main window, second is database one
-        self.assertTrue(win.visibility)
+        self.assertTrue(win.visibility, 'Database window isn\'t displayed!')
 
     def test_delete_db(self):
+        """
+        Here we test delete button of edit database form.
+        """
+        # we don't realy want to delete our real database so we copy it into the
+        # fake file system
         init_src_folder(self.monkeypatch)
         self.copyDatabase('database')
         self.setUp()
@@ -178,7 +186,7 @@ class EditDbTest(DbsTest):
         self.editButton.click()
 
         # Then he presses delete button
-        # Suddenly Bob changes his mind and presses `No` button in warning dialog that appears
+        # Suddenly Bob changes his mind and presses `No` button of warning dialog that appears
         self.monkeypatch.setattr(
             QMessageBox, "warning",
             self.mess(
