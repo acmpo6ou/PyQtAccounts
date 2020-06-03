@@ -45,6 +45,5 @@ def test_wizard_pages_order():
     # correct order
     for page_id in wizard.pageIds():
         page = wizard.page(page_id)
-        assert isinstance(
-            page, pages[page_id],
-            'Order of pages in InstallationWizard is incorrect!')
+        assert isinstance(page, pages[page_id]), \
+            'Order of pages in InstallationWizard is incorrect!'

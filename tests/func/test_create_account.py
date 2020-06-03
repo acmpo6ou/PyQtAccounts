@@ -70,8 +70,12 @@ class CreateAccTest(AccsTest):
         """
         This test tests opening of create account form through menu.
         """
-        # first is `File` submenu, first action is `New account...`
-        self.menu(0, 0).trigger()
+        # Here we obtain menu action to open create account form
+        # we can't use self.menu() method to do this because it applies to menu
+        # of main window while we need menu of opened database
+        file = self.win.menuBar().actions()[0]  # first is `File` submenu
+        new_acc = file.menu().actions()[0]  # first action is `New account...`
+        new_acc.trigger()
         self.checkOnlyVisible(self.form)
 
     def test_validate_name(self):

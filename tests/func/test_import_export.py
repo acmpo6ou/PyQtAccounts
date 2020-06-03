@@ -142,7 +142,7 @@ class ImportExportTest(DbsTest, SettingsMixin):
         # And presses Ctrl+E
         # File dialog appears and she chose path
         file_dialog = self.export_database_dialog(
-            'database', ('tests/func/src/database.tar', ))
+            'database', ('/home/accounts/database.tar', ))
         QFileDialog.getSaveFileName = file_dialog
 
         # Success message appears
@@ -155,7 +155,10 @@ class ImportExportTest(DbsTest, SettingsMixin):
         self.menu(0, 2).trigger()  # We do it here because of the dialogs
 
         # And Lea has database.tar on the disk now
-        self.checkDbOnDisk('tests/func/src/database.tar')
+        self.assertTrue(
+            os.path.exists('/home/accounts/database.tar'),
+            'Database tar file hasn\'t created while export '
+            'operation is successful!')
 
     def test_export_fail(self):
         """
