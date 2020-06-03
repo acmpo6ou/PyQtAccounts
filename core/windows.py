@@ -15,7 +15,6 @@
 
 # You should have received a copy of the GNU General Public License
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
-
 """
 This module provides all classes that represent windows or other big elements of program.
 """
@@ -62,11 +61,12 @@ def export(name, path, parent):
     except Exception:
         # if there are some errors we show error message
         QMessageBox.critical(parent, 'Помилка!', 'Експорт бази данних '
-                                                 'завершився невдачею.')
+                             'завершився невдачею.')
     else:
         # if not we show success message
-        QMessageBox.information(parent, 'Експорт', 'Успішно експортовано базу '
-                                                   'данних <i><b>{}</b></i>'.format(name))
+        QMessageBox.information(
+            parent, 'Експорт', 'Успішно експортовано базу '
+            'данних <i><b>{}</b></i>'.format(name))
 
 
 def _import(path, parent):
@@ -87,7 +87,8 @@ def _import(path, parent):
                 raise TypeError('Невірний файл!')
 
         # here we obtain name of the database through its files names
-        name = os.path.basename(file.name).replace('.db', '').replace('.bin', '')
+        name = os.path.basename(file.name).replace('.db',
+                                                   '').replace('.bin', '')
 
         # here we check whether number of files in archive is 2, if not we throw exception,
         # because file might be corrupted
@@ -113,8 +114,9 @@ def _import(path, parent):
         QMessageBox.critical(parent, 'Помилка!', str(err))
     else:
         # if not we show success message
-        QMessageBox.information(parent, 'Імпорт',
-                                'Успішно імпортовано базу данних <i><b>{}</b></i>'.format(name))
+        QMessageBox.information(
+            parent, 'Імпорт',
+            'Успішно імпортовано базу данних <i><b>{}</b></i>'.format(name))
 
 
 class Panel(QHBoxLayout):
@@ -381,14 +383,14 @@ class MenuBar(QMenuBar):
                             self.preferences, QKeySequence('Ctrl+P'))
 
         self.Updates = self.addMenu('&Updates')
-        self.Updates.addAction(QIcon('img/update-available.svg'), '&Check for updates',
-                               self.checkForUpdates)
+        self.Updates.addAction(QIcon('img/update-available.svg'),
+                               '&Check for updates', self.checkForUpdates)
         self.Updates.addAction(QIcon('img/changelog.svg'), '&View changelog',
                                lambda: ShowChangelog(parent))
 
-        self.Help = self.addMenu('&Help')                     # first is the main window
-        self.Help.addAction(QIcon('img/info.png'), 'About', parent.windows[0].about.exec,
-                            QKeySequence('F1'))
+        self.Help = self.addMenu('&Help')  # first is the main window
+        self.Help.addAction(QIcon('img/info.png'), 'About',
+                            parent.windows[0].about.exec, QKeySequence('F1'))
         self.Help.addAction(QIcon('img/qt5.png'), 'PyQt5',
                             lambda: QMessageBox.aboutQt(parent))
 
@@ -410,7 +412,8 @@ class MenuBar(QMenuBar):
                 res = UpdatesAvailable(parent, log)
             else:
                 # else we show message saying that there are no updates.
-                res = QMessageBox.information(parent, "Оновлення", "Немає оновленнь.")
+                res = QMessageBox.information(parent, "Оновлення",
+                                              "Немає оновленнь.")
             # here we assign resulting dialog to main window, so we can test those dialogs.
             parent.res = res
 
@@ -418,7 +421,8 @@ class MenuBar(QMenuBar):
         thread = QThread(parent=self)
         updating = Updating()
         updating.moveToThread(thread)
-        updating.result.connect(lambda changes, log: mess(self.parent, changes, log))
+        updating.result.connect(
+            lambda changes, log: mess(self.parent, changes, log))
         thread.started.connect(updating.run)
         thread.start()
 
@@ -465,10 +469,9 @@ class AppMenuBar(MenuBar):
         """
         # by default we show home directory at the `Chose directory dialog`
         home = os.getenv('HOME')
-        path = QFileDialog.getOpenFileName(
-            caption='Імпортувати базу данних',
-            filter='Tarball (*.tar)',
-            directory=home)[0]
+        path = QFileDialog.getOpenFileName(caption='Імпортувати базу данних',
+                                           filter='Tarball (*.tar)',
+                                           directory=home)[0]
         # if user pressed `cancel` button we abort export, if not we call _import function
         if path:
             _import(path, self.parent)
@@ -493,10 +496,9 @@ class AppMenuBar(MenuBar):
 
         # by default we show home directory at the `Chose directory dialog`
         home = os.getenv('HOME')
-        path = QFileDialog.getSaveFileName(
-            caption='Експортувати базу данних',
-            filter='Tarball (*.tar)',
-            directory=f'{home}/{name}.tar')[0]
+        path = QFileDialog.getSaveFileName(caption='Експортувати базу данних',
+                                           filter='Tarball (*.tar)',
+                                           directory=f'{home}/{name}.tar')[0]
 
         # if user pressed `cancel` button we abort export
         if not path:
@@ -596,8 +598,11 @@ class DbWindow(QMainWindow):
         show_account_form = ShowAccForm(self.db)
 
         tips = {'help': helpTip}
-        forms = {'create': create_account_form, 'edit': edit_account_form,
-                 'show': show_account_form}
+        forms = {
+            'create': create_account_form,
+            'edit': edit_account_form,
+            'show': show_account_form
+        }
 
         splitter = QSplitter()
         for tip in tips:
@@ -638,10 +643,10 @@ class DbWindow(QMainWindow):
 
         # here we asking user does he sure about exit
         if self.ask:
-            action = QMessageBox.question(self, 'Увага!',
-                                          'Ви певні що хочете вийти?\n'
-                                          'Усі незбережені зміни буде втрачено!\n'
-                                          'Натисніть Ctrl+S аби зберегти зміни.')
+            action = QMessageBox.question(
+                self, 'Увага!', 'Ви певні що хочете вийти?\n'
+                'Усі незбережені зміни буде втрачено!\n'
+                'Натисніть Ctrl+S аби зберегти зміни.')
         else:
             action = QMessageBox.Yes
 
@@ -655,7 +660,7 @@ class DbWindow(QMainWindow):
 
 class About(QDialog):
     """
-    This class is a About dialog, it appears when user goes to menu: Help -> About or presses F1.
+    This class is an About dialog, it appears when user goes to menu: Help -> About or presses F1.
     This dialog provides all helpful information about PyQtAccounts such as license, credits etc.
     """
     def __init__(self):
@@ -674,13 +679,15 @@ class About(QDialog):
         self.titleLayout.addWidget(self.title)
 
         # and here we obtain current programs version to use it in about section of dialog
-        version = str(getVersion())[1:]  # to prevent the appearance of the `v` symbol
+        version = str(
+            getVersion())[1:]  # to prevent the appearance of the `v` symbol
 
         # this is `about` label, it provides information about PyQtAccounts
         self.about = \
             '''<pre>
 
 
+            Author: Kolvakh Bogdan
             Version {}
             <b>PyQtAccounts</b> — is simple account database manager made 
             using Python 3 and PyQt5.
@@ -695,6 +702,7 @@ class About(QDialog):
             that we do not saving or sharing any private data such as your 
             account passwords or databases.
             </span>
+            (c) Copyright 2020 Kolvakh Bogdan
             </pre>'''.format(version)
         self.aboutLabel = QLabel(self.about)
         self.aboutLabel.setOpenExternalLinks(True)
@@ -736,7 +744,8 @@ class Settings(QDialog):
         QDialog.__init__(self, parent)
         self.setWindowTitle('Settings - PyQtAccounts')
         # here we open user settings that store in his home directory
-        self.settings = QSettings(f'{os.getenv("HOME")}/PyTools', 'PyQtAccounts')
+        self.settings = QSettings(f'{os.getenv("HOME")}/PyTools',
+                                  'PyQtAccounts')
 
         # here we create title and label for main database feature
         # feature when we auto select main database on startup (database that user chose as main).
@@ -744,8 +753,10 @@ class Settings(QDialog):
         label = QLabel('Головна база данних:')
 
         # here we create checkbox to switch database feature and combobox to chose main database.
-        checkbox = QCheckBox('Показувати форму для введення пароля одразу після запуску')
-        checkbox.setChecked(self.settings.value('advanced/is_main_db', False, type=bool))
+        checkbox = QCheckBox(
+            'Показувати форму для введення пароля одразу після запуску')
+        checkbox.setChecked(
+            self.settings.value('advanced/is_main_db', False, type=bool))
 
         dbs = QComboBox()
         dbs.addItems(getDbList())
