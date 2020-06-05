@@ -68,7 +68,7 @@ class TestPassGenerationDialog(DbsTest):
             if s in string:
                 break
         else:
-            assert AssertionError(f"No {symbols} in {string}!")
+            raise AssertionError(f"No {symbols} in {string}!")
 
     def checkNotHasOneOf(self, string, symbols):
         """
@@ -85,8 +85,8 @@ class TestPassGenerationDialog(DbsTest):
             pass
         else:
             # in other way when no AssertionError was raised it means that `string`
-            # contains some of `symbols`
-            assert AssertionError(f"Found one of {symbols} in {string}!")
+            # contains some of `symbols` so we show error message
+            raise AssertionError(f"Found one of {symbols} in {string}!")
 
     def test_length(self):
         """
@@ -116,7 +116,7 @@ class TestPassGenerationDialog(DbsTest):
 
     def check_symbols(self, flag, symbols):
         """
-        Here we check that generated password contains or contains no symbols
+        Here we check that generated password does or does not contains symbols
         such as digits, punctuation, lower and upper ascii letters accordingly
         to flag of generate password dialog.
         :param flag:
@@ -124,19 +124,40 @@ class TestPassGenerationDialog(DbsTest):
         :param symbols:
         symbols that are associated with flag
         """
+        # here we simulate click on generate button of generate password dialog
         self.gen.click()
+        # then we check that it has at least one of characters from symbols
         self.checkHasOneOf(self.pass_input.text(), symbols)
+        # and then we check that passwords in both password fields are equal
         self.checkPassEqual()
 
+        # then we uncheck checkbox associated with given flag
         flag.setChecked(False)
+        # here we press generate button again
+        self.gen.click()
+        # and here we check that password has no characters of `symbols` because
+        # we unchecked checkbox and generated password must not contain any characters
+        # that are associated with the flag
         self.checkNotHasOneOf(self.pass_input.text(), symbols)
+        # here we again check that passwords are equal in both fields
         self.checkPassEqual()
 
     def test_symbols(self):
+        """
+        Here we use check_symbols method to check generate
+        password dialog behavior when certain checkboxes are checked or
+        unchecked.
+        """
+        # here we obtain dialog instance
         dialog = self.dialog
+
+        # and here we create lists of flags (i.e. checkboxes) and symbols
+        # associated with them
         flags = (dialog.digitsFlag, dialog.lowerFlag, dialog.upperFlag,
                  dialog.punctuationFlag)
         symbols = (digits, ascii_lowercase, ascii_uppercase, punctuation)
 
+        # finally we use check_symbols method to check dialog behavior when
+        # certain checkboxes are checked or unchecked
         for flag, syms in zip(flags, symbols):
             self.check_symbols(flag, syms)
