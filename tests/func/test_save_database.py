@@ -28,8 +28,18 @@ from PyQtAccounts import *
 
 
 class DbSaveTest(AccsTest):
+    """
+    This test class provides all functional tests for database window save
+    operation.
+    """
     def setUp(self):
+        """
+        Here we reassign some widely used variables and initialize in-memory
+        file system.
+        """
+        # here we open database using setUp method from AccsTest superclass
         super().setUp('import_database', 'import_database')
+
         self.form = self.accs.forms['edit']
         self.list = self.accs.list
         self.saveButton = self.form.createButton
@@ -37,10 +47,14 @@ class DbSaveTest(AccsTest):
         self.name = self.form.nameInput
         self.email = self.form.emailInput
 
+        # and here we initialize in-memory file system
         init_src_folder(self.monkeypatch)
         self.copyDatabase('import_database')
 
     def openDatabase(self):
+        """
+        This method opens and returns database window.
+        """
         window = Window()
         dbs = window.dbs
         form = dbs.forms['open']
@@ -53,6 +67,9 @@ class DbSaveTest(AccsTest):
         return win
 
     def test_save_after_edit(self):
+        """
+        Here we test saving of database through menu of database window.
+        """
         # Ross wants to edit his account, so he chose it in the list and presses edit button
         self.list.selected(Index('firefox'))
         self.editButton.click()
@@ -62,13 +79,18 @@ class DbSaveTest(AccsTest):
         self.saveButton.click()
 
         # Ross then goes to menu: File -> Save
+        # We can't use self.menu() method here to obtain menu action because
+        # self.menu() will use menu of main window while we need menu of
+        # database window
         file = self.win.menuBar().actions()[0]  # first is `File` submenu
-        save = file.menu().actions()[1]         # second action is `Save`
+        save = file.menu().actions()[1]  # second action is `Save`
         save.trigger()
 
         # Database is saved now, so he closes the database window, and there is no messages
         self.win.close()
-        self.assertNotIn(self.win, self.window.windows)
+        self.assertNotIn(
+            self.win, self.window.windows,
+            "User closed the window but it still in windows list!")
         self.window.close()
         del self.window
 
@@ -80,9 +102,16 @@ class DbSaveTest(AccsTest):
         accs.list.selected(Index('firefox'))
 
         # And he sees his name changed at the account show form
-        self.assertEqual("Ім'я: Ross Geller", accs.forms['show'].name.text())
+        self.assertEqual(
+            "Ім'я: Ross Geller", accs.forms['show'].name.text(),
+            'Name of account is not changed after database was'
+            'saved!')
 
     def test_save_message_Yes(self):
+        """
+        Here we test closing of database window when there are unsaved changes
+        and user presses `Yes` in confirmation dialog.
+        """
         # Lea wants to edit her account, so she chose it in the list
         self.list.selected(Index('firefox'))
         self.editButton.click()
@@ -94,11 +123,12 @@ class DbSaveTest(AccsTest):
         # But then Lea changed her mind and closes database window
         # Message appears asking her about unsaved changes
         # Lea presses `Yes`
-        self.monkeypatch.setattr(QMessageBox, 'question', self.mess(
-            'Увага!',
-            'Ви певні що хочете вийти?\n'
-            'Усі незбережені зміни буде втрачено!\n'
-            'Натисніть Ctrl+S аби зберегти зміни.', button=QMessageBox.Yes))
+        self.monkeypatch.setattr(
+            QMessageBox, 'question',
+            self.mess('Увага!', 'Ви певні що хочете вийти?\n'
+                      'Усі незбережені зміни буде втрачено!\n'
+                      'Натисніть Ctrl+S аби зберегти зміни.',
+                      button=QMessageBox.Yes))
         self.win.close()
 
         # Database window is closed now and Lea closes PyQtAccounts
@@ -114,7 +144,8 @@ class DbSaveTest(AccsTest):
         accs.list.selected(Index('firefox'))
 
         # And sees that her e-mail is such as it was
-        self.assertEqual("E-mail: firefox@gmail.com", accs.forms['show'].email.text())
+        self.assertEqual("E-mail: firefox@gmail.com",
+                         accs.forms['show'].email.text())
 
     def test_save_message_No(self):
         # Lea wants to edit her account again, so she chose it in the list
@@ -128,11 +159,12 @@ class DbSaveTest(AccsTest):
         # But then Lea changed her mind and closes database window
         # Message appears asking her about unsaved changes
         # Lea presses `No`
-        self.monkeypatch.setattr(QMessageBox, 'question', self.mess(
-            'Увага!',
-            'Ви певні що хочете вийти?\n'
-            'Усі незбережені зміни буде втрачено!\n'
-            'Натисніть Ctrl+S аби зберегти зміни.', button=QMessageBox.No))
+        self.monkeypatch.setattr(
+            QMessageBox, 'question',
+            self.mess('Увага!', 'Ви певні що хочете вийти?\n'
+                      'Усі незбережені зміни буде втрачено!\n'
+                      'Натисніть Ctrl+S аби зберегти зміни.',
+                      button=QMessageBox.No))
         self.win.close()
 
         # Database window is still opened
