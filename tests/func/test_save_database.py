@@ -110,7 +110,7 @@ class DbSaveTest(AccsTest):
     def test_save_message_Yes(self):
         """
         Here we test closing of database window when there are unsaved changes
-        and user presses `Yes` in confirmation dialog.
+        and user presses `Yes` at confirmation dialog.
         """
         # Lea wants to edit her account, so she chose it in the list
         self.list.selected(Index('firefox'))
@@ -132,7 +132,10 @@ class DbSaveTest(AccsTest):
         self.win.close()
 
         # Database window is closed now and Lea closes PyQtAccounts
-        self.assertNotIn(self.win, self.window.windows)
+        self.assertNotIn(
+            self.win, self.window.windows,
+            'Database window is closed but it is still in windows'
+            'list!')
         self.window.close()
         del self.window
 
@@ -144,10 +147,16 @@ class DbSaveTest(AccsTest):
         accs.list.selected(Index('firefox'))
 
         # And sees that her e-mail is such as it was
-        self.assertEqual("E-mail: firefox@gmail.com",
-                         accs.forms['show'].email.text())
+        self.assertEqual(
+            "E-mail: firefox@gmail.com", accs.forms['show'].email.text(),
+            "Database window was closed discarding all changes but"
+            "changes are saved!")
 
     def test_save_message_No(self):
+        """
+        Here we test closing of database window when there are unsaved changes
+        and user presses `No` at confirmation dialog.
+        """
         # Lea wants to edit her account again, so she chose it in the list
         self.list.selected(Index('firefox'))
         self.editButton.click()
@@ -168,7 +177,12 @@ class DbSaveTest(AccsTest):
         self.win.close()
 
         # Database window is still opened
-        self.assertIn(self.win, self.window.windows)
+        self.assertIn(
+            self.win, self.window.windows,
+            "Database window isn't closed but it is no loner in "
+            "windows list after user tries to close database window when "
+            "there are unsaved changes and user presses `No` at "
+            "confirmation dialog!")
 
         # Lea then change her e-mail back to `firefox@gmail.com` as it was and saves it
         self.email.setText('firefox@gmail.com')
