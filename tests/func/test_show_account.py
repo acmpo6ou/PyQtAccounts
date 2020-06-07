@@ -30,15 +30,27 @@ from PyQtAccounts import *
 
 
 class ShowAccTest(AccsTest):
+    """
+    This test class provides all functional tests for show account form.
+    """
     def setUp(self):
+        """
+        Here we reassign some widely used variables and initialize fake file
+        system.
+        """
         super().setUp()
         self.form = self.accs.forms['show']
         self.list = self.accs.list
 
+        # here we initialize fake file system and copy `database` database in
+        # there which we will use during tests
         init_src_folder(self.monkeypatch)
         self.copyDatabase('database')
 
     def test_show_account(self):
+        """
+        Here we test show account form.
+        """
         # Lea wants to take a look at her account, so she clicks on it in the list
         self.list.selected(Index('habr'))
 
@@ -46,27 +58,45 @@ class ShowAccTest(AccsTest):
         self.checkOnlyVisible(self.form)
 
         # And it has all information about account
-        self.assertEqual('Акаунт: habr', self.form.account.text())
-        self.assertEqual("Ім'я: Lea", self.form.name.text())
-        self.assertEqual('E-mail: spheromancer@habr.com', self.form.email.text())
-        self.assertEqual('Пароль: habr_password', self.form.password.text())
-        self.assertEqual('Дата: 19.05.1990', self.form.date.text())
-        self.assertEqual('Коментарій: Habr account.', self.form.comment.toPlainText())
+        self.assertEqual('Акаунт: habr', self.form.account.text(),
+                         "Account-name in show account form is incorrect!")
+        self.assertEqual("Ім'я: Lea", self.form.name.text(),
+                         "Name in show account form is incorrect!")
+        self.assertEqual('E-mail: spheromancer@habr.com',
+                         self.form.email.text(),
+                         "Email in show account form is incorrect!")
+        self.assertEqual('Пароль: habr_password', self.form.password.text(),
+                         "Password in show account form is incorrect!")
+        self.assertEqual('Дата: 19.05.1990', self.form.date.text(),
+                         "Date in show account form is incorrect!")
+        self.assertEqual('Коментарій: Habr account.',
+                         "Comment in show account form is incorrect!",
+                         self.form.comment.toPlainText())
 
     def test_copy_email_and_password(self):
+        """
+        Here we test how copying of email and password in show account form works.
+        """
         # Bob wants to copy e-mail and password of his account, so he chose one in the list
         self.list.selected(Index('gmail'))
 
         # He then goes to menu: File -> Copy
+        # we can't use self.menu() here because it is applied to main window
+        # while we use database one
         file = self.win.menuBar().actions()[0]  # first is `File` submenu
-        copy = file.menu().actions()[2]         # third action is `Copy`
+        copy = file.menu().actions()[2]  # third action is `Copy`
         copy.trigger()
 
         # Password copied to clipboard
         clipboard = QGuiApplication.clipboard()
-        self.assertEqual(clipboard.text(), '$z#5G_UG~K;I9U9$')  # those symbols are password
+        self.assertEqual(clipboard.text(),
+                         '$z#5G_UG~K;I9U9$',  # those symbols are password
+                         "Password isn't copied to clipboard when performed "
+                        "copy operation in show account form!"
 
         # E-mail is copied to mouse clipboard by xclip tool
         xclip = Popen(['xclip', '-o'], stdout=PIPE, stderr=STDOUT)
         mouseboard = xclip.communicate()[0].decode()
-        self.assertEqual(mouseboard, 'bobgreen@gmail.com\n')
+        self.assertEqual(mouseboard, 'bobgreen@gmail.com\n',
+                        "Email isn't copied to mouse clipboard when performed"
+                        " copy option in show account form!")
