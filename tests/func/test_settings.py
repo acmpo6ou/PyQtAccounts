@@ -107,26 +107,44 @@ class SettingsTest(SettingsMixin, DbsTest):
 
         # Checkbox in settings is also unchecked
         self.assertFalse(window.settings.mainDbLayout.checkbox.isChecked(),
-                         "The checkbox in settings that represents main database feature")
+                         "The checkbox in settings that represents main database feature"
+                        " is checked when user has main database feature unset"
+                        "(i.e. turned off).")
 
         # And combobox have `main` as current database
         self.assertEqual('main',
-                         window.settings.mainDbLayout.dbs.currentText())
+                         window.settings.mainDbLayout.dbs.currentText(),
+                        "Combobox must have `main` as main database when user"
+                        "hasn't defined main database feature.")
 
     def test_is_main_db_False(self):
+        """
+        Here we test main database feature of PyQtAccounts when it is turned
+        off.
+        """
         # Ross doesn't use main database feature of PyQtAccounts.
         # He turned it off by himself.
+        # also it was time when he used it with `crypt` as main database 
         self.settings.setValue('advanced/is_main_db', False)
         self.settings.setValue('advanced/main_db', 'crypt')
 
         # He opens PyQtAccounts and there is no form for opening any database.
         # Title of open database form is empty.
         window = Window()
-        self.assertEqual('<b></b>', window.dbs.forms['open'].title.text())
+        self.assertEqual(
+            '<b></b>', window.dbs.forms['open'].title.text(),
+            "The title of open database form is incorrect when user has main"
+            " database feature turned off, title must be empty!")
 
         # Checkbox in settings is also unchecked
-        self.assertFalse(window.settings.mainDbLayout.checkbox.isChecked())
+        self.assertFalse(
+            window.settings.mainDbLayout.checkbox.isChecked(),
+            "The checkbox in settings that represents main database feature"
+            " is checked when user has this feature turned off!")
 
         # And combobox have `crypt` as current database
-        self.assertEqual('crypt',
-                         window.settings.mainDbLayout.dbs.currentText())
+        self.assertEqual(
+            'crypt',
+            window.settings.mainDbLayout.dbs.currentText(),
+            "Combobox must have `crypt` as main database even when user"
+            " has this feature turned off but used it with `crypt` in the past!")
