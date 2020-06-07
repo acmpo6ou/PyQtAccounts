@@ -21,7 +21,6 @@ from PyQt5.QtTest import QTest
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
-
 from unittest.mock import Mock
 import os
 import setup
@@ -32,7 +31,14 @@ from setup import *
 
 
 class RequirementsPageTest(UnitTest, SetupMixin):
+    """
+    This class provides all functional tests for RequirementsPage.
+    """
     def test_install_no_pip(self):
+        """
+        Here we test how installation goes when we have no pip installed (i.e.
+        program must show error).
+        """
         # Toon wants to install PyQtAccounts
         # He hasn't installed pip and some of dependencies
         self.test_reqs = Reqs()
@@ -47,10 +53,20 @@ class RequirementsPageTest(UnitTest, SetupMixin):
         page.installButton.click()
 
         # The error appears saying that he need to install pip first
-        self.assertTrue(page.errors.visibility)
-        self.assertEqual(page.errors.toPlainText(), 'Встановіть пакет pip3!')
+        self.assertTrue(
+            page.errors.visibility,
+            "Error message isn't displayed when user wants to "
+            "install unsatisfied dependencies and has no pip installed!")
+        self.assertEqual(
+            page.errors.toPlainText(), 'Встановіть пакет pip3!',
+            "Error message is incorrect when user wants to "
+            "install unsatisfied dependencies and has no pip installed!")
 
     def test_install_button(self):
+        """
+        Here we test what happens when user presses install button and
+        everything is OK.
+        """
         # Tom wants to install PyQtAccounts
         # He hasn't installed some pip dependencies
         self.test_reqs = Reqs()
@@ -66,8 +82,14 @@ class RequirementsPageTest(UnitTest, SetupMixin):
         page.installButton.click()
 
         # He has pip3 installed so errors are cleared and hidden
-        self.assertEqual(page.errors.toPlainText(), '')
-        self.assertFalse(page.errors.visibility)
+        self.assertEqual(
+            page.errors.toPlainText(), '',
+            "Error message must be empty when user wants to "
+            "install unsatisfied dependencies and HAS pip installed!")
+        self.assertFalse(
+            page.errors.visibility,
+            "Error message is displayed when user wants to "
+            "install unsatisfied dependencies and HAS pip installed!")
 
         # install button is disabled
         self.assertFalse(page.installButton.isEnabled())
@@ -87,7 +109,8 @@ class RequirementsPageTest(UnitTest, SetupMixin):
         self.assertFalse(page.errors.visibility)
 
         # install label says that everything is installed successfully
-        self.assertEqual(page.installLabel.text(), '<p style="color: #37FF91;">Встановлено!</p>')
+        self.assertEqual(page.installLabel.text(),
+                         '<p style="color: #37FF91;">Встановлено!</p>')
 
         # tips are hidden
         self.assertFalse(page.reqsTips.visibility)
@@ -110,10 +133,9 @@ class RequirementsPageTest(UnitTest, SetupMixin):
         # Some errors appears during installation.
         def errors_visible():
             assert page.errors.visibility
+
         self.qbot.waitUntil(errors_visible)
 
-        INSTALL_ERRORS_TEXT = (
-            'Не вдалося встановити cryptography\n'
-            'Не вдалося встановити gitpython\n'
-        )
+        INSTALL_ERRORS_TEXT = ('Не вдалося встановити cryptography\n'
+                               'Не вдалося встановити gitpython\n')
         self.assertEqual(page.errors.toPlainText(), INSTALL_ERRORS_TEXT)
