@@ -82,8 +82,7 @@ class SettingsTest(SettingsMixin, DbsTest):
 
         # And combobox have `main` as current database
         self.assertEqual(
-            'main',
-            window.settings.mainDbLayout.dbs.currentText()
+            'main', window.settings.mainDbLayout.dbs.currentText(),
             "Main database in combobox is incorrect - must be `main`!")
 
     def test_is_main_db_not_set(self):
@@ -106,16 +105,17 @@ class SettingsTest(SettingsMixin, DbsTest):
             "of main database!")
 
         # Checkbox in settings is also unchecked
-        self.assertFalse(window.settings.mainDbLayout.checkbox.isChecked(),
-                         "The checkbox in settings that represents main database feature"
-                        " is checked when user has main database feature unset"
-                        "(i.e. turned off).")
+        self.assertFalse(
+            window.settings.mainDbLayout.checkbox.isChecked(),
+            "The checkbox in settings that represents main database feature"
+            " is checked when user has main database feature unset"
+            "(i.e. turned off).")
 
         # And combobox have `main` as current database
-        self.assertEqual('main',
-                         window.settings.mainDbLayout.dbs.currentText(),
-                        "Combobox must have `main` as main database when user"
-                        "hasn't defined main database feature.")
+        self.assertEqual(
+            'main', window.settings.mainDbLayout.dbs.currentText(),
+            "Combobox must have `main` as main database when user"
+            "hasn't defined main database feature.")
 
     def test_is_main_db_False(self):
         """
@@ -124,7 +124,7 @@ class SettingsTest(SettingsMixin, DbsTest):
         """
         # Ross doesn't use main database feature of PyQtAccounts.
         # He turned it off by himself.
-        # also it was time when he used it with `crypt` as main database 
+        # also it was time when he used it with `crypt` as main database
         self.settings.setValue('advanced/is_main_db', False)
         self.settings.setValue('advanced/main_db', 'crypt')
 
@@ -144,7 +144,7 @@ class SettingsTest(SettingsMixin, DbsTest):
 
         # And combobox have `crypt` as current database
         self.assertEqual(
-            'crypt',
-            window.settings.mainDbLayout.dbs.currentText(),
+            'crypt', window.settings.mainDbLayout.dbs.currentText(),
             "Combobox must have `crypt` as main database even when user"
-            " has this feature turned off but used it with `crypt` in the past!")
+            " has this feature turned off but used it with `crypt` in the past!"
+        )

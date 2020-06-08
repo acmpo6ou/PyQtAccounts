@@ -160,4 +160,10 @@ class TestPassGenerationDialog(DbsTest):
         # finally we use check_symbols method to check dialog behavior when
         # certain checkboxes are checked or unchecked
         for flag, syms in zip(flags, symbols):
+            # here we need to make all flags checked at the start of testing
+            # next flag because we make all this in
+            # loop and check_symbols method unchecks every flag so at the end we
+            # will have all flags unchecked and it will case error which will crash test
+            for f in flags:
+                f.setChecked(True)
             self.check_symbols(flag, syms)

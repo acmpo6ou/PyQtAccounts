@@ -70,8 +70,8 @@ class ShowAccTest(AccsTest):
         self.assertEqual('Дата: 19.05.1990', self.form.date.text(),
                          "Date in show account form is incorrect!")
         self.assertEqual('Коментарій: Habr account.',
-                         "Comment in show account form is incorrect!",
-                         self.form.comment.toPlainText())
+                         self.form.comment.toPlainText(),
+                         "Comment in show account form is incorrect!")
 
     def test_copy_email_and_password(self):
         """
@@ -89,14 +89,16 @@ class ShowAccTest(AccsTest):
 
         # Password copied to clipboard
         clipboard = QGuiApplication.clipboard()
-        self.assertEqual(clipboard.text(),
-                         '$z#5G_UG~K;I9U9$',  # those symbols are password
-                         "Password isn't copied to clipboard when performed "
-                        "copy operation in show account form!"
+        self.assertEqual(
+            clipboard.text(),
+            '$z#5G_UG~K;I9U9$',  # those symbols are password
+            "Password isn't copied to clipboard when performed "
+            "copy operation in show account form!")
 
         # E-mail is copied to mouse clipboard by xclip tool
         xclip = Popen(['xclip', '-o'], stdout=PIPE, stderr=STDOUT)
         mouseboard = xclip.communicate()[0].decode()
-        self.assertEqual(mouseboard, 'bobgreen@gmail.com\n',
-                        "Email isn't copied to mouse clipboard when performed"
-                        " copy option in show account form!")
+        self.assertEqual(
+            mouseboard, 'bobgreen@gmail.com\n',
+            "Email isn't copied to mouse clipboard when performed"
+            " copy option in show account form!")
