@@ -15,7 +15,6 @@
 
 # You should have received a copy of the GNU General Public License
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
-
 """
 This module provides function to generate random password.
 """
@@ -24,7 +23,7 @@ import random
 import string
 
 
-def main(symbols="", length=16):
+def gen(symbols, length):
     """
     This function generates random password using symbols that passed in `symbols` argument.
     :param symbols:
@@ -55,3 +54,54 @@ def main(symbols="", length=16):
     for i in range(length):
         password += random.choice(symbs)
     return password
+
+
+def checkHasOneOf(syms, password):
+    """
+    We use this method to check that password has at least one of characters
+    specified in `syms`.
+    """
+    # here we iterate trough all characters of `syms`
+    for s in syms:
+        # and some of them is in password then we break and everything is OK.
+        if s in password:
+            break
+    else:
+        # else we raise exception
+        raise AssertionError
+
+
+def main(symbols, length=16):
+    """
+    This function uses gen() to generate password and then checks whether
+    password contains specified in `symbols` characters. Because of random
+    password generation even though user specified `d` in `symbols` to include
+    digits, that doesn't necessary means that digits will be included! In rare
+    cases gen() will generate password without digits even when `d` is specified
+    in `symbols`.
+    Note: parameters to this function are the same as to gen() so you can find
+    their description there.
+    """
+    # here we call gen() to create password and if it does not contain
+    # characters that are specified in `symbols` then we regenerate it again and again
+    # until we generate password that contains at least one of the characters
+    # that specified by types in `symbols`
+    while True:
+        password = gen(symbols, length)
+
+        try:
+            # here we check password
+            if 'd' in symbols:
+                checkHasOneOf(string.digits, password)
+            if 'l' in symbols:
+                checkHasOneOf(string.ascii_lowercase, password)
+            if 'u' in symbols:
+                checkHasOneOf(string.ascii_uppercase, password)
+            if 'p' in symbols:
+                checkHasOneOf(string.punctuation, password)
+
+            # if everything is OK then we return generated password
+            return password
+        except AssertionError:
+            # and if it doesn't contain some characters we regenerate it
+            continue
