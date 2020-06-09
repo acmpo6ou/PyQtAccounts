@@ -81,6 +81,7 @@ class CloseWhenDatabaseOpenedTest(AccsTest):
         # Lea closes PyQtAccounts window when there is no database opened, when
         # she does this no confirmation popup is appearing.
         self.monkeypatch.setattr(QMessageBox, 'question', self.mess_showed)
+        del self.window.windows[1:]  # we have only 1 window - main window
         self.window.close()
 
         # window simply closes
