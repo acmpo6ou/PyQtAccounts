@@ -15,7 +15,6 @@
 
 # You should have received a copy of the GNU General Public License
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
-
 """
 This module provides helper functions for PyQtAccounts.
 """
@@ -34,8 +33,10 @@ def getDbList():
     SRC_DIR constant from core.const module.
     Function finds databases by their .db files.
     """
-    return [os.path.basename(db).replace('.db', '') for db in
-            glob.glob(f'{core.const.SRC_DIR}/*.db')]
+    return [
+        os.path.basename(db).replace('.db', '')
+        for db in glob.glob(f'{core.const.SRC_DIR}/*.db')
+    ]
 
 
 def getAkiList(db):
@@ -99,7 +100,6 @@ class Index:
     We need this class to implement main database setting: when on startup we automatically
     select main database which specified as `main_db` value of QSettings.
     """
-
     def __init__(self, name):
         self.name = name
 
@@ -112,3 +112,15 @@ class Index:
         'main'
         """
         return self.name
+
+
+def add_database(lst, name):
+    """
+    We use this function to add database `name` to list specified in `lst`.
+    """
+    # here we create item for list using `name` and special icon of list
+    item = QStandardItem(lst.icon, name)
+    # then we add created item to model of list
+    lst.model.appendRow(item)
+    # finally we sort the list
+    lst.model.sort(0)
