@@ -112,26 +112,3 @@ class Index:
         'main'
         """
         return self.name
-
-
-def add_database(lst, name):
-    """
-    We use this function to add database `name` to list specified in `lst`.
-    """
-    # here we create item for list using `name` and special icon of list
-    item = QStandardItem(lst.icon, name)
-    # then we add created item to model of list
-    lst.model.appendRow(item)
-    # finally we sort the list
-    lst.model.sort(0)
-
-
-def remove_database(model, name):
-    """
-    We use this function to remove database `name` to list specified in `lst`.
-    """
-    # here we find item specified in name, findItems() method returns list of
-    # find items, so we need to iterate trough it (it contains one item anyway)
-    for item in model.findItems(name):
-        model.removeRow(item.row())
-    model.sort(0)
