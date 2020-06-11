@@ -357,5 +357,10 @@ class CreateDbTest(DbsTest):
         # `somedb` appears at the database list
         self.checkDbInList('somedb')
 
+        # it also appears in list of main databases feature in settings dialog
+        # findItems returns list and if it isn't empty then we found what we wanted
+        self.assertTrue(
+            self.window.settings.mainDbLayout.dbs.model.findItems('somedb'))
+
         # And it actually on disk at the `src` folder
         self.checkDbOnDisk('somedb')
