@@ -37,7 +37,6 @@ class CreateDbForm(CreateForm):
     """
     This is a superclass which specifies CreateForm class for create database form needs.
     """
-
     def __init__(self, helpTip, parent=None):
         """
         This constructor creates the form specifying all widgets parameters.
@@ -48,9 +47,10 @@ class CreateDbForm(CreateForm):
         """
         title = 'Створити базу данних'
         namePlaceholder = "ім'я бази данних"
-        nameTip = ("Для імені бази данних підтримуються \n"
-                   "лише великі та малі англійські символи, а також ці: .()-_\n"
-                   "Усі неправильні символи видаляються автоматично.")
+        nameTip = (
+            "Для імені бази данних підтримуються \n"
+            "лише великі та малі англійські символи, а також ці: .()-_\n"
+            "Усі неправильні символи видаляються автоматично.")
         passTip = ("Якщо ви не хочете придумувати пароль ви можете\n"
                    "натиснути кнопку 'Згенерувати', аби згенерувати його.")
         nameError = 'База даних з таким іменем вже існує!'
@@ -71,9 +71,7 @@ class CreateDbForm(CreateForm):
         self.clear()
 
         # here we update database list and help tip
-        item = QStandardItem(self.list.icon, name)
-        self.list.model.appendRow(item)
-        self.list.model.sort(0)
+        add_database(self.list, name)
         self.tips['help'].setText("Виберіть базу данних")
 
     def validateName(self, event):
@@ -102,7 +100,6 @@ class EditDbForm(CreateForm):
     """
     This is a superclass which specifies CreateForm class for edit database form needs.
     """
-
     def __init__(self, tips, windows, parent=None):
         """
         This constructor creates the form specifying all widgets parameters appropriately to
@@ -116,9 +113,10 @@ class EditDbForm(CreateForm):
         """
         title = 'Редагувати базу данних'
         namePlaceholder = "ім'я бази данних"
-        nameTip = ("Для імені бази данних підтримуються \n"
-                   "лише великі та малі англійські символи, а також ці: .()-_\n"
-                   "Усі неправильні символи видаляються автоматично.")
+        nameTip = (
+            "Для імені бази данних підтримуються \n"
+            "лише великі та малі англійські символи, а також ці: .()-_\n"
+            "Усі неправильні символи видаляються автоматично.")
         passTip = ("Якщо ви не хочете придумувати пароль ви можете\n"
                    "натиснути кнопку 'Згенерувати', аби згенерувати його.")
         nameError = 'База даних з таким іменем вже існує!'
@@ -182,8 +180,9 @@ class EditDbForm(CreateForm):
         This method deletes database showing confirmation dialog.
         """
         name = self.db.name
-                                     # first is the main window
-        action = QMessageBox.warning(self.windows[0], 'Увага!',
+        # first is the main window
+        action = QMessageBox.warning(self.windows[0],
+                                     'Увага!',
                                      'Ви певні що хочете видалити базу данних '
                                      '<i><b>{}</b></i>'.format(name),
                                      buttons=QMessageBox.No | QMessageBox.Yes,
@@ -195,9 +194,7 @@ class EditDbForm(CreateForm):
             os.remove(f'{core.const.SRC_DIR}/{name}.bin')
 
             # and we update database list
-            for item in self.model.findItems(name):
-                self.model.removeRow(item.row())
-            self.model.sort(0)
+            remove_database(self.model, name)
             self.clear()
             self.db.ask = False
 
@@ -234,12 +231,8 @@ class EditDbForm(CreateForm):
         self.clear()
 
         # Here we delete old database name from list and add new name to it
-        for item in self.model.findItems(self.old_name):
-            self.model.removeRow(item.row())
-
-        item = QStandardItem(self.list.icon, name)
-        self.list.model.appendRow(item)
-        self.list.model.sort(0)
+        remove_database(self.model, name)
+        add_database(self.list, name)
 
         # to avoid errors that occurs because of close behavior
         self.windows.remove(self.db)
@@ -298,7 +291,8 @@ class OpenDbForm(QWidget):
         """
         # Here we set title according to the name of database being chosen
         self.name = index.data()
-        self.title.setText('Відкрити базу данних <i><b>{}</b></i>'.format(self.name))
+        self.title.setText('Відкрити базу данних <i><b>{}</b></i>'.format(
+            self.name))
 
     def open(self):
         """
