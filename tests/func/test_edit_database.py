@@ -150,12 +150,29 @@ class EditDbTest(DbsTest):
         # Edit database form disappears
         self.checkOnlyVisible(self.help)
 
-        # Database name changes in the list
+        # Database name changes in the list to `another_database` and it also
+        # exists on disk
         self.checkDbInList('another_database')
+        self.checkDbOnDisk('another_database')
+
+        # it also appears in list of main database feature in settings dialog
+        # Note: findItems returns list and if it isn't empty then we found what we wanted
+        # that's why we use assertTrue to check this: if list isn't empty than
+        # it will be interpreted as True
+        self.assertTrue(
+            self.window.settings.mainDbLayout.dbs.model.findItems(
+                'another_database'))
 
         # And there is no longer `database` in the list, nor on the disk
         self.checkDbNotInList('database')
         self.checkDbNotOnDisk('database')
+
+        # it also disappears from list of main database feature in settings dialog
+        # Note: findItems returns list and if it is empty then we didn't find what we wanted
+        # that's why we use assertFalse to check this: if list is empty than
+        # it will be interpreted as False
+        self.assertFalse(
+            self.window.settings.mainDbLayout.dbs.model.findItems('database'))
 
         # Tom tries then to open `another_database`
         self.openDatabase('another_database', 'another_password')
@@ -199,6 +216,13 @@ class EditDbTest(DbsTest):
         self.checkDbInList('database')
         self.checkDbOnDisk('database')
 
+        # it also exists in list of main database feature in settings dialog
+        # Note: findItems returns list and if it isn't empty then we found what we wanted
+        # that's why we use assertTrue to check this: if list isn't empty than
+        # it will be interpreted as True
+        self.assertTrue(
+            self.window.settings.mainDbLayout.dbs.model.findItems('database'))
+
         # Then he decided to delete database
         self.monkeypatch.setattr(
             QMessageBox, "warning",
@@ -210,6 +234,13 @@ class EditDbTest(DbsTest):
         # And there in no longer database in the list, neither on the disk
         self.checkDbNotInList('database')
         self.checkDbNotOnDisk('database')
+
+        # it also disappears from list of main database feature in settings dialog
+        # Note: findItems returns list and if it is empty then we didn't find what we wanted
+        # that's why we use assertFalse to check this: if list is empty than
+        # it will be interpreted as False
+        self.assertFalse(
+            self.window.settings.mainDbLayout.dbs.model.findItems('database'))
 
         # Edit form disappears
         self.checkOnlyVisible(self.help)

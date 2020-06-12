@@ -357,8 +357,10 @@ class CreateDbTest(DbsTest):
         # `somedb` appears at the database list
         self.checkDbInList('somedb')
 
-        # it also appears in list of main databases feature in settings dialog
-        # findItems returns list and if it isn't empty then we found what we wanted
+        # it also appears in list of main database feature in settings dialog
+        # Note: findItems returns list and if it isn't empty then we found what we wanted
+        # that's why we use assertTrue to check this: if list isn't empty than
+        # it will be interpreted as True
         self.assertTrue(
             self.window.settings.mainDbLayout.dbs.model.findItems('somedb'))
 
