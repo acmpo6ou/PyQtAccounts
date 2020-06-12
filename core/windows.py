@@ -759,7 +759,8 @@ class Settings(QDialog):
             self.settings.value('advanced/is_main_db', False, type=bool))
 
         dbs = QComboBox()
-        dbs.addItems(getDbList())
+        dbs.setModel(parent.dbs.list.model)
+        dbs.model = parent.dbs.list.model
         main_db = self.settings.value('advanced/main_db', '', type=str)
         if main_db:
             dbs.setCurrentText(main_db)
