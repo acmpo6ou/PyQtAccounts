@@ -18,12 +18,13 @@
 
 from PyQt5.QtTest import QTest
 from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
 import unittest
 import pytest
 import os
 import glob
 
-from tests.base import DbsTest, SettingsMixin
+from tests.base import DbsTest, SettingsMixin, init_src_folder
 import core.utils
 from core.const import *
 from PyQtAccounts import *
@@ -39,6 +40,14 @@ class HelpTipTest(SettingsMixin, DbsTest):
         """
         DbsTest.setUp(self)  # this test is about databases
         SettingsMixin.setUp(self)  # help tip depends on settings
+
+    def openDatabase(self):
+        """
+        We use this method to open `database` database.
+        """
+        self.dbs.list.selected(Index('database'))
+        self.open_form.passField.passInput.setText('some_password')
+        self.open_form.openButton.click()
 
     def test_no_dbs(self):
         """
@@ -68,3 +77,42 @@ class HelpTipTest(SettingsMixin, DbsTest):
             tip.text(), "Виберіть базу данних",
             'Help tip in main window has incorrect value when user'
             'has databases!')
+
+    def test_delete_last_database(self):
+        """
+        Here we test how help tip will change when user deletes last database.
+        """
+        # Tom has one database called `database`
+        window = Window()
+        self.dbs = window.dbs
+        self.open_form = window.dbs.forms['open']
+        init_src_folder(self.monkeypatch)
+        self.copyDatabase('database')
+
+        # help tip says that he should chose database
+        tip = window.dbs.tips['help']
+        self.assertEqual(
+            tip.text(), "Виберіть базу данних",
+            'Help tip in main window has incorrect value when user'
+            'has databases!')
+
+        # Tom than opens his database
+        self.openDatabase()
+
+        # then he presses edit button on the panel
+        self.dbs.panel.editButton.click()
+
+        # and then he deletes his last database
+        self.monkeypatch.setattr(
+            QMessageBox, 'warning',
+            self.mess(
+                'Увага!',
+                'Ви певні що хочете видалити базу данних <i><b>database</b></i>',
+                QMessageBox.Yes))
+        self.dbs.forms['edit'].deleteButton.click()
+
+        # help tip message changes, telling Tom how he can create new database
+        self.assertEqual(
+            tip.text(), HELP_TIP_DB,
+            'Help tip in main window has incorrect value when user'
+            'has deleted his last database!')
