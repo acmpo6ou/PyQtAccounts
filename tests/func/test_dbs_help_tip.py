@@ -116,3 +116,44 @@ class HelpTipTest(SettingsMixin, DbsTest):
             tip.text(), HELP_TIP_DB,
             'Help tip in main window has incorrect value when user'
             'has deleted his last database!')
+
+    def test_delete_database_not_last(self):
+        """
+        Here we test how help tip will change when user deletes database and he
+        has some remaining databases.
+        """
+        # Tom has two databases called `database` and `main`
+        window = Window()
+        self.dbs = window.dbs
+        self.open_form = window.dbs.forms['open']
+        init_src_folder(self.monkeypatch)
+        self.copyDatabase('database')
+        self.copyDatabase('main')
+
+        # help tip says that he should chose database
+        tip = window.dbs.tips['help']
+        self.assertEqual(
+            tip.text(), "Виберіть базу данних",
+            'Help tip in main window has incorrect value when user'
+            'has databases!')
+
+        # Tom than opens his `database`
+        self.openDatabase()
+
+        # then he presses edit button on the panel
+        self.dbs.panel.editButton.click()
+
+        # and then he deletes his `database` which isn't last
+        self.monkeypatch.setattr(
+            QMessageBox, 'warning',
+            self.mess(
+                'Увага!',
+                'Ви певні що хочете видалити базу данних <i><b>database</b></i>',
+                QMessageBox.Yes))
+        self.dbs.forms['edit'].deleteButton.click()
+
+        # everything is OK and message of help tip hasn't changed
+        self.assertEqual(
+            tip.text(), "Виберіть базу данних",
+            'Help tip in main window has incorrect value when user'
+            'has databases!')

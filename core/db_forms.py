@@ -27,6 +27,7 @@ from core.getaki import *
 from core.windows import *
 from core.utils import *
 import core.const
+from core.const import *
 from cryptography.exceptions import InvalidSignature
 from cryptography.fernet import InvalidToken
 
@@ -207,7 +208,7 @@ class EditDbForm(CreateForm):
 
             # if there is no databases left we show appropriate tip
             if not getDbList():
-                self.tips['help'].setText(HELP_TIP)
+                self.tips['help'].setText(HELP_TIP_DB)
 
     def create(self):
         """
