@@ -15,7 +15,6 @@
 
 # You should have received a copy of the GNU General Public License
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
-
 """
 This module contains test case classes and helpful functions that are used by tests.
 """
@@ -41,7 +40,6 @@ class BaseTest(unittest.TestCase):
     """
     Base test superclass almost all tests are inherit from it.
     """
-
     def setUp(self):
         """
         This method setts up environment for every test, here we set TESTING environment variable
@@ -96,7 +94,6 @@ class BaseTest(unittest.TestCase):
         :return:
         mock function that will mock import database dialog.
         """
-
         def file_dialog(caption, filter, directory):
             """
             This is a mock function itself, it checks whether arguments being passed are right,
@@ -128,7 +125,6 @@ class BaseTest(unittest.TestCase):
         :return:
         mock function that will mock export database dialog.
         """
-
         def export_database_dialog(caption, filter, directory):
             """
             This is a mock function itself, it checks whether arguments being passed are right,
@@ -161,7 +157,6 @@ class BaseTest(unittest.TestCase):
         :return:
         mock function that will mock some function from QMessageBox.
         """
-
         def mess(parent, this_head, this_text, *args, **kwargs):
             """
             This is a mock function itself, it checks whether arguments being passed are right,
@@ -214,18 +209,15 @@ class UnitTest(BaseTest):
     This class is a test case for unit tests, it contains all methods that are specific to
     them.
     """
-
     def patchVersion(self):
         """
         This function is used to mock some classes from git module which getVersion function
         uses to identify which version of PyQtAccounts is installed.
         """
-
         class Tag:
             """
             This is a double of Tag class from git module.
             """
-
             def __init__(self, name, date):
                 """
                 In this constructor we save tags name and fake date of its creation.
@@ -252,7 +244,6 @@ class UnitTest(BaseTest):
             This is a mock for Repo class from git module, we use it create fake tags for
             repository.
             """
-
             def __init__(self, *args):
                 """
                 In constructor we simply create fake tags using Tag mock class.
@@ -273,7 +264,6 @@ class FuncTest(BaseTest):
     This class is a test case for functional tests, it contains all methods that are specific to
     them. It is a superclass for DbsTest and AccsTest.
     """
-
     def setUp(self):
         """
         This method sets up everything specific for functional tests.
@@ -313,8 +303,9 @@ class FuncTest(BaseTest):
                 self.assertTrue(parent.forms[form].visibility,
                                 f'Form {elem} is not visible!')
                 continue
-            self.assertFalse(parent.forms[form].visibility,
-                             f"Form {parent.forms[form]} is visible, but it should not be!")
+            self.assertFalse(
+                parent.forms[form].visibility,
+                f"Form {parent.forms[form]} is visible, but it should not be!")
 
         # here we check every tip of parent:
         # if this tip is elem we check whether it is visible
@@ -324,8 +315,9 @@ class FuncTest(BaseTest):
                 self.assertTrue(parent.tips[tip].visibility,
                                 f'Tip {elem} is not visible!')
                 continue
-            self.assertFalse(parent.tips[tip].visibility,
-                             f"Tip {parent.forms[form]} is visible, but it should not be!")
+            self.assertFalse(
+                parent.tips[tip].visibility,
+                f"Tip {parent.forms[form]} is visible, but it should not be!")
 
     @staticmethod
     def check_in_list(name, parent):
@@ -364,19 +356,20 @@ class FuncTest(BaseTest):
             # here we to check is given element IS in the list
             self.check_in_list(name, parent)
         except AssertionError:
-            # if AssertionError caught then it is OK, element is NOT in the list, so we do nothing
+            # if AssertionError caught then it is OK, element is NOT in the list, so we do
+            # nothing
             pass
         else:
-            # and if there is no exceptions then element IS in the list and it is not right, so we
-            # throw AssertionError with appropriate message
-            raise AssertionError(f"{name} is IN the list of {parent}, but it shouldn't be!")
+            # and if there is no exceptions then element IS in the list and it is not right,
+            # so we throw AssertionError with appropriate message
+            raise AssertionError(
+                f"{name} is IN the list of {parent}, but it shouldn't be!")
 
 
 class DbsTest(FuncTest):
     """
     This class is a test case for everything that about databases.
     """
-
     def checkOnlyVisible(self, elem):
         """
         This method is used to check that `elem` parameter is the only visible widget in Dbs
@@ -435,7 +428,6 @@ class AccsTest(FuncTest):
     """
     This class is a test case for everything that about accounts.
     """
-
     def setUp(self, name='database', password='some_password'):
         """
         This method is called before each accounts test, it opens test database because in
@@ -500,7 +492,6 @@ class SetupMixin:
     This mixin is provides some helpful methods that are about setup.py module (i.e. installation
     wizard).
     """
-
     def patchReqs(self, to_install=[], cant_install=[]):
         """
         This method is used to monkeypatch Reqs class from setup.py module. Reqs is class that
@@ -537,7 +528,6 @@ class SetupMixin:
         :return:
         fake function for monkeypatching os.system library function
         """
-
         def wrap(command):
             """
             This function is a test double for os.system. It simulates work and returns exit
@@ -604,7 +594,6 @@ class SettingsMixin:
     """
     This mixin provides setUp method which creates fake settings file for PyQtAccounts.
     """
-
     def setUp(self):
         """
         This method creates fake settings file for PyQtAccounts.
@@ -616,4 +605,5 @@ class SettingsMixin:
         os.mkdir('/home/accounts/.config')
 
         # and here we create settings instance that points to fake settings file
-        self.settings = QSettings(f'{os.getenv("HOME")}/PyTools', 'PyQtAccounts')
+        self.settings = QSettings(f'{os.getenv("HOME")}/PyTools',
+                                  'PyQtAccounts')

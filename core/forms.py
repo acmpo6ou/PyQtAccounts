@@ -15,12 +15,12 @@
 
 # You should have received a copy of the GNU General Public License
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
-
 """
 This module defines helpful form classes.
 """
 
 from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
 from core.testutils import QWidget
 import core.widgets as widgets
 
@@ -182,3 +182,26 @@ class CreateForm(QWidget):
         subclasses.
         """
         raise NotImplementedError()
+
+    def add_item(self, name):
+        """
+        We use this function to add item `name` to list of form (the form has
+        self.list attribute that is a list of Dbs or Accs instance).
+        """
+        # here we create item for list using `name` and special icon of list
+        item = QStandardItem(self.list.icon, name)
+        # then we add created item to model of list
+        self.list.model.appendRow(item)
+        # finally we sort the list
+        self.list.model.sort(0)
+
+    def remove_item(self, name):
+        """
+        We use this function to remove item `name` from list of form (the form has
+        self.list attribute that is a list of Dbs or Accs instance).
+        """
+        # here we find item specified in name, findItems() method returns list of
+        # find items, so we need to iterate trough it (it contains one item anyway)
+        for item in self.list.model.findItems(name):
+            self.list.model.removeRow(item.row())
+        self.list.model.sort(0)

@@ -33,29 +33,6 @@ from cryptography.fernet import InvalidToken
 SRC_DIR = core.const.SRC_DIR
 
 
-def add_database(lst, name):
-    """
-    We use this function to add database `name` to list specified in `lst`.
-    """
-    # here we create item for list using `name` and special icon of list
-    item = QStandardItem(lst.icon, name)
-    # then we add created item to model of list
-    lst.model.appendRow(item)
-    # finally we sort the list
-    lst.model.sort(0)
-
-
-def remove_database(model, name):
-    """
-    We use this function to remove database `name` to list specified in `lst`.
-    """
-    # here we find item specified in name, findItems() method returns list of
-    # find items, so we need to iterate trough it (it contains one item anyway)
-    for item in model.findItems(name):
-        model.removeRow(item.row())
-    model.sort(0)
-
-
 class CreateDbForm(CreateForm):
     """
     This is a superclass which specifies CreateForm class for create database form needs.
@@ -94,7 +71,7 @@ class CreateDbForm(CreateForm):
         self.clear()
 
         # here we update database list and help tip
-        add_database(self.list, name)
+        self.add_item(name)
         self.tips['help'].setText("Виберіть базу данних")
 
     def validateName(self, event):
@@ -217,7 +194,7 @@ class EditDbForm(CreateForm):
             os.remove(f'{core.const.SRC_DIR}/{name}.bin')
 
             # and we update database list
-            remove_database(self.model, name)
+            self.remove_item(name)
             self.clear()
             self.db.ask = False
 
@@ -254,8 +231,8 @@ class EditDbForm(CreateForm):
         self.clear()
 
         # Here we delete old database name from list and add new name to it
-        add_database(self.list, name)
-        remove_database(self.model, self.old_name)
+        self.add_item(name)
+        self.remove_item(self.old_name)
 
         # to avoid errors that occurs because of close behavior
         self.windows.remove(self.db)

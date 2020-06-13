@@ -15,7 +15,6 @@
 
 # You should have received a copy of the GNU General Public License
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
-
 """
 This module provides classes for account forms.
 """
@@ -194,9 +193,7 @@ class CreateAccForm(CreateAcc):
         self.clear()
 
         # Here we update accounts list, hide form and show help tip
-        item = QStandardItem(self.list.icon, accountname)
-        self.list.model.appendRow(item)
-        self.list.model.sort(0)
+        self.add_item(accountname)
         self.clear()
         self.tips['help'].setText("Виберіть акаунт")
 
@@ -256,9 +253,11 @@ class EditAccForm(CreateAcc):
                 break
 
         # Then we show confirmation dialog.
-        action = QMessageBox.warning(win, 'Увага!',
+        action = QMessageBox.warning(win,
+                                     'Увага!',
                                      'Ви певні що хочете видалити акаунт '
-                                     '<i><b>{}</b></i>'.format(self.account.account),
+                                     '<i><b>{}</b></i>'.format(
+                                         self.account.account),
                                      buttons=QMessageBox.No | QMessageBox.Yes,
                                      defaultButton=QMessageBox.No)
 
@@ -267,9 +266,7 @@ class EditAccForm(CreateAcc):
             del self.db[self.account.account]
 
             # and we delete it form accounts list
-            for item in self.list.model.findItems(self.account.account):
-                self.list.model.removeRow(item.row())
-            self.list.model.sort(0)
+            self.remove_item(self.account.account)
             self.clear()
 
             # if database is empty now, we update help tip
@@ -298,8 +295,7 @@ class EditAccForm(CreateAcc):
         self.passField.passInput.setText(password)
         self.passRepeatField.passInput.setText(password)
 
-        day, month, year = [int(d) for d in self.account.date.split(
-            '.')]
+        day, month, year = [int(d) for d in self.account.date.split('.')]
         self.dateInput.setDate(QDate(year, month, day))
 
         self.commentInput.setText(self.account.comment)
@@ -330,11 +326,8 @@ class EditAccForm(CreateAcc):
         self.clear()
 
         # here we update accounts list and clear the edit account form
-        for item in self.list.model.findItems(self.old_account):
-            self.list.model.removeRow(item.row())
-        item = QStandardItem(self.list.icon, accountname)
-        self.list.model.appendRow(item)
-        self.list.model.sort(0)
+        self.add_item(accountname)
+        self.remove_item(self.old_account)
         self.clear()
 
 
