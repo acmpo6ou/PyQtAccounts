@@ -80,6 +80,21 @@ class CreateAcc(CreateForm):
         self.emailInput = QLineEdit()
         self.emailInput.setPlaceholderText('введіть e-mail акаунта')
 
+        # here we have radio buttons that will define what will be copied to
+        # mouseboard `email` or `username` when user performs copy operation
+        self.copy_label = QLabel(
+            'Тут ви можете вибрати що буде копіюватися до\n'
+            'мишиного буферу:')
+        self.username_radio = QRadioButton('Username', self)
+        self.email_radio = QRadioButton('E-mail', self)
+
+        # e-mail will be copied to mouseboard by default
+        self.email_radio.setChecked(True)
+
+        copyLayout = QHBoxLayout()
+        copyLayout.addWidget(self.email_radio)
+        copyLayout.addWidget(self.username_radio)
+
         self.dateLabel = QLabel('Дата народження:')
         self.dateInput = QDateEdit()
         self.dateInput.setDisplayFormat('dd.MM.yyyy')
@@ -96,6 +111,8 @@ class CreateAcc(CreateForm):
         self.layout.insertWidget(2, self.accountInput)
         self.layout.insertWidget(5, self.emailLabel)
         self.layout.insertWidget(6, self.emailInput)
+        self.layout.insertWidget(7, self.copy_label)
+        self.layout.insertLayout(8, copyLayout)
         self.layout.insertLayout(13, dateLayout)
         self.layout.insertWidget(14, self.commentLabel)
         self.layout.insertWidget(15, self.commentInput)

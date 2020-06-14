@@ -49,6 +49,10 @@ class CreateAccTest(AccsTest):
         self.comment = self.form.commentInput
         self.createButton = self.form.createButton
 
+        self.copy_label = self.form.copy_label
+        self.username_radio = self.form.username_radio
+        self.email_radio = self.form.email_radio
+
     def checkNameErrors(self):
         """
         This is a method which will check for name errors.
@@ -212,6 +216,32 @@ class CreateAccTest(AccsTest):
         # Lea wants to create account
         self.accs.panel.addButton.click()
 
+        # There is copy section in this form:
+        # it has label that says what will be copied
+        self.assertEqual(
+            self.copy_label.text(),
+            'Тут ви можете вибрати що буде копіюватися до\n'
+            'мишиного буферу:',
+            'Message of copy label in create account form is incorrect!')
+
+        # also it has two radio buttons that allow user to chose what will be
+        # copied, e-main radio button is checked by default
+        self.assertTrue(
+            self.email_radio.isChecked(),
+            'E-mail radio button in create account form must be checked by default!'
+        )
+        self.assertFalse(
+            self.username_radio.isChecked(),
+            'Username radio button in create account form must be unchecked by default!'
+        )
+
+        # this radio buttons have appropriate names: `email` and `username`
+        self.assertEqual(self.email_radio.text(), 'E-mail',
+                         'Text of e-mail radio button is incorrect!')
+        self.assertEqual(self.username_radio.text(), 'Username',
+                         'Text of username radio button is incorrect!')
+        # Lea will use default copy settings so she doesn't change anything
+
         # She fills all fields
         QTest.keyClicks(self.account_name, 'someaccount')
         QTest.keyClicks(self.name, 'somename')
@@ -241,6 +271,8 @@ class CreateAccTest(AccsTest):
                          'password field of created account is incorrect!')
         self.assertEqual('example@gmail.com', acc.email,
                          'email field of created account is incorrect!')
+        self.assertEqual(True, acc.copy_email,
+                         'copy_email field of created account is incorrect!')
         self.assertEqual('01.01.2000', acc.date,
                          'date field of created account is incorrect!')
         self.assertEqual('Comment of account.', acc.comment,

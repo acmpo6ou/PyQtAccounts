@@ -15,7 +15,6 @@
 
 # You should have received a copy of the GNU General Public License
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
-
 """
 This module provides functions and classes for serializing and deserializing accounts.
 This module has replaced pickle module from standard library because of security reasons.
@@ -28,7 +27,14 @@ class Account:
     """
     This class stores data about account.
     """
-    def __init__(self, account, name, email, password, date, comment):
+    def __init__(self,
+                 account,
+                 name,
+                 email,
+                 password,
+                 date,
+                 comment,
+                 copy_email=True):
         """
         This constructor saves all account data.
         """
@@ -38,6 +44,7 @@ class Account:
         self.password = password
         self.date = date
         self.comment = comment
+        self.copy_email = copy_email
 
     def __eq__(self, other):
         """
