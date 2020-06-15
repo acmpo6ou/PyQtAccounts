@@ -15,7 +15,6 @@
 
 # You should have received a copy of the GNU General Public License
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
-
 """
 This module provides functions for creating, encrypting and decrypting databases.
 """
@@ -63,13 +62,11 @@ def openDatabase(dbname, password):
         salt = file.read()
 
     # here we using fernet encryption function to decrypt and deserialize database.
-    kdf = PBKDF2HMAC(
-        algorithm=hashes.SHA256(),
-        length=32,
-        salt=salt,
-        iterations=100000,
-        backend=default_backend()
-    )
+    kdf = PBKDF2HMAC(algorithm=hashes.SHA256(),
+                     length=32,
+                     salt=salt,
+                     iterations=100000,
+                     backend=default_backend())
     key = base64.urlsafe_b64encode(kdf.derive(password))
     f = Fernet(key)
 
@@ -102,13 +99,11 @@ def encryptDatabase(dbname, db, password):
         salt = file.read()
 
     # here we using fernet encryption function to encrypt and serialize database.
-    kdf = PBKDF2HMAC(
-        algorithm=hashes.SHA256(),
-        length=32,
-        salt=salt,
-        iterations=100000,
-        backend=default_backend()
-    )
+    kdf = PBKDF2HMAC(algorithm=hashes.SHA256(),
+                     length=32,
+                     salt=salt,
+                     iterations=100000,
+                     backend=default_backend())
     key = base64.urlsafe_b64encode(kdf.derive(password))
     f = Fernet(key)
     data = akidump.dumps(db)

@@ -53,7 +53,8 @@ class Account:
         """
         This method compares attributes of two accounts and returns True if all of them are equal.
         """
-        attrs = [a for a in dir(self) if not a.startswith('__')]
+        attrs = ('account', 'name', 'email', 'password', 'date', 'comment',
+                 'copy_email')
 
         for a in attrs:
             my = getattr(self, a)
@@ -93,9 +94,11 @@ def dumps(data):
     return json.dumps(db).encode()
 
 
-def loads(data):
+def loads_old(data):
     """
     This function deserializes string to database.
+    NOTE: this function is obsolete but we use it only for backward
+    comparability with those databases that are serialized in obsolete way.
     :param data:
     string to deserialize, type: byte string
     :return:
@@ -116,3 +119,16 @@ def loads(data):
                           comment)
         res[accountname] = account
     return res
+
+
+def loads_json(data):
+    """
+    This function deserializes json string to database.
+    :param data:
+    json string to deserialize
+    """
+    # here db will be a dict which will contain dicts that will represent our
+    # Account instances
+    db = json.loads(data)
+
+    # here we convert dicts in `db` to Account instances
