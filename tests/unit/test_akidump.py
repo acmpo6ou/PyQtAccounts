@@ -18,6 +18,7 @@
 
 from core.akidump import *
 from core.getaki import *
+import core.const
 
 from unittest.mock import Mock
 import pytest
@@ -78,6 +79,11 @@ class AkidumpTest(UnitTest):
         Here we test how `loads` function from akidump.py module will
         deserialize data that is serialized in obsolete way.
         """
+        # here we monkeypatch SRC_PATH which is the pass to src directory where
+        # openDatabase looks for database files, we will change SRC_PATH to
+        # `tests/` as it is a directory were our test databases are
+        self.monkeypatch.setattr('core.const.SRC_PATH', 'tests/')
+
         # we will use openDatabase from core.getaki module which uses loads
         # function from akidump to deserialize database
         db = openDatabase(
@@ -89,24 +95,41 @@ class AkidumpTest(UnitTest):
         habr = Account(account='habr',
                        name='Lea',
                        email='spheromancer@habr.com',
-                       password='habr_password',
+                       password=b'habr_password',
                        date='19.05.1990',
                        comment='Habr account.',
                        copy_email=True)
         gmail = Account(account='gmail',
                         name='Bob',
                         email='bobgreen@gmail.com',
-                        password='$z#5G_UG~K;I9U9$',
+                        password=b'$z#5G_UG~K;I9U9$',
                         date='19.05.1990',
                         comment='Gmail account.',
                         copy_email=True)
         mega = Account(account='mega',
                        name='Tom',
                        email='tom@gmail.com',
-                       password='tom',
+                       password=b'tom',
                        date='01.01.2000',
                        comment='Mega account.',
                        copy_email=True)
         expected_db = {'habr': habr, 'gmail': gmail, 'mega': mega}
-        self.assertEqual(db, expected_db)
-        # TODO: use isEqual function form utils.py to compare databases
+        self.assertTrue(
+            isEqual(db, expected_db),
+            '`loads` deserialization of obsolete data is incorrect!')
+
+    def test_loads_json(self):
+        """
+        Here we test how `loads` function from akidump.py module will
+        deserialize data that is serialized in new, json way.
+        """
+        # here are our json serialized data
+        data = (b'{"gmail": {"account": "gmail", "name": "Tom", "email": '
+                b'"tom@gmail.com", "password": "123", "date": "01.01.1990", '
+                b'"comment": "My gmail account.", "copy_email": true}}')
+
+        # and here we use loads to deserialize it
+        loaded = loads(data)
+
+        # and here we check results
+        self.assertEqual(loaded, self.db)
