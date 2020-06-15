@@ -20,6 +20,9 @@ This module provides functions and classes for serializing and deserializing acc
 This module has replaced pickle module from standard library because of security reasons.
 """
 
+import json
+
+# NOTE: this separator is now obsolete because we use json to serialize our databases
 SEPARATOR = 's' + '-=' * 30 + 'e'  # this is a separator between accounts in .db file.
 
 
@@ -60,25 +63,34 @@ class Account:
         else:
             return True
 
+    def to_dict(self):
+        """
+        We use this method to convert our Account instance to dictionary which
+        is json serializable.
+        """
+        return {
+            'account': self.account,
+            'name': self.name,
+            'email': self.email,
+            'password': self.password.decode(),
+            'date': self.date,
+            'comment': self.comment,
+            'copy_email': self.copy_email,
+        }
+
 
 def dumps(data):
     """
-    This function serializes database to string using SEPARATOR constant to separate accounts.
+    This function serializes database to string using json module.
     :param data:
     represents database, type: dict
     :return:
     serialized string, type: byte string
     """
-    res = ''
+    db = {}
     for account in data:
-        res += data[account].account + SEPARATOR
-        res += data[account].name + SEPARATOR
-        res += data[account].email + SEPARATOR
-        res += data[account].password.decode() + SEPARATOR
-        res += data[account].date + SEPARATOR
-        res += data[account].comment + SEPARATOR
-
-    return res.encode()
+        db[account] = data[account].to_dict()
+    return json.dumps(db).encode()
 
 
 def loads(data):
