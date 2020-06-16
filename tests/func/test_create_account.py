@@ -36,18 +36,24 @@ class CreateAccTest(AccsTest):
         """
         super().setUp()
         self.form = self.accs.forms['create']
+        self.help_tip = self.accs.tips['help']
 
         self.account_name = self.form.accountInput
         self.name = self.form.nameInput
         self.nameError = self.form.nameError
         self.nameFilledError = self.form.nameFilledError
+
         self.passFilledError = self.form.passFilledError
         self.passEqError = self.form.passEqError
         self.pass_input = self.form.passField.passInput
         self.pass_repeat_input = self.form.passRepeatField.passInput
+
         self.email = self.form.emailInput
+        self.date = self.form.dateInput
         self.comment = self.form.commentInput
+
         self.createButton = self.form.createButton
+        self.cancelButton = self.form.cancelButton
 
         self.copy_label = self.form.copy_label
         self.username_radio = self.form.username_radio
@@ -297,8 +303,45 @@ class CreateAccTest(AccsTest):
         QTest.keyClicks(self.pass_input, 'some_password')
         QTest.keyClicks(self.pass_repeat_input, 'some_password')
         QTest.keyClicks(self.email, 'example@gmail.com')
-        self.date.setText('02.05.1990')
+        self.date.setDate(QDate(1990, 5, 2))
         QTest.keyClicks(self.comment, 'Comment of account.')
 
         # suddenly she changes her mind and presses `Cancel` button
         self.cancelButton.click()
+
+        # create account form disappears
+        self.checkOnlyVisible(self.help_tip)
+
+        # and all fields of create account form are cleared
+        self.assertEqual(
+            self.account_name.text(), '',
+            'Account-name field of create account form is not cleared when user '
+            'pressed cancel button!')
+        self.assertEqual(
+            self.name.text(), '',
+            'Name field of create account form is not cleared when user '
+            'pressed cancel button!')
+        self.assertEqual(
+            self.pass_input.text(), '',
+            'First password field of create account form is not cleared when user '
+            'pressed cancel button!')
+        self.assertEqual(
+            self.pass_repeat_input.text(), '',
+            'Second password field of create account form is not cleared when user '
+            'pressed cancel button!')
+        self.assertEqual(
+            self.email.text(), '',
+            'Email field of create account form is not cleared when user '
+            'pressed cancel button!')
+        self.assertEqual(
+            self.comment.toPlainText(), '',
+            'Comment field of create account form is not cleared when user '
+            'pressed cancel button!')
+        self.assertEqual(
+            self.date.text(), '01.01.2000',
+            'Date field of create account form is not cleared when user '
+            'pressed cancel button!')
+        self.assertTrue(
+            self.email_radio.isChecked(),
+            'Copy section of create account form is not cleared when user '
+            'pressed cancel button!')
