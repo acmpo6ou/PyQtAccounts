@@ -132,3 +132,35 @@ def loads_json(data):
     db = json.loads(data)
 
     # here we convert dicts in `db` to Account instances
+    for account in db:
+        # here we first encode password value of account dict to byte string,
+        # because password in Account class must be a byte string
+        password = db[account]['password'].encode()
+        db[account]['password'] = password
+
+        # then we unpack account dict as arguments for Account constructor to
+        # create Account instance from account dict, then we save freshly
+        # created Account instance back to the database
+        db[account] = Account(**db[account])
+
+    # finally we return deserialized database
+    return db
+
+
+def loads(data):
+    """
+    This function is an interface to `loads_old` and `loads_json` functions.
+    `loads` will use `loads_old` for databases serialized in the
+    obsolete way and `loads_json` for those serialized json way.
+    """
+    # here we first try to deserialize `data` using `loads_json`
+    try:
+        db = loads_json(data)
+    except json.decoder.JSONDecodeError:
+        # and if we cant decode that data, then perhaps it is database
+        # serialized in the obsolete way, so we try `loads_old` to deserialize
+        # it
+        db = loads_old(data)
+
+    # finally we return deserialized database
+    return db
