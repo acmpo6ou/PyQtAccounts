@@ -203,9 +203,10 @@ class CreateAccForm(CreateAcc):
         password = self.passField.passInput.text().encode()
         date = self.dateInput.text()
         comment = self.commentInput.toPlainText().replace('\n', '\n\n')
+        copy_email = self.email_radio.isChecked()
 
         account = akidump.Account(accountname, name, email, password, date,
-                                  comment)
+                                  comment, copy_email)
         self.db[accountname] = account
         self.clear()
 

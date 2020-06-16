@@ -240,7 +240,9 @@ class CreateAccTest(AccsTest):
                          'Text of e-mail radio button is incorrect!')
         self.assertEqual(self.username_radio.text(), 'Username',
                          'Text of username radio button is incorrect!')
-        # Lea will use default copy settings so she doesn't change anything
+
+        # Lea wont use default copy settings so she doesn't change anything
+        self.username_radio.setChecked(True)
 
         # She fills all fields
         QTest.keyClicks(self.account_name, 'someaccount')
@@ -271,7 +273,7 @@ class CreateAccTest(AccsTest):
                          'password field of created account is incorrect!')
         self.assertEqual('example@gmail.com', acc.email,
                          'email field of created account is incorrect!')
-        self.assertEqual(True, acc.copy_email,
+        self.assertEqual(False, acc.copy_email,
                          'copy_email field of created account is incorrect!')
         self.assertEqual('01.01.2000', acc.date,
                          'date field of created account is incorrect!')

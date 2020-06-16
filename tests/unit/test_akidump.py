@@ -79,10 +79,10 @@ class AkidumpTest(UnitTest):
         Here we test how `loads` function from akidump.py module will
         deserialize data that is serialized in obsolete way.
         """
-        # here we monkeypatch SRC_PATH which is the pass to src directory where
-        # openDatabase looks for database files, we will change SRC_PATH to
-        # `tests/` as it is a directory were our test databases are
-        self.monkeypatch.setattr('core.const.SRC_PATH', 'tests/')
+        # here we monkeypatch SRC_DIR which is the pass to src directory where
+        # openDatabase looks for database files, we will change SRC_DIR to
+        # `tests/src` as it is a directory were our test databases are
+        self.monkeypatch.setattr('core.const.SRC_DIR', 'tests/src')
 
         # we will use openDatabase from core.getaki module which uses loads
         # function from akidump to deserialize database
