@@ -241,7 +241,7 @@ class CreateAccTest(AccsTest):
         self.assertEqual(self.username_radio.text(), 'Username',
                          'Text of username radio button is incorrect!')
 
-        # Lea wont use default copy settings so she doesn't change anything
+        # Lea wont use default copy settings
         self.username_radio.setChecked(True)
 
         # She fills all fields
@@ -279,3 +279,26 @@ class CreateAccTest(AccsTest):
                          'date field of created account is incorrect!')
         self.assertEqual('Comment of account.', acc.comment,
                          'comment field of created account is incorrect!')
+
+    def test_cancel_button(self):
+        """
+        Here we test the cancel button of create account form. It must hide the
+        form and clear it.
+        """
+        # Lea wants to create account
+        self.accs.panel.addButton.click()
+
+        # Lea wont use default copy settings
+        self.username_radio.setChecked(True)
+
+        # She fills all fields
+        QTest.keyClicks(self.account_name, 'someaccount')
+        QTest.keyClicks(self.name, 'somename')
+        QTest.keyClicks(self.pass_input, 'some_password')
+        QTest.keyClicks(self.pass_repeat_input, 'some_password')
+        QTest.keyClicks(self.email, 'example@gmail.com')
+        self.date.setText('02.05.1990')
+        QTest.keyClicks(self.comment, 'Comment of account.')
+
+        # suddenly she changes her mind and presses `Cancel` button
+        self.cancelButton.click()
