@@ -112,10 +112,10 @@ class CreateAcc(CreateForm):
         self.layout.insertWidget(5, self.emailLabel)
         self.layout.insertWidget(6, self.emailInput)
         self.layout.insertWidget(7, self.copy_label)
-        self.layout.insertLayout(8, copyLayout)
-        self.layout.insertLayout(13, dateLayout)
-        self.layout.insertWidget(14, self.commentLabel)
-        self.layout.insertWidget(15, self.commentInput)
+        self.layout.insertLayout(9, copyLayout)
+        self.layout.insertLayout(15, dateLayout)
+        self.layout.insertWidget(16, self.commentLabel)
+        self.layout.insertWidget(17, self.commentInput)
 
         # Creating a scroll area which contains a fake layout (widget) which
         # contains layout of form, and putting
@@ -139,7 +139,9 @@ class CreateAcc(CreateForm):
         self.emailInput.clear()
         self.passField.passInput.clear()
         self.passRepeatField.passInput.clear()
+        self.dateInput.setDate(QDate(2000, 1, 1))
         self.commentInput.clear()
+        self.email_radio.setChecked(True)
 
         for i in range(self.errors.layout().count()):
             err = self.errors.layout().itemAt(i).widget()
