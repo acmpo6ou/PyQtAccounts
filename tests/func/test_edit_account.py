@@ -195,3 +195,9 @@ class EditAccsTest(AccsTest):
 
         # Show account form appears, and everything is fine
         self.checkOnlyVisible(self.accs.forms['show'])
+
+    def test_no_changes(self):
+        """
+        Here we test what happens when user didn't change anything and presses
+        save button.
+        """

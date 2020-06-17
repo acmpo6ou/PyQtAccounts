@@ -232,8 +232,8 @@ class EditDbForm(CreateForm):
         self.clear()
 
         # Here we delete old database name from list and add new name to it
-        self.add_item(name)
         self.remove_item(self.old_name)
+        self.add_item(name)
 
         # to avoid errors that occurs because of close behavior
         self.windows.remove(self.db)

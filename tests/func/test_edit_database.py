@@ -215,3 +215,22 @@ class EditDbTest(DbsTest):
 
         # Edit form disappears
         self.checkOnlyVisible(self.help)
+
+    def test_no_change(self):
+        """
+        Here we test what happens when user doesn't changes any thing.
+        """
+        # Tom wants to edit database
+        self.openDatabase()
+        self.editButton.click()
+
+        # Suddenly he changes his mind and presses save button without any
+        # change
+        self.saveButton.click()
+
+        # Edit database form disappears
+        self.checkOnlyVisible(self.help)
+
+        # `database` is still in the list and on the disk
+        self.checkDbInList('database')
+        self.checkDbOnDisk('database')

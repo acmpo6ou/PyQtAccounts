@@ -346,8 +346,8 @@ class EditAccForm(CreateAcc):
         self.clear()
 
         # here we update accounts list and clear the edit account form
-        self.add_item(accountname)
         self.remove_item(self.old_account)
+        self.add_item(accountname)
         self.clear()
 
 
