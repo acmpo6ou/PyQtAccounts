@@ -38,7 +38,7 @@ class ShowAccTest(AccsTest):
         Here we reassign some widely used variables and initialize fake file
         system.
         """
-        super().setUp()
+        super().setUp(name='database2')
         self.form = self.accs.forms['show']
         self.list = self.accs.list
 
@@ -72,13 +72,20 @@ class ShowAccTest(AccsTest):
         self.assertEqual('Коментарій: Habr account.',
                          self.form.comment.toPlainText(),
                          "Comment in show account form is incorrect!")
+        self.assertEqual(
+            f'До мишиного буферу копіюється: e-mail',
+            self.form.mouse_copy.text(),
+            "Mouse-copy label of show account form is incorrect!")
 
     def test_copy_email_and_password(self):
         """
-        Here we test how copying of email and password in show account form works.
+        Here we test how copying of email and password in show account form
+        works, when e-mail is chosen to be copied to mouseboard.
         """
         # Bob wants to copy e-mail and password of his account, so he chose one in the list
         self.list.selected(Index('gmail'))
+
+        # Note: he has e-mail chosen to be copied to mouseboard
 
         # He then goes to menu: File -> Copy
         # we can't use self.menu() here because it is applied to main window
@@ -101,4 +108,38 @@ class ShowAccTest(AccsTest):
         self.assertEqual(
             mouseboard, 'bobgreen@gmail.com\n',
             "Email isn't copied to mouse clipboard when performed"
+            " copy option in show account form!")
+
+    def test_copy_usename_and_password(self):
+        """
+        Here we test how copying of username and password in show account form
+        works, when username is chosen to be copied to mouseboard.
+        """
+        # Chris wants to copy username and password of his account, so he chose one in the
+        # list
+        self.list.selected(Index('stackoverflow'))
+
+        # Note: he has username chosen to be copied to mouseboard
+
+        # He then goes to menu: File -> Copy
+        # we can't use self.menu() here because it is applied to main window
+        # while we use database one
+        file = self.win.menuBar().actions()[0]  # first is `File` submenu
+        copy = file.menu().actions()[2]  # third action is `Copy`
+        copy.trigger()
+
+        # Password copied to clipboard
+        clipboard = QGuiApplication.clipboard()
+        self.assertEqual(
+            clipboard.text(),
+            '930bU~1j.;nLS<Ga',  # those symbols are password
+            "Password isn't copied to clipboard when performed "
+            "copy operation in show account form!")
+
+        # Username is copied to mouse clipboard by xclip tool
+        xclip = Popen(['xclip', '-o'], stdout=PIPE, stderr=STDOUT)
+        mouseboard = xclip.communicate()[0].decode()
+        self.assertEqual(
+            mouseboard, 'Chris Kirkman\n',
+            "Username isn't copied to mouse clipboard when performed"
             " copy option in show account form!")
