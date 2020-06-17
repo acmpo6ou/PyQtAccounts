@@ -373,6 +373,7 @@ class ShowAccForm(QWidget):
         self.email = QLabel()
         self.password = QLabel()
         self.date = QLabel()
+        self.mouse_copy = QLabel()
         self.comment = QTextEdit()
         self.comment.setReadOnly(True)
 
@@ -394,6 +395,7 @@ class ShowAccForm(QWidget):
         layout.addWidget(self.email)
         layout.addWidget(self.password)
         layout.addWidget(self.date)
+        layout.addWidget(self.mouse_copy)
         layout.addWidget(self.copyTip)
         layout.addWidget(self.comment)
         self.setLayout(layout)
@@ -414,15 +416,28 @@ class ShowAccForm(QWidget):
         self.date.setText('Дата: ' + account.date)
         self.comment.setText('Коментарій: ' + account.comment)
 
+        mouse_copy = 'e-mail' if account.copy_email else 'username'
+        self.mouse_copy.setText(f'До мишиного буферу копіюється: {mouse_copy}')
+
     def copyAcc(self):
         """
         This method is called when user presses Ctrl+C or through menu: File -> Copy.
-        It copies e-mail to mouse buffer and password to clipboard.
+        It copies e-mail or username to mouse buffer, depending on `copy_email`
+        setting of account, and password to clipboard.
         """
         # to copy password
         clipboard = QGuiApplication.clipboard()
         clipboard.setText(self.password.text().replace('Пароль: ', ''))
 
-        # to copy e-mail
-        email = self.email.text().replace('E-mail: ', '')
-        os.system(f'echo {email} | xclip')
+        # we need this to know what will be copied to mouseboard
+        mouse_copy = self.mouse_copy.text().replace(
+            "До мишиного буферу копіюється: ", '')
+
+        # and here we check if mouse_copy contains `e-mail` then we have to copy e-mail
+        if mouse_copy == 'e-mail':
+            email = self.email.text().replace('E-mail: ', '')
+            os.system(f'echo {email} | xclip')
+        else:
+            # we copy username to mouseboard
+            username = self.name.text().replace("Ім'я: ", '')
+            os.system(f'echo {username} | xclip')
