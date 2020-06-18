@@ -21,6 +21,7 @@ from PyQt5.QtCore import *
 import unittest
 import pytest
 import os
+from subprocess import Popen, PIPE, STDOUT
 
 from tests.base import AccsTest, init_accounts_folder, init_src_folder
 from core.utils import *
@@ -201,6 +202,30 @@ class EditAccsTest(AccsTest):
         # Show account form appears, and everything is fine
         self.checkOnlyVisible(self.accs.forms['show'])
 
+        # He then goes to menu: File -> Copy
+        # we can't use self.menu() here because it is applied to main window
+        # while we use database one
+        file = self.win.menuBar().actions()[0]  # first is `File` submenu
+        copy = file.menu().actions()[2]  # third action is `Copy`
+        copy.trigger()
+
+        # when he performs copy operation username is copied to mouseboard and
+        # password to clipboard
+        clipboard = QGuiApplication.clipboard()
+        self.assertEqual(
+            clipboard.text(),
+            'mypass',  # those symbols are password
+            "Password isn't copied to clipboard when performed "
+            "copy operation in show account form!")
+
+        # Username is copied to mouse clipboard by xclip tool
+        xclip = Popen(['xclip', '-o'], stdout=PIPE, stderr=STDOUT)
+        mouseboard = xclip.communicate()[0].decode()
+        self.assertEqual(
+            mouseboard, 'Tom\n',
+            "Username isn't copied to mouse clipboard when performed"
+            " copy operation in show account form!")
+
     def test_no_changes(self):
         """
         Here we test what happens when user didn't change anything and presses
@@ -260,6 +285,13 @@ class EditAccsTest(AccsTest):
         # Show account form appears, and everything is fine
         self.checkOnlyVisible(self.accs.forms['show'])
 
+        # He then goes to menu: File -> Copy
+        # we can't use self.menu() here because it is applied to main window
+        # while we use database one
+        file = self.win.menuBar().actions()[0]  # first is `File` submenu
+        copy = file.menu().actions()[2]  # third action is `Copy`
+        copy.trigger()
+
         # when he performs copy operation e-mail is copied to mouseboard and
         # password to clipboard
         clipboard = QGuiApplication.clipboard()
@@ -273,6 +305,6 @@ class EditAccsTest(AccsTest):
         xclip = Popen(['xclip', '-o'], stdout=PIPE, stderr=STDOUT)
         mouseboard = xclip.communicate()[0].decode()
         self.assertEqual(
-            mouseboard, 'tom@gmail.com',
+            mouseboard, 'tom@gmail.com\n',
             "Email isn't copied to mouse clipboard when performed"
             " copy operation in show account form!")
