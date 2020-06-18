@@ -155,6 +155,13 @@ class EditDbTest(DbsTest):
         self.checkDbInList('another_database')
         self.checkDbOnDisk('another_database')
 
+        # and it is not empty
+        dbsize = os.stat('/home/accounts/test/src/another_database.db').st_size
+        self.assertGreater(
+            dbsize,
+            100,  # 100 bytes is a size of an empty database
+            "Database is erased when its name is changed!")
+
         # And there is no longer `database` in the list, nor on the disk
         self.checkDbNotInList('database')
         self.checkDbNotOnDisk('database')
