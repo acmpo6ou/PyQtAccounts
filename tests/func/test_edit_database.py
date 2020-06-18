@@ -234,3 +234,10 @@ class EditDbTest(DbsTest):
         # `database` is still in the list and on the disk
         self.checkDbInList('database')
         self.checkDbOnDisk('database')
+
+        # Then Tom opens `database` again
+        self.openDatabase()
+
+        # database window appears and everything is fine
+        self.assertTrue(self.window.windows[1])
+        self.checkOnlyVisible(self.help)
