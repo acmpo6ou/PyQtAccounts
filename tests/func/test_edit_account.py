@@ -52,6 +52,7 @@ class EditAccsTest(AccsTest):
         self.email = self.form.emailInput
         self.date = self.form.dateInput
         self.comment = self.form.commentInput
+        self.username_radio = self.form.username_radio
 
         # here we initialize in-memory file system because our tests will change
         # databases and sometimes save those changes but we don't want to change
@@ -147,7 +148,8 @@ class EditAccsTest(AccsTest):
         self.list.selected(Index('mega'))
         self.editButton.click()
 
-        # He changes name and password
+        # He changes name, password, date, comment and what will be copied to
+        # mouseboard
         self.account.setText('stackoverflow')
         self.pass_input.setText('mypass')
         self.pass_repeat_input.setText('mypass')
@@ -155,6 +157,7 @@ class EditAccsTest(AccsTest):
         self.email.setText('tom@gmail.com')
         self.date.setDate(QDate(1997, 7, 10))
         self.comment.setText('I love stackoverflow!')
+        self.username_radio.setChecked(True)
 
         # Everything is fine so he presses save button
         self.saveButton.click()
@@ -183,6 +186,8 @@ class EditAccsTest(AccsTest):
                          'date of edited account is incorrect!')
         self.assertEqual('I love stackoverflow!', account.comment,
                          'comment of edited account is incorrect!')
+        self.assertFalse(account.copy_email,
+                         "Copy e-mail of edited account is incorrect!")
 
         # And there is no longer `mega` in the list neither in database
         self.checkAccNotInList('mega')
@@ -201,3 +206,73 @@ class EditAccsTest(AccsTest):
         Here we test what happens when user didn't change anything and presses
         save button.
         """
+        # Tom wants to edit database
+        self.list.selected(Index('mega'))
+        self.editButton.click()
+
+        # then he changes his mind and presses save button without changing
+        # anything
+        self.saveButton.click()
+
+        # Edit account form disappears
+        self.checkOnlyVisible(self.help)
+
+        # Account name doesn't changes in the list nor in database
+        self.checkAccInList('mega')
+        self.assertIn(
+            'mega', getAkiList(self.win.db),
+            'Account name has changed in account list after user'
+            'didn\'t change anything in edit account form!')
+
+        # Also it has all properties left unchanged
+        account = self.win.db['mega']
+        self.assertEqual(
+            'mega', account.account,
+            'account name of account that was edited, but doesn\'t changed is incorrect!'
+        )
+        self.assertEqual(
+            b'tom', account.password,
+            'password of account that was edited, but doesn\'t changed is incorrect!'
+        )
+        self.assertEqual(
+            'Tom', account.name,
+            'name of account that was edited, but doesn\'t changed is incorrect!'
+        )
+        self.assertEqual(
+            'tom@gmail.com', account.email,
+            'email of account that was edited, but doesn\'t changed is incorrect!'
+        )
+        self.assertEqual(
+            '01.01.2000', account.date,
+            'date of account that was edited, but doesn\'t changed is incorrect!'
+        )
+        self.assertEqual(
+            'Mega account.', account.comment,
+            'comment of account that was edited, but doesn\'t changed is incorrect!'
+        )
+        self.assertTrue(
+            account.copy_email, "Copy e-mail of account that was edited, but "
+            "doesn't changed is incorrect!")
+
+        # Tom then wants to view edited account
+        self.list.selected(Index('mega'))
+
+        # Show account form appears, and everything is fine
+        self.checkOnlyVisible(self.accs.forms['show'])
+
+        # when he performs copy operation e-mail is copied to mouseboard and
+        # password to clipboard
+        clipboard = QGuiApplication.clipboard()
+        self.assertEqual(
+            clipboard.text(),
+            'tom',  # those symbols are password
+            "Password isn't copied to clipboard when performed "
+            "copy operation in show account form!")
+
+        # E-mail is copied to mouse clipboard by xclip tool
+        xclip = Popen(['xclip', '-o'], stdout=PIPE, stderr=STDOUT)
+        mouseboard = xclip.communicate()[0].decode()
+        self.assertEqual(
+            mouseboard, 'tom@gmail.com',
+            "Email isn't copied to mouse clipboard when performed"
+            " copy operation in show account form!")

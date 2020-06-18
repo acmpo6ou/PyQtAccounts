@@ -108,7 +108,7 @@ class ShowAccTest(AccsTest):
         self.assertEqual(
             mouseboard, 'bobgreen@gmail.com\n',
             "Email isn't copied to mouse clipboard when performed"
-            " copy option in show account form!")
+            " copy operation in show account form!")
 
     def test_copy_usename_and_password(self):
         """
@@ -142,4 +142,4 @@ class ShowAccTest(AccsTest):
         self.assertEqual(
             mouseboard, 'Chris Kirkman\n',
             "Username isn't copied to mouse clipboard when performed"
-            " copy option in show account form!")
+            " copy operation in show account form!")
