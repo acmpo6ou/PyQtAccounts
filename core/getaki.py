@@ -125,9 +125,8 @@ def newDatabase(dbname, password):
     saltfile = f'{core.const.SRC_DIR}/' + dbname + '.bin'
     dbfile = f'{core.const.SRC_DIR}/' + dbname + '.db'
 
-    db = {}
     generateSalt(saltfile)
-    token = encryptDatabase(dbname, db, password)
+    token = encryptDatabase(dbname, {}, password)
 
     with open(dbfile, 'wb') as file:
         file.write(token)

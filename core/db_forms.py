@@ -231,6 +231,11 @@ class EditDbForm(CreateForm):
         newDatabase(name, password)
         self.clear()
 
+        # then we save encrypted database to freshly created database
+        token = encryptDatabase(name, self.db.db, password)
+        with open(f'{core.const.SRC_DIR}/{name}.db', 'wb') as dbfile:
+            dbfile.write(token)
+
         # Here we delete old database name from list and add new name to it
         self.remove_item(self.old_name)
         self.add_item(name)
