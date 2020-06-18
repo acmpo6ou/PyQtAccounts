@@ -337,10 +337,11 @@ class EditAccForm(CreateAcc):
         password = self.passField.passInput.text().encode()
         date = self.dateInput.text()
         comment = self.commentInput.toPlainText()
+        copy_email = self.email_radio.isChecked()
 
         # and here we create new account and also delete the old one
         account = akidump.Account(accountname, name, email, password, date,
-                                  comment)
+                                  comment, copy_email)
         del self.db[self.old_account]
         self.db[accountname] = account
         self.clear()
