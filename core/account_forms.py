@@ -95,6 +95,11 @@ class CreateAcc(CreateForm):
         copyLayout.addWidget(self.email_radio)
         copyLayout.addWidget(self.username_radio)
 
+        self.attach_label = QLabel("Додати файли:")
+        self.attach_list = QListView()
+        self.attach_list.setModel(QStandardItemModel())
+        self.attach_add_button = QPushButton()
+
         self.dateLabel = QLabel('Дата народження:')
         self.dateInput = QDateEdit()
         self.dateInput.setDisplayFormat('dd.MM.yyyy')

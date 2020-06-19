@@ -15,7 +15,6 @@
 
 # You should have received a copy of the GNU General Public License
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
-
 """
 This module provides all helpful functions and classes that PyQtAccounts uses for updating
 """
@@ -58,7 +57,8 @@ def time_for_updates():
         current = QDate.currentDate()
 
         # if we never checked for updates yet or we checked but long ago enough we return True
-        if not last_checked or last_checked.addDays(frequency.toInt()) <= current:
+        if not last_checked or last_checked.addDays(
+                frequency.toInt()) <= current:
             settings.setValue('updates/last', current)
             return True
         else:
@@ -73,8 +73,11 @@ def getChangeLog():
     :return:
     list of change strings
     """
-    return [change.decode().rstrip() for change in urlopen(
-        'https://raw.githubusercontent.com/Acmpo6ou/PyQtAccounts/master/change.log')]
+    return [
+        change.decode().rstrip() for change in urlopen(
+            'https://raw.githubusercontent.com/Acmpo6ou/PyQtAccounts/master/change.log'
+        )
+    ]
 
 
 class Updating(QObject):
@@ -86,7 +89,7 @@ class Updating(QObject):
 
     def run(self):
         """
-        This method does all updating work, such as gets changelog.
+        This method does all updating work, such as getting changelog.
         """
         import git
         repo = git.Repo('.')
@@ -174,7 +177,9 @@ class UpdatesAvailable(QWidget):
         origin.pull()
 
         # start new instance of the program in daemon
-        t = threading.Thread(target=os.system, args=('./run.sh',), daemon=True)
+        t = threading.Thread(target=os.system,
+                             args=('./run.sh', ),
+                             daemon=True)
         t.start()
 
         # and close the old one
