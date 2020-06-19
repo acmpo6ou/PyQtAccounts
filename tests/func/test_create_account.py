@@ -59,6 +59,10 @@ class CreateAccTest(AccsTest):
         self.username_radio = self.form.username_radio
         self.email_radio = self.form.email_radio
 
+        self.attach_label = self.form.attach_label
+        self.attach_list = self.form.attach_list
+        self.attach_add_button = self.form.attach_add_button
+
     def checkNameErrors(self):
         """
         This is a method which will check for name errors.
@@ -341,3 +345,38 @@ class CreateAccTest(AccsTest):
             self.email_radio.isChecked(),
             'Copy section of create account form is not cleared when user '
             'pressed cancel button!')
+
+    def test_attach_files(self):
+        """
+        Here we test attach files feature of create account form.
+        """
+        # Toon wants to create account and attach some files to it
+        self.accs.panel.addButton.click()
+
+        # he fills only required fields
+        QTest.keyClicks(self.account_name, 'tf2')
+        QTest.keyClicks(self.pass_input, 'something')
+        QTest.keyClicks(self.pass_repeat_input, 'something')
+
+        # then he finds label that says `attach files`
+        self.assertEqual(self.attach_label.text(), 'Додати файли:',
+                         "Message of attach label is incorrect!")
+
+        # there is also an empty list under it
+        self.assertEqual(
+            self.attach_list.model().rowCount(), 0,
+            'Attach list of create account form must be empty when'
+            'form is just displayed!')
+
+        # there is button that Toon can use to add files to list, Toon presses
+        # it
+        self.attach_add_button.click()
+
+        # file dialog appears asking Toon to chose file to attach
+        def mock_browse(parrent, caption, dir):
+            """
+            We use this function to monkeypatch getOpenFileName and check
+            arguments that are passed to it.
+            """
+
+        self.monkeypatch.setattr(QFileDialog, 'getOpenFileName', mock_browse)
