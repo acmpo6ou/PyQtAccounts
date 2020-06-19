@@ -42,18 +42,19 @@ class BaseTest(unittest.TestCase):
     """
     def setUp(self):
         """
-        This method setts up environment for every test, here we set TESTING environment variable
-        to True, for example adjusted hide and show functions from testutils module use it to
-        determine whether they should construct (or destruct) windows or not. This variable is like
-        a signal for program that it is running under test, this strategy very helpful.
+        This method setts up environment for every test, here we set TESTING environment
+        variable to True, for example adjusted hide and show functions from testutils module
+        use it to determine whether they should construct (or destruct) windows or not. This
+        variable is like a signal for program that it is running under test, this strategy
+        very helpful.
         """
         os.environ['TESTING'] = 'True'
 
     @pytest.fixture(autouse=True)
     def monkeypatching(self, monkeypatch):
         """
-        This method is a fixture that defines monkeypatch attribute for test class, because pytest
-        doesn't pass monkeypatch to methods, only to functions.
+        This method is a fixture that defines monkeypatch attribute for test class, because
+        pytest doesn't pass monkeypatch to methods, only to functions.
         :param monkeypatch:
         Monkeypatch instance
         """
@@ -485,6 +486,20 @@ class AccsTest(FuncTest):
         name of the account
         """
         self.check_not_in_list(name, self.accs)
+
+    def account_menu(self, submenu_index, action_index):
+        """
+        This method returns account menu action instance (QAction) by given index of submenu
+        and index of menu action.
+        :param submenu_index:
+        index of submenu that contains account menu action we want to get, type int
+        :param action_index:
+        index of menu action we want to get, type int
+        :return:
+        menu action, type QAction
+        """
+        submenu = self.win.menuBar().actions()[submenu_index]
+        return submenu.menu().actions()[action_index]
 
 
 class SetupMixin:
