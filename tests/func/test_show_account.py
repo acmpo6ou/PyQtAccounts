@@ -88,11 +88,7 @@ class ShowAccTest(AccsTest):
         # Note: he has e-mail chosen to be copied to mouseboard
 
         # He then goes to menu: File -> Copy
-        # we can't use self.menu() here because it is applied to main window
-        # while we use database one
-        file = self.win.menuBar().actions()[0]  # first is `File` submenu
-        copy = file.menu().actions()[2]  # third action is `Copy`
-        copy.trigger()
+        self.account_menu(0, 2).trigger()
 
         # Password copied to clipboard
         clipboard = QGuiApplication.clipboard()
@@ -122,11 +118,7 @@ class ShowAccTest(AccsTest):
         # Note: he has username chosen to be copied to mouseboard
 
         # He then goes to menu: File -> Copy
-        # we can't use self.menu() here because it is applied to main window
-        # while we use database one
-        file = self.win.menuBar().actions()[0]  # first is `File` submenu
-        copy = file.menu().actions()[2]  # third action is `Copy`
-        copy.trigger()
+        self.account_menu(0, 2).trigger()
 
         # Password copied to clipboard
         clipboard = QGuiApplication.clipboard()

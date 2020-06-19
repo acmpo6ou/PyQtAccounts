@@ -79,12 +79,7 @@ class DbSaveTest(AccsTest):
         self.saveButton.click()
 
         # Ross then goes to menu: File -> Save
-        # We can't use self.menu() method here to obtain menu action because
-        # self.menu() will use menu of main window while we need menu of
-        # database window
-        file = self.win.menuBar().actions()[0]  # first is `File` submenu
-        save = file.menu().actions()[1]  # second action is `Save`
-        save.trigger()
+        self.account_menu(0, 1).trigger()
 
         # Database is saved now, so he closes the database window, and there is no messages
         self.win.close()
