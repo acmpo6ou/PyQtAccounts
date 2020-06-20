@@ -98,7 +98,18 @@ class CreateAcc(CreateForm):
         self.attach_label = QLabel("Додати файли:")
         self.attach_list = QListView()
         self.attach_list.setModel(QStandardItemModel())
-        self.attach_add_button = QPushButton()
+        self.attach_list.pathmap = {}
+
+        self.attach_file_button = QPushButton()
+        self.attach_file_button.clicked.connect(self.attach_file)
+        self.attach_file_button.setIcon(QIcon('img/list-add.png'))
+        self.attach_file_button.setIconSize(QSize(22, 22))
+        attachButtonsLayout = QVBoxLayout()
+        attachButtonsLayout.addWidget(self.attach_file_button)
+
+        attachLayout = QHBoxLayout()
+        attachLayout.addWidget(self.attach_list)
+        attachLayout.addLayout(attachButtonsLayout)
 
         self.dateLabel = QLabel('Дата народження:')
         self.dateInput = QDateEdit()
@@ -119,6 +130,8 @@ class CreateAcc(CreateForm):
         self.layout.insertWidget(7, self.copy_label)
         self.layout.insertLayout(9, copyLayout)
         self.layout.insertLayout(15, dateLayout)
+        self.layout.insertWidget(16, self.attach_label)
+        self.layout.insertLayout(17, attachLayout)
         self.layout.insertWidget(16, self.commentLabel)
         self.layout.insertWidget(17, self.commentInput)
 
@@ -155,6 +168,24 @@ class CreateAcc(CreateForm):
         self.createButton.setEnabled(False)
         self.hide()
         self.helpTip.show()
+
+    def attach_file(self):
+        """
+        This method is invoked when user presses on attache file button.
+        """
+        # here we get path of file to attach and then we obtain its name
+        home = os.getenv('HOME')
+        path = QFileDialog.getOpenFileName(self.parent(),
+                                           'Виберіть файл для закріплення',
+                                           home)[0]
+        name = os.path.basename(path)
+
+        # and here we add attached file to attach list
+        item = QStandardItem(name)
+        self.attach_list.model().appendRow(item)
+
+        # also we create mapping of attached file name and its path
+        self.attach_list.pathmap[name] = path
 
 
 class CreateAccForm(CreateAcc):
