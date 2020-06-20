@@ -61,7 +61,7 @@ class CreateAccTest(AccsTest):
 
         self.attach_label = self.form.attach_label
         self.attach_list = self.form.attach_list
-        self.attach_add_button = self.form.attach_add_button
+        self.attach_file_button = self.form.attach_file_button
 
     def checkNameErrors(self):
         """
@@ -369,14 +369,64 @@ class CreateAccTest(AccsTest):
             'form is just displayed!')
 
         # there is button that Toon can use to add files to list, Toon presses
-        # it
-        self.attach_add_button.click()
-
-        # file dialog appears asking Toon to chose file to attach
-        def mock_browse(parrent, caption, dir):
+        # it and file dialog appears asking him to chose file to attach
+        def mock_browse(path):
             """
-            We use this function to monkeypatch getOpenFileName and check
-            arguments that are passed to it.
+            This function constructs test double of getOpenFileName so it will
+            simulate that user chose file in open file dialog.
             """
+            def wrap(parrent, caption, folder):
+                """
+                We use this function to monkeypatch getOpenFileName and check
+                arguments that are passed to it.
+                """
+                assert caption == "Виберіть файл для закріплення",\
+                        "Title of attach file dialog is incorrect!"
+                assert folder == os.getenv('HOME'),\
+                       "Default folder of attach file dialog must be a home folder!"
+                return (path, )
 
-        self.monkeypatch.setattr(QFileDialog, 'getOpenFileName', mock_browse)
+            return wrap
+
+        # Toon chose somefile.txt
+        self.monkeypatch.setattr(
+            QFileDialog, 'getOpenFileName',
+            mock_browse(
+                'Documents/PyQtAccounts/tests/func/src/attach_files/somefile.txt'
+            ))
+
+        self.attach_file_button.click()
+
+        # `somefile.txt` appears in the attach list
+        self.assertTrue(
+            self.attach_list.model().findItems('somefile.txt'),
+            "File name of attached file doesn't appear in the attach list!")
+
+        # and in the dict that maps attached file name to file path
+        self.assertEqual(
+            self.attach_list.pathmap['somefile.txt'],
+            'Documents/PyQtAccounts/tests/func/src/attach_files/somefile.txt',
+            "Mapping from attached file name to its path doesn't created!")
+
+        # so Toon attaches another file
+        self.monkeypatch.setattr(
+            QFileDialog, 'getOpenFileName',
+            mock_browse(
+                'Documents/PyQtAccounts/tests/func/src/attach_files/pyqt5.py'))
+
+        self.attach_file_button.click()
+
+        # and he attaches another one, that has the same name as already
+        # attached file - `somefile.txt`
+        self.monkeypatch.setattr(
+            QFileDialog, 'getOpenFileName',
+            mock_browse(
+                'Documents/PyQtAccounts/tests/func/src/attach_files/sub/sometimes.txt'
+            ))
+
+        self.attach_file_button.click()
+
+        # Warning message appears saying that file with such name already
+        # exists, this message asks Toon what he would like to do - replace
+        # existing file or abort the operation
+        # Toon answers `No`
