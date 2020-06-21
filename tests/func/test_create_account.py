@@ -424,9 +424,63 @@ class CreateAccTest(AccsTest):
                 'Documents/PyQtAccounts/tests/func/src/attach_files/sub/sometimes.txt'
             ))
 
-        self.attach_file_button.click()
-
         # Warning message appears saying that file with such name already
-        # exists, this message asks Toon what he would like to do - replace
+        # exists, this message asks Toon what he would like to do – replace
         # existing file or abort the operation
         # Toon answers `No`
+        self.monkeypatch.setattr(
+            QMessageBox, 'warning',
+            self.mess('Увага!',
+                      "Файл з таким іменем вже існує, замінити?",
+                      button=QMessageBox.No))
+
+        self.attach_file_button.click()
+
+        # `somefile.txt` is still in the list and it name still has the old mapping
+        self.assertEqual(
+            self.attach_list.pathmap['somefile.txt'],
+            'Documents/PyQtAccounts/tests/func/src/attach_files/somefile.txt',
+            "Mapping from attached file name to its path is replaced when user "
+            "tried to attach file with same name and pressed `No` in "
+            "confirmation dialog!")
+
+        self.assertTrue(
+            self.attach_list.model().findItems('somefile.txt'),
+            "File name of attached file disappears from attach list when user "
+            "tried to attach file with same name and pressed `No` in "
+            "confirmation dialog!")
+
+        # Toon then changed his mind and attaches `sub/somefile.txt` replacing
+        # existing `somefile.txt`
+        self.monkeypatch.setattr(
+            QFileDialog, 'getOpenFileName',
+            mock_browse(
+                'Documents/PyQtAccounts/tests/func/src/attach_files/sub/sometimes.txt'
+            ))
+
+        # Warning message appears saying that file with such name already
+        # exists, this message asks Toon what he would like to do – replace
+        # existing file or abort the operation
+        # Toon answers `Yes`
+        self.monkeypatch.setattr(
+            QMessageBox, 'warning',
+            self.mess('Увага!',
+                      "Файл з таким іменем вже існує, замінити?",
+                      button=QMessageBox.Yes))
+
+        self.attach_file_button.click()
+
+        # `somefile.txt` is still in the list but it name has another mapping
+        print(self.attach_list.pathmap['somefile.txt'])
+        self.assertEqual(
+            self.attach_list.pathmap['somefile.txt'],
+            'Documents/PyQtAccounts/tests/func/src/attach_files/sub/somefile.txt',
+            "Mapping from attached file name to its path isn't replaced when user "
+            "tried to attach file with same name and pressed `Yes` in "
+            "confirmation dialog!")
+
+        self.assertTrue(
+            self.attach_list.model().findItems('somefile.txt'),
+            "File name of attached file disappears from attach list when user "
+            "tried to attach file with same name and pressed `Yes` in "
+            "confirmation dialog!")

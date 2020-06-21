@@ -180,12 +180,33 @@ class CreateAcc(CreateForm):
                                            home)[0]
         name = os.path.basename(path)
 
-        # and here we add attached file to attach list
-        item = QStandardItem(name)
-        self.attach_list.model().appendRow(item)
+        # by default `answer` is `Yes` so we always will create path mapping, if
+        # file specified in `name` already exists then we will display
+        # confirmation dialog and if user answers `No` then we will change
+        # `answer` to False and mapping wont be created
+        answer = QMessageBox.Yes
 
-        # also we create mapping of attached file name and its path
-        self.attach_list.pathmap[name] = path
+        # here we check if file we trying to attache already exists then we ask
+        # user what to do – replace existing file or abort attach operation
+        if name in self.attach_list.pathmap:
+            answer = QMessageBox.warning(
+                self.parent,
+                'Увага!',
+                'Файл з таким іменем вже існує, замінити?',
+                buttons=QMessageBox.Yes | QMessageBox.No)
+
+        # there is no need to add another file name to list if it already
+        # exists, so here we add it only when it isn't exist yet
+        else:
+            # here we add attached file to attach list
+            item = QStandardItem(name)
+            self.attach_list.model().appendRow(item)
+
+        # here we check `answer` variable if it is `Yes` then we create mapping
+        # from file name to its path
+        if answer == QMessageBox.Yes:
+            # here we create mapping of attached file name and its path
+            self.attach_list.pathmap[name] = path
 
 
 class CreateAccForm(CreateAcc):
