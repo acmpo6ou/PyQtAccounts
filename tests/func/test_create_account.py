@@ -505,6 +505,8 @@ class CreateAccTest(AccsTest):
             "attach file and presses `Cancel` in chose file dialog!")
 
         # Toon then decides to detach `pyqt5.py` file:
+        # so he chose it in the list
+        self.form.file_selected(Index('pyqt5.py'))
 
         # He presses detach button, but suddenly changes his mind and presses
         # `No` in confirmation dialog
@@ -519,10 +521,31 @@ class CreateAccTest(AccsTest):
         self.assertEqual(
             self.attach_list.pathmap['pyqt5.py'],
             'Documents/PyQtAccounts/tests/func/src/attach_files/pyqt5.py',
-            "File was detached when user tries to detach it but presses `No` "
-            "in confirmation dialog!")
+            "File mapping was deleted when user tries to detach file "
+            "associated with it but presses `No` in confirmation dialog!")
 
         self.assertTrue(
             self.attach_list.model().findItems('pyqt5.py'),
-            "File mapping was deleted when user tries to detach file "
-            "associated with it but presses `No` in confirmation dialog!")
+            "File was detached when user tries to detach it but presses `No` "
+            "in confirmation dialog!")
+
+        # Toon then changes his mind again and detaches `pyqt5.py` pressing
+        # `Yes` in confirmation dialog
+        self.monkeypatch.setattr(
+            QMessageBox, 'warning',
+            self.mess('Увага!',
+                      "Ви впевнені що хочете відкріпити <b>pyqt5.py</b>?",
+                      button=QMessageBox.Yes))
+        self.detach_button.click()
+
+        # and `pyqt5.py` is detached, there is no longer mapping for it neither
+        # it exists in the list
+        self.assertNotIn(
+            'pyqt5.py', self.attach_list.pathmap,
+            "File mapping isn't deleted when user tries to detach the file and "
+            "presses `Yes` in confirmation dialog!")
+
+        self.assertFalse(
+            self.attach_list.model().findItems('pyqt5.py'),
+            "File isn't deleted when user tries to detach it "
+            "and presses `Yes` in confirmation dialog!")

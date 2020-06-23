@@ -99,6 +99,8 @@ class CreateAcc(CreateForm):
         self.attach_list = QListView()
         self.attach_list.setModel(QStandardItemModel())
         self.attach_list.pathmap = {}
+        self.attach_list.clicked.connect(self.file_selected)
+        self.attach_list.selected = None
 
         self.attach_file_button = QPushButton()
         self.attach_file_button.clicked.connect(self.attach_file)
@@ -221,11 +223,39 @@ class CreateAcc(CreateForm):
             # here we create mapping of attached file name and its path
             self.attach_list.pathmap[name] = path
 
+    def file_selected(self, name):
+        """
+        This method is invoked when user clicks on file name in the attach files
+        list.
+        """
+        # here we save selected file name, so later if user wants to delete
+        # selected file we will be able to do it
+        self.attach_list.selected = name.data()
+
     def detach_file(self):
         """
         We use this method to detach file from attach file list.
         """
-        pass
+        selected = self.attach_list.selected
+
+        # here we check does user has any file selected, because if not we can't
+        # determine which file he wants to detach
+        if not selected:
+            # if there is no file selected yet and user presses detach
+            # button we simply do nothing
+            return
+
+        # here we show confirmation dialog in case if user pressed detach button
+        # by accident
+        answer = QMessageBox.warning(self.parent,
+                                     'Увага!',
+                                     'Ви впевнені що хочете відкріпити'
+                                     f'<b>{selected}</b>?',
+                                     buttons=QMessageBox.Yes | QMessageBox.No)
+
+        if answer == QMessageBox.Yes:
+            # if users answer is `Yes` then we delete appropriate file mapping
+            del self.attach_list.pathmap[selected]
 
 
 class CreateAccForm(CreateAcc):
