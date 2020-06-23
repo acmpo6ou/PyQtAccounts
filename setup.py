@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright (c) 2020 Kolvah Bogdan
+# Copyright (c) 2020 Kolvakh Bogdan
 # This file is part of PyQtAccounts.
 
 # PyQtAccounts is free software: you can redistribute it and/or modify
@@ -15,7 +15,6 @@
 
 # You should have received a copy of the GNU General Public License
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
-
 """
 This is a PyQtAccounts installation wizard. It installs all pip program dependencies and initializes
 PyQtAccounts, also it creates shortcuts in main menu and on desktop.
@@ -96,7 +95,8 @@ class ReqsList(QListView):
 
         # here we create icons and model, also we don't want our list to be editable
         installed = QIcon('/usr/share/icons/Humanity/actions/48/gtk-yes.svg')
-        not_installed = QIcon('/usr/share/icons/Humanity/actions/48/stock_not.svg')
+        not_installed = QIcon(
+            '/usr/share/icons/Humanity/actions/48/stock_not.svg')
         self.model = QStandardItemModel()
         self.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
@@ -141,15 +141,15 @@ class ReqsTips(QTextEdit):
             самостійно.</p>
             <p>Для їх встановлення потрібні права адміністратора.</p>
             <p>Введіть в терміналі таку команду:</p>
-            <p><b>sudo apt install {0}</b></p>'''.format(
-                ' '.join([req for req in reqs.cant_install]))
+            <p><b>sudo apt install {0}</b></p>'''.format(' '.join(
+                [req for req in reqs.cant_install]))
 
         if reqs.to_install:
             tips += '''<p>Пакети <i><b>{}</b></i> ми можемо встановити для вас, для цього 
             натисніть кнопку "Встановити".</p>
             <p>Але спершу не забудьте перевірити наявність пакету 
-            <i><b>pip3</b></i>!</p>'''.format(
-                ', '.join([req for req in reqs.to_install]))
+            <i><b>pip3</b></i>!</p>'''.format(', '.join(
+                [req for req in reqs.to_install]))
 
         self.setHtml(tips)
 
@@ -205,11 +205,15 @@ class WelcomePage(QWizardPage):
     def __init__(self, parent=None):
         super(WelcomePage, self).__init__(parent)
         # There is an icon of PyQtAccounts on the welcome page.
-        self.setPixmap(QWizard.WatermarkPixmap,
-                       QPixmap('/usr/share/icons/Mint-X/mimetypes/96/application-pgp-keys.svg'))
+        self.setPixmap(
+            QWizard.WatermarkPixmap,
+            QPixmap(
+                '/usr/share/icons/Mint-X/mimetypes/96/application-pgp-keys.svg'
+            ))
 
         # Greetings
-        self.title = Title('<pre>Вітаємо у майстрі встановлення\n PyQtAccounts!</pre>')
+        self.title = Title(
+            '<pre>Вітаємо у майстрі встановлення\n PyQtAccounts!</pre>')
         self.text = QLabel('<pre><br>Ми допоможемо вам пройти всі кроки \n'
                            'встановлення.</pre>')
 
@@ -373,7 +377,8 @@ class RequirementsPage(QWizardPage):
         # if progress is greater than or equal 100% then installation has finished.
         # so here we hide tips and show successful installation label.
         if self.progress >= 100:
-            self.installLabel.setText('<p style="color: #37FF91;">Встановлено!</p>')
+            self.installLabel.setText(
+                '<p style="color: #37FF91;">Встановлено!</p>')
             self.reqsTips.hide()
 
         # at the end we emit completeChanged signal to check have we installed everything yet or
@@ -454,7 +459,8 @@ class Initialize(QObject):
         try:
             # here we trying to clone our stable github repository in folder that user gave us
             # also we want to track the progress of clone process to show it on progressbar.
-            git.Repo.clone_from('https://github.com/Acmpo6ou/PyQtAccounts', self.folder,
+            git.Repo.clone_from('https://github.com/Acmpo6ou/PyQtAccounts',
+                                self.folder,
                                 progress=Progress(self.progress))
         except RecursionError:  # to prevent fatal python error
             raise
@@ -497,7 +503,8 @@ class InitPage(QWizardPage):
         #   where we will clone PyQtAccounts)
         # button that says `Browse...`, the chose folder dialog popups when user clicks it
         # label that represents path to directory being chosen
-        self.initLabel = QLabel('Виберіть папку в яку ви хочете встановити PyQtAccounts:')
+        self.initLabel = QLabel(
+            'Виберіть папку в яку ви хочете встановити PyQtAccounts:')
         self.browseButton = QPushButton('Browse...')
         self.browseButton.clicked.connect(self.browse)
         self.browseLabel = QLabel(self.folder)
@@ -549,8 +556,10 @@ class InitPage(QWizardPage):
         wizard = self.parent()
 
         # here we show directory dialog with appropriate title and opened directory.
-        folder = QFileDialog.getExistingDirectory(wizard, 'Installation directory',
-                                                  self.folder, QFileDialog.ShowDirsOnly)
+        folder = QFileDialog.getExistingDirectory(wizard,
+                                                  'Installation directory',
+                                                  self.folder,
+                                                  QFileDialog.ShowDirsOnly)
 
         # if user chose folder we save its path to `folder` attribute of the page and update
         # text of browse label.
@@ -615,9 +624,10 @@ class InitPage(QWizardPage):
         # as directory in which we clone github repository
         if res:
             self.errors.show()
-            self.errors.setText('Помилка ініціалізації!\n'
-                                "Відсутнє мережеве з'єднання, або відмовлено у доступі на "
-                                "запис у папку інсталяції.")
+            self.errors.setText(
+                'Помилка ініціалізації!\n'
+                "Відсутнє мережеве з'єднання, або відмовлено у доступі на "
+                "запис у папку інсталяції.")
 
     def init_progress(self, progress):
         """
@@ -678,16 +688,14 @@ class FinishPage(QWizardPage):
         # here we create shortcuts if at least one of shortcut checkboxes are checked
         if desktop or startmenu:
             # we use make_shortcut function from pyshortcuts module for this.
-            make_shortcut(
-                name='PyQtAccounts',
-                script=cwd + '/run.sh',
-                description='Simple account database manager.',
-                icon=cwd + '/img/icon.svg',
-                terminal=False,
-                desktop=desktop,
-                startmenu=startmenu,
-                executable='/bin/bash'
-            )
+            make_shortcut(name='PyQtAccounts',
+                          script=cwd + '/run.sh',
+                          description='Simple account database manager.',
+                          icon=cwd + '/img/icon.svg',
+                          terminal=False,
+                          desktop=desktop,
+                          startmenu=startmenu,
+                          executable='/bin/bash')
 
             # fixing .ico icon issue, make_shortcut function adds .ico extension to icon path
             # (i.e. our '/img/icon.svg' becomes '/img/icon.svg.ico'), so we remove .ico from our
@@ -699,8 +707,13 @@ class FinishPage(QWizardPage):
                     file.write(desktop.replace('.ico', ''))
 
             if startmenu:
-                menu = open(home + '/.local/share/applications/PyQtAccounts.desktop').read()
-                with open(home + '/.local/share/applications/PyQtAccounts.desktop', 'w') as file:
+                menu = open(
+                    home +
+                    '/.local/share/applications/PyQtAccounts.desktop').read()
+                with open(
+                        home +
+                        '/.local/share/applications/PyQtAccounts.desktop',
+                        'w') as file:
                     file.write(menu.replace('.ico', ''))
 
         # here we create run.sh script which will start our application
@@ -725,7 +738,8 @@ if __name__ == '__main__':
         font-size: 24px;
     }
     ''')
-    app.setWindowIcon(QIcon('/usr/share/icons/Mint-X/mimetypes/96/application-pgp-keys.svg'))
+    app.setWindowIcon(
+        QIcon('/usr/share/icons/Mint-X/mimetypes/96/application-pgp-keys.svg'))
     wizard = InstallationWizard()
     wizard.show()
     sys.exit(app.exec_())

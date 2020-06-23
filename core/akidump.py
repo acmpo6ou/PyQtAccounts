@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright (c) 2020 Kolvah Bogdan
+# Copyright (c) 2020 Kolvakh Bogdan
 # This file is part of PyQtAccounts.
 
 # PyQtAccounts is free software: you can redistribute it and/or modify
