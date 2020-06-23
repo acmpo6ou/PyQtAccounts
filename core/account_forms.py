@@ -104,8 +104,15 @@ class CreateAcc(CreateForm):
         self.attach_file_button.clicked.connect(self.attach_file)
         self.attach_file_button.setIcon(QIcon('img/list-add.png'))
         self.attach_file_button.setIconSize(QSize(22, 22))
+
+        self.detach_button = QPushButton()
+        self.detach_button.clicked.connect(self.detach_file)
+        self.detach_button.setIcon(QIcon('img/list-remove.svg'))
+        self.detach_button.setIconSize(QSize(22, 22))
+
         attachButtonsLayout = QVBoxLayout()
         attachButtonsLayout.addWidget(self.attach_file_button)
+        attachButtonsLayout.addWidget(self.detach_button)
 
         attachLayout = QHBoxLayout()
         attachLayout.addWidget(self.attach_list)
@@ -178,6 +185,12 @@ class CreateAcc(CreateForm):
         path = QFileDialog.getOpenFileName(self.parent(),
                                            'Виберіть файл для закріплення',
                                            home)[0]
+        # if user presses `Cancel` in chose file dialog then path will be empty
+        # string and in this case there is no need to create empty file name in
+        # attach list neither to create mapping for it
+        if not path:
+            return
+
         name = os.path.basename(path)
 
         # by default `answer` is `Yes` so we always will create path mapping, if
@@ -207,6 +220,12 @@ class CreateAcc(CreateForm):
         if answer == QMessageBox.Yes:
             # here we create mapping of attached file name and its path
             self.attach_list.pathmap[name] = path
+
+    def detach_file(self):
+        """
+        We use this method to detach file from attach file list.
+        """
+        pass
 
 
 class CreateAccForm(CreateAcc):

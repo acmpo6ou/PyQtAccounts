@@ -62,6 +62,7 @@ class CreateAccTest(AccsTest):
         self.attach_label = self.form.attach_label
         self.attach_list = self.form.attach_list
         self.attach_file_button = self.form.attach_file_button
+        self.detach_button = self.form.detach_button
 
     def checkNameErrors(self):
         """
@@ -421,7 +422,7 @@ class CreateAccTest(AccsTest):
         self.monkeypatch.setattr(
             QFileDialog, 'getOpenFileName',
             mock_browse(
-                'Documents/PyQtAccounts/tests/func/src/attach_files/sub/sometimes.txt'
+                'Documents/PyQtAccounts/tests/func/src/attach_files/sub/somefile.txt'
             ))
 
         # Warning message appears saying that file with such name already
@@ -455,7 +456,7 @@ class CreateAccTest(AccsTest):
         self.monkeypatch.setattr(
             QFileDialog, 'getOpenFileName',
             mock_browse(
-                'Documents/PyQtAccounts/tests/func/src/attach_files/sub/sometimes.txt'
+                'Documents/PyQtAccounts/tests/func/src/attach_files/sub/somefile.txt'
             ))
 
         # Warning message appears saying that file with such name already
@@ -471,7 +472,6 @@ class CreateAccTest(AccsTest):
         self.attach_file_button.click()
 
         # `somefile.txt` is still in the list but it name has another mapping
-        print(self.attach_list.pathmap['somefile.txt'])
         self.assertEqual(
             self.attach_list.pathmap['somefile.txt'],
             'Documents/PyQtAccounts/tests/func/src/attach_files/sub/somefile.txt',
@@ -484,3 +484,45 @@ class CreateAccTest(AccsTest):
             "File name of attached file disappears from attach list when user "
             "tried to attach file with same name and pressed `Yes` in "
             "confirmation dialog!")
+
+        # Toon then wants to attach another file, but then changes his mind and
+        # presses `Cancel` in chose file dialog
+        self.monkeypatch.setattr(QFileDialog, 'getOpenFileName',
+                                 mock_browse(''))
+        self.attach_file_button.click()
+
+        # the empty file name doesn't appear in the attach list
+        self.assertEqual(
+            2,
+            self.attach_list.model().rowCount(),
+            "The empty file name was added when user tries to "
+            "attach file and presses `Cancel` in chose file dialog!")
+
+        # also there is no empty mapping
+        self.assertNotIn(
+            '', self.attach_list.pathmap,
+            "The empty file mapping was added when user tries to "
+            "attach file and presses `Cancel` in chose file dialog!")
+
+        # Toon then decides to detach `pyqt5.py` file:
+
+        # He presses detach button, but suddenly changes his mind and presses
+        # `No` in confirmation dialog
+        self.monkeypatch.setattr(
+            QMessageBox, 'warning',
+            self.mess('Увага!',
+                      "Ви впевнені що хочете відкріпити <b>pyqt5.py</b>?",
+                      button=QMessageBox.No))
+        self.detach_button.click()
+
+        # `pyqt5.py` is still in the list and has its mapping
+        self.assertEqual(
+            self.attach_list.pathmap['pyqt5.py'],
+            'Documents/PyQtAccounts/tests/func/src/attach_files/pyqt5.py',
+            "File was detached when user tries to detach it but presses `No` "
+            "in confirmation dialog!")
+
+        self.assertTrue(
+            self.attach_list.model().findItems('pyqt5.py'),
+            "File mapping was deleted when user tries to detach file "
+            "associated with it but presses `No` in confirmation dialog!")
