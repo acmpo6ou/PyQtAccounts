@@ -547,5 +547,29 @@ class CreateAccTest(AccsTest):
 
         self.assertFalse(
             self.attach_list.model().findItems('pyqt5.py'),
-            "File isn't deleted when user tries to detach it "
+            "File isn't removed from attach list when user tries to detach it "
             "and presses `Yes` in confirmation dialog!")
+
+        # satisfied with his attached files Toon presses `Create` button
+        self.createButton.click()
+
+        # The create form disappears
+        self.checkOnlyVisible(self.accs.tips['help'])
+
+        # `tf2` appears in the account list
+        self.checkAccInList('tf2')
+
+        # And it is in the database and has all keys and values
+        self.assertIn('tf2', self.win.db,
+                      'Account has not appeared in database after creation!')
+        acc = self.win.db['tf2']
+        self.assertEqual('tf2', acc.account,
+                         'account field of created account is incorrect!')
+        self.assertEqual(b'something', acc.password,
+                         'password field of created account is incorrect!')
+        expected_attached_files = {
+            'somefile.txt': "Some another file.\n<h1></h1>"
+        }
+        self.assertEqual(
+            expected_attached_files, acc.attached_files,
+            "Attached files dictionary of created account is incorrect!")

@@ -249,13 +249,18 @@ class CreateAcc(CreateForm):
         # by accident
         answer = QMessageBox.warning(self.parent,
                                      'Увага!',
-                                     'Ви впевнені що хочете відкріпити'
+                                     'Ви впевнені що хочете відкріпити '
                                      f'<b>{selected}</b>?',
                                      buttons=QMessageBox.Yes | QMessageBox.No)
 
         if answer == QMessageBox.Yes:
             # if users answer is `Yes` then we delete appropriate file mapping
             del self.attach_list.pathmap[selected]
+
+            # and we remove file name from attach list
+            model = self.attach_list.model()
+            filename = model.findItems(selected)[0]
+            model.removeRow(filename.row())
 
 
 class CreateAccForm(CreateAcc):
@@ -313,8 +318,20 @@ class CreateAccForm(CreateAcc):
         comment = self.commentInput.toPlainText().replace('\n', '\n\n')
         copy_email = self.email_radio.isChecked()
 
+        attached_files = {}
+        # here we iterate trough all files specified in attach_list's `pathmap`
+        for name in self.attach_list.pathmap:
+            # here we construct file path
+            path = os.environ['HOME'] + '/' + self.attach_list.pathmap[name]
+            # then we open and read the file using mapping associated with `name`
+            with open(path, 'rb') as f:
+                file = f.read()
+            # finally we save opened file content to dict and associate it with
+            # appropriate file name
+            attached_files[name] = file
+
         account = akidump.Account(accountname, name, email, password, date,
-                                  comment, copy_email)
+                                  comment, copy_email, attached_files)
         self.db[accountname] = account
         self.clear()
 

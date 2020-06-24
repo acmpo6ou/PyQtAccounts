@@ -37,7 +37,8 @@ class Account:
                  password,
                  date,
                  comment,
-                 copy_email=True):
+                 copy_email=True,
+                 attach_files=None):
         """
         This constructor saves all account data.
         """
@@ -48,6 +49,12 @@ class Account:
         self.date = date
         self.comment = comment
         self.copy_email = copy_email
+        # here we check whether attached_files argument is supplied if yes we
+        # assign it to self.attached_files attribute else we assign empty
+        # dictionary to self.attached_files
+        # NOTE: that we do this in that strange way because we dict is mutable
+        # type and we can't just write attached_files={} in __init__ constructor
+        self.attached_files = attach_files if attach_files else {}
 
     def __eq__(self, other):
         """
