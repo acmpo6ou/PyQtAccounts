@@ -21,6 +21,7 @@ This module has replaced pickle module from standard library because of security
 """
 
 import json
+import base64
 
 # NOTE: this separator is now obsolete because we use json to serialize our databases
 SEPARATOR = 's' + '-=' * 30 + 'e'  # this is a separator between accounts in .db file.
@@ -61,7 +62,7 @@ class Account:
         This method compares attributes of two accounts and returns True if all of them are equal.
         """
         attrs = ('account', 'name', 'email', 'password', 'date', 'comment',
-                 'copy_email')
+                 'copy_email', 'attached_files')
 
         for a in attrs:
             my = getattr(self, a)
@@ -76,6 +77,14 @@ class Account:
         We use this method to convert our Account instance to dictionary which
         is json serializable.
         """
+        # JSON can't encode byte like strings which we have in our
+        # attached_files dict, so we encode those byte strings to ascii using
+        # b64encode
+        attach = {}
+        for file in self.attached_files:
+            encoded = base64.b64encode(self.attached_files[file])
+            attach[file] = encoded.decode('ascii')
+
         return {
             'account': self.account,
             'name': self.name,
@@ -84,6 +93,7 @@ class Account:
             'date': self.date,
             'comment': self.comment,
             'copy_email': self.copy_email,
+            'attach_files': attach
         }
 
 
@@ -144,6 +154,13 @@ def loads_json(data):
         # because password in Account class must be a byte string
         password = db[account]['password'].encode()
         db[account]['password'] = password
+
+        # here we also recode attached files from ascii base64 to byte string
+        attached_files = db[account]['attach_files']
+        for file in attached_files:
+            data = attached_files[file].encode()
+            recoded = base64.b64decode(data)
+            db[account]['attach_files'][file] = recoded
 
         # then we unpack account dict as arguments for Account constructor to
         # create Account instance from account dict, then we save freshly

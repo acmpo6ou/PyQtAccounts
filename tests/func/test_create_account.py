@@ -351,6 +351,9 @@ class CreateAccTest(AccsTest):
         """
         Here we test attach files feature of create account form.
         """
+        # we must use real HOME environment variable for this test
+        os.environ['HOME'] = f'/home/{os.getlogin()}'
+
         # Toon wants to create account and attach some files to it
         self.accs.panel.addButton.click()
 
@@ -568,7 +571,7 @@ class CreateAccTest(AccsTest):
         self.assertEqual(b'something', acc.password,
                          'password field of created account is incorrect!')
         expected_attached_files = {
-            'somefile.txt': "Some another file.\n<h1></h1>"
+            'somefile.txt': b"Some another file.\n<h1></h1>\n"
         }
         self.assertEqual(
             expected_attached_files, acc.attached_files,

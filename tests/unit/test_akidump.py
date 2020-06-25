@@ -34,13 +34,15 @@ class AkidumpTest(UnitTest):
         Here we reassign some widely used variables.
         """
         # Tom has database with gmail account
-        account = Account(account='gmail',
-                          name='Tom',
-                          email='tom@gmail.com',
-                          password=b'123',
-                          date='01.01.1990',
-                          comment='My gmail account.',
-                          copy_email=True)
+        account = Account(
+            account='gmail',
+            name='Tom',
+            email='tom@gmail.com',
+            password=b'123',
+            date='01.01.1990',
+            comment='My gmail account.',
+            copy_email=True,
+            attach_files={'somefile.txt': b"Some another file.\n<h1></h1>\n"})
         self.db = {'gmail': account}
 
     def test_account_serialization(self):
@@ -53,7 +55,8 @@ class AkidumpTest(UnitTest):
             dump,
             '{"account": "gmail", "name": "Tom", "email": "tom@gmail.com", '
             '"password": "123", "date": "01.01.1990", '
-            '"comment": "My gmail account.", "copy_email": true}',
+            '"comment": "My gmail account.", "copy_email": true, '
+            '"attach_files": {"somefile.txt": "U29tZSBhbm90aGVyIGZpbGUuCjxoMT48L2gxPgo="}}',
             '`to_dict` method of Account class is incorrect!')
 
     def test_dumps(self):
@@ -64,13 +67,13 @@ class AkidumpTest(UnitTest):
         # here we use dumps function for akidump.py module to serialize his
         # account
         dump = dumps(self.db)
-        print(repr(dump))
 
         # then we check that it is dumped appropriately
         self.assertEqual(
             dump, b'{"gmail": {"account": "gmail", "name": "Tom", "email": '
             b'"tom@gmail.com", "password": "123", "date": "01.01.1990", '
-            b'"comment": "My gmail account.", "copy_email": true}}',
+            b'"comment": "My gmail account.", "copy_email": true, '
+            b'"attach_files": {"somefile.txt": "U29tZSBhbm90aGVyIGZpbGUuCjxoMT48L2gxPgo="}}}',
             "Serialization of `dumps` function from core.akidump module is incorrect!"
         )
 
@@ -124,12 +127,16 @@ class AkidumpTest(UnitTest):
         deserialize data that is serialized in new, json way.
         """
         # here are our json serialized data
-        data = (b'{"gmail": {"account": "gmail", "name": "Tom", "email": '
-                b'"tom@gmail.com", "password": "123", "date": "01.01.1990", '
-                b'"comment": "My gmail account.", "copy_email": true}}')
+        data = (
+            b'{"gmail": {"account": "gmail", "name": "Tom", "email": '
+            b'"tom@gmail.com", "password": "123", "date": "01.01.1990", '
+            b'"comment": "My gmail account.", "copy_email": true, '
+            b'"attach_files": {"somefile.txt": "U29tZSBhbm90aGVyIGZpbGUuCjxoMT48L2gxPgo="}}}'
+        )
 
         # and here we use loads to deserialize it
         loaded = loads(data)
 
         # and here we check results
-        self.assertEqual(loaded, self.db)
+        self.assertEqual(loaded, self.db,
+                         '`loads` deserialization of json data is incorrect!')
