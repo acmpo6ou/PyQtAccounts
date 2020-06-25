@@ -155,12 +155,14 @@ def loads_json(data):
         password = db[account]['password'].encode()
         db[account]['password'] = password
 
-        # here we also recode attached files from ascii base64 to byte string
-        attached_files = db[account]['attach_files']
-        for file in attached_files:
-            data = attached_files[file].encode()
-            recoded = base64.b64decode(data)
-            db[account]['attach_files'][file] = recoded
+        # here we also recode attached files from ascii base64 to byte string if
+        # account have any
+        attached_files = db[account].get('attach_files')
+        if attached_files:
+            for file in attached_files:
+                data = attached_files[file].encode()
+                recoded = base64.b64decode(data)
+                db[account]['attach_files'][file] = recoded
 
         # then we unpack account dict as arguments for Account constructor to
         # create Account instance from account dict, then we save freshly

@@ -140,3 +140,34 @@ class AkidumpTest(UnitTest):
         # and here we check results
         self.assertEqual(loaded, self.db,
                          '`loads` deserialization of json data is incorrect!')
+
+    def test_loads_json_no_attached_files(self):
+        """
+        Here we test how `loads` function from akidump.py module will
+        deserialize data that is serialized in new, json way, when there is no
+        attached files in the account.
+        """
+        # here are our json serialized data
+        data = (b'{"gmail": {"account": "gmail", "name": "Tom", "email": '
+                b'"tom@gmail.com", "password": "123", "date": "01.01.1990", '
+                b'"comment": "My gmail account.", "copy_email": true}}')
+
+        # and here we use loads to deserialize it
+        loaded = loads(data)
+
+        # here is what we expect
+        account = Account(account='gmail',
+                          name='Tom',
+                          email='tom@gmail.com',
+                          password=b'123',
+                          date='01.01.1990',
+                          comment='My gmail account.',
+                          copy_email=True)
+
+        db = {'gmail': account}
+
+        # and here we check results
+        self.assertEqual(
+            loaded, db, '`loads` deserialization of json data is incorrect '
+            'when we try to deserialize data that contains account'
+            'without attached files!')
