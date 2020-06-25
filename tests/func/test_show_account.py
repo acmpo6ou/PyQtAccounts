@@ -45,7 +45,7 @@ class ShowAccTest(AccsTest):
         # here we initialize fake file system and copy `database` database in
         # there which we will use during tests
         init_src_folder(self.monkeypatch)
-        self.copyDatabase('database')
+        self.copyDatabase('database2')
 
     def test_show_account(self):
         """

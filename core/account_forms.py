@@ -442,6 +442,10 @@ class EditAccForm(CreateAcc):
         self.dateInput.setDate(QDate(year, month, day))
 
         self.commentInput.setText(self.account.comment)
+
+        self.email_radio.setChecked(self.account.copy_email)
+        self.username_radio.setChecked(not self.account.copy_email)
+
         hide(self.forms, self.tips)
         self.show()
 

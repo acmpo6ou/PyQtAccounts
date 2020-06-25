@@ -54,6 +54,7 @@ class EditAccsTest(AccsTest):
         self.date = self.form.dateInput
         self.comment = self.form.commentInput
         self.username_radio = self.form.username_radio
+        self.email_radio = self.form.email_radio
 
         # here we initialize in-memory file system because our tests will change
         # databases and sometimes save those changes but we don't want to change
@@ -63,7 +64,7 @@ class EditAccsTest(AccsTest):
 
     def test_edit_content(self):
         """
-        Here we test editing of account in edit account form.
+        Here we test how content of account is loaded in edit account form.
         """
         # Lea wants to edit her account, so she chose it in the list and presses edit button
         self.list.selected(Index('habr'))
@@ -95,6 +96,77 @@ class EditAccsTest(AccsTest):
         self.assertEqual(
             self.comment.toPlainText(), 'Habr account.',
             'comment field of edit form is filled with incorrect data!')
+        self.assertTrue(
+            self.email_radio.isChecked(),
+            "Email radio of edit form isn't checked when user has email set as "
+            "what will be copied to mouseboard!")
+
+    def test_edit_content_copy_username(self):
+        """
+        Here we test how content of account is loaded in edit account form when
+        user has username set to be copied into mouseboard.
+        """
+        # we need another database for this purpose `database2` contains account
+        # that has username set as what will be copied to mouseboard
+        super().setUp(name='database2')
+        self.form = self.accs.forms['edit']
+        self.list = self.accs.list
+        self.help = self.accs.tips['help']
+
+        self.editButton = self.accs.panel.editButton
+        self.deleteButton = self.form.deleteButton
+        self.saveButton = self.form.createButton
+
+        self.account = self.form.accountInput
+        self.name = self.form.nameInput
+        self.pass_input = self.form.passField.passInput
+        self.pass_repeat_input = self.form.passRepeatField.passInput
+        self.email = self.form.emailInput
+        self.date = self.form.dateInput
+        self.comment = self.form.commentInput
+        self.username_radio = self.form.username_radio
+        self.email_radio = self.form.email_radio
+
+        # here we initialize fake file system and copy `database2` database in
+        # there which we will use during tests
+        init_src_folder(self.monkeypatch)
+        self.copyDatabase('database2')
+
+        # Chris wants to edit her account, so she chose it in the list and presses edit button
+        self.list.selected(Index('stackoverflow'))
+        self.editButton.click()
+
+        # Edit form appears
+        self.checkOnlyVisible(self.form)
+
+        # Every field is filled as well
+        self.assertEqual(
+            self.account.text(), 'stackoverflow',
+            'account name field of edit form is filled with incorrect data!')
+        self.assertEqual(
+            self.name.text(), 'Chris Kirkman',
+            'name field of edit form is filled with incorrect data!')
+        self.assertEqual(
+            self.pass_input.text(), '930bU~1j.;nLS<Ga',
+            'password field of edit form is filled with incorrect data!')
+        self.assertEqual(
+            self.pass_repeat_input.text(), '930bU~1j.;nLS<Ga',
+            'second password field of edit form is filled with incorrect data!'
+        )
+        self.assertEqual(
+            self.email.text(), 'chris@gmail.com',
+            'email field of edit form is filled with incorrect data!')
+        self.assertEqual(
+            self.date.text(), '01.01.1995',
+            'date field of edit form is filled with incorrect data!')
+        self.assertEqual(
+            self.comment.toPlainText(), '',
+            'comment field of edit form is filled with incorrect data!')
+
+        self.assertTrue(
+            self.username_radio.isChecked(),
+            "Username radio of edit form isn't checked when user has email set as "
+            "what will be copied to mouseboard!")
 
     def test_delete_button(self):
         """
