@@ -171,6 +171,9 @@ class CreateAcc(CreateForm):
         self.commentInput.clear()
         self.email_radio.setChecked(True)
 
+        model = self.attach_list.model()
+        model.removeRows(0, model.rowCount())
+
         for i in range(self.errors.layout().count()):
             err = self.errors.layout().itemAt(i).widget()
             err.hide()

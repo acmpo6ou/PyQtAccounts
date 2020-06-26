@@ -64,6 +64,25 @@ class CreateAccTest(AccsTest):
         self.attach_file_button = self.form.attach_file_button
         self.detach_button = self.form.detach_button
 
+    @staticmethod
+    def mock_browse(path):
+        """
+        This function constructs test double of getOpenFileName so it will
+        simulate that user chose file in open file dialog.
+        """
+        def wrap(parrent, caption, folder):
+            """
+            We use this function to monkeypatch getOpenFileName and check
+            arguments that are passed to it.
+            """
+            assert caption == "Виберіть файл для закріплення",\
+                    "Title of attach file dialog is incorrect!"
+            assert folder == os.getenv('HOME'),\
+                   "Default folder of attach file dialog must be a home folder!"
+            return (path, )
+
+        return wrap
+
     def checkNameErrors(self):
         """
         This is a method which will check for name errors.
@@ -307,6 +326,15 @@ class CreateAccTest(AccsTest):
         self.date.setDate(QDate(1990, 5, 2))
         QTest.keyClicks(self.comment, 'Comment of account.')
 
+        # and attaches some files
+        self.monkeypatch.setattr(
+            QFileDialog, 'getOpenFileName',
+            self.mock_browse(
+                'Documents/PyQtAccounts/tests/func/src/attach_files/somefile.txt'
+            ))
+
+        self.attach_file_button.click()
+
         # suddenly she changes her mind and presses `Cancel` button
         self.cancelButton.click()
 
@@ -347,6 +375,12 @@ class CreateAccTest(AccsTest):
             'Copy section of create account form is not cleared when user '
             'pressed cancel button!')
 
+        # attach files list cleared as well
+        self.assertEqual(
+            self.attach_list.model().rowCount(), 0,
+            'Attach list of create account form must be cleared when '
+            'form was hidden and displayed again!')
+
     def test_attach_files(self):
         """
         Here we test attach files feature of create account form.
@@ -369,7 +403,7 @@ class CreateAccTest(AccsTest):
         # there is also an empty list under it
         self.assertEqual(
             self.attach_list.model().rowCount(), 0,
-            'Attach list of create account form must be empty when'
+            'Attach list of create account form must be empty when '
             'form is just displayed!')
 
         # and this list is not editable
@@ -379,28 +413,10 @@ class CreateAccTest(AccsTest):
 
         # there is button that Toon can use to add files to list, Toon presses
         # it and file dialog appears asking him to chose file to attach
-        def mock_browse(path):
-            """
-            This function constructs test double of getOpenFileName so it will
-            simulate that user chose file in open file dialog.
-            """
-            def wrap(parrent, caption, folder):
-                """
-                We use this function to monkeypatch getOpenFileName and check
-                arguments that are passed to it.
-                """
-                assert caption == "Виберіть файл для закріплення",\
-                        "Title of attach file dialog is incorrect!"
-                assert folder == os.getenv('HOME'),\
-                       "Default folder of attach file dialog must be a home folder!"
-                return (path, )
-
-            return wrap
-
         # Toon chose somefile.txt
         self.monkeypatch.setattr(
             QFileDialog, 'getOpenFileName',
-            mock_browse(
+            self.mock_browse(
                 'Documents/PyQtAccounts/tests/func/src/attach_files/somefile.txt'
             ))
 
@@ -420,7 +436,7 @@ class CreateAccTest(AccsTest):
         # so Toon attaches another file
         self.monkeypatch.setattr(
             QFileDialog, 'getOpenFileName',
-            mock_browse(
+            self.mock_browse(
                 'Documents/PyQtAccounts/tests/func/src/attach_files/pyqt5.py'))
 
         self.attach_file_button.click()
@@ -429,7 +445,7 @@ class CreateAccTest(AccsTest):
         # attached file - `somefile.txt`
         self.monkeypatch.setattr(
             QFileDialog, 'getOpenFileName',
-            mock_browse(
+            self.mock_browse(
                 'Documents/PyQtAccounts/tests/func/src/attach_files/sub/somefile.txt'
             ))
 
@@ -463,7 +479,7 @@ class CreateAccTest(AccsTest):
         # existing `somefile.txt`
         self.monkeypatch.setattr(
             QFileDialog, 'getOpenFileName',
-            mock_browse(
+            self.mock_browse(
                 'Documents/PyQtAccounts/tests/func/src/attach_files/sub/somefile.txt'
             ))
 
@@ -496,7 +512,7 @@ class CreateAccTest(AccsTest):
         # Toon then wants to attach another file, but then changes his mind and
         # presses `Cancel` in chose file dialog
         self.monkeypatch.setattr(QFileDialog, 'getOpenFileName',
-                                 mock_browse(''))
+                                 self.mock_browse(''))
         self.attach_file_button.click()
 
         # the empty file name doesn't appear in the attach list
