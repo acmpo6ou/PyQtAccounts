@@ -34,6 +34,9 @@ class CreateAccTest(AccsTest):
         """
         Here we reassign some widely used variables. 
         """
+        # we must use real home pass for tests that test attach files feature
+        self.home = f'/home/{os.getlogin()}'
+
         super().setUp()
         self.form = self.accs.forms['create']
         self.help_tip = self.accs.tips['help']
@@ -330,7 +333,7 @@ class CreateAccTest(AccsTest):
         self.monkeypatch.setattr(
             QFileDialog, 'getOpenFileName',
             self.mock_browse(
-                'Documents/PyQtAccounts/tests/func/src/attach_files/somefile.txt'
+                f'{self.home}/Documents/PyQtAccounts/tests/func/src/attach_files/somefile.txt'
             ))
 
         self.attach_file_button.click()
@@ -385,9 +388,6 @@ class CreateAccTest(AccsTest):
         """
         Here we test attach files feature of create account form.
         """
-        # we must use real HOME environment variable for this test
-        os.environ['HOME'] = f'/home/{os.getlogin()}'
-
         # Toon wants to create account and attach some files to it
         self.accs.panel.addButton.click()
 
@@ -417,7 +417,7 @@ class CreateAccTest(AccsTest):
         self.monkeypatch.setattr(
             QFileDialog, 'getOpenFileName',
             self.mock_browse(
-                'Documents/PyQtAccounts/tests/func/src/attach_files/somefile.txt'
+                f'{self.home}/Documents/PyQtAccounts/tests/func/src/attach_files/somefile.txt'
             ))
 
         self.attach_file_button.click()
@@ -430,14 +430,15 @@ class CreateAccTest(AccsTest):
         # and in the dict that maps attached file name to file path
         self.assertEqual(
             self.attach_list.pathmap['somefile.txt'],
-            'Documents/PyQtAccounts/tests/func/src/attach_files/somefile.txt',
+            f'{self.home}/Documents/PyQtAccounts/tests/func/src/attach_files/somefile.txt',
             "Mapping from attached file name to its path doesn't created!")
 
         # so Toon attaches another file
         self.monkeypatch.setattr(
             QFileDialog, 'getOpenFileName',
             self.mock_browse(
-                'Documents/PyQtAccounts/tests/func/src/attach_files/pyqt5.py'))
+                f'{self.home}/Documents/PyQtAccounts/tests/func/src/attach_files/pyqt5.py'
+            ))
 
         self.attach_file_button.click()
 
@@ -446,7 +447,7 @@ class CreateAccTest(AccsTest):
         self.monkeypatch.setattr(
             QFileDialog, 'getOpenFileName',
             self.mock_browse(
-                'Documents/PyQtAccounts/tests/func/src/attach_files/sub/somefile.txt'
+                f'{self.home}/Documents/PyQtAccounts/tests/func/src/attach_files/sub/somefile.txt'
             ))
 
         # Warning message appears saying that file with such name already
@@ -464,7 +465,7 @@ class CreateAccTest(AccsTest):
         # `somefile.txt` is still in the list and it name still has the old mapping
         self.assertEqual(
             self.attach_list.pathmap['somefile.txt'],
-            'Documents/PyQtAccounts/tests/func/src/attach_files/somefile.txt',
+            f'{self.home}/Documents/PyQtAccounts/tests/func/src/attach_files/somefile.txt',
             "Mapping from attached file name to its path is replaced when user "
             "tried to attach file with same name and pressed `No` in "
             "confirmation dialog!")
@@ -480,7 +481,7 @@ class CreateAccTest(AccsTest):
         self.monkeypatch.setattr(
             QFileDialog, 'getOpenFileName',
             self.mock_browse(
-                'Documents/PyQtAccounts/tests/func/src/attach_files/sub/somefile.txt'
+                f'{self.home}/Documents/PyQtAccounts/tests/func/src/attach_files/sub/somefile.txt'
             ))
 
         # Warning message appears saying that file with such name already
@@ -498,7 +499,7 @@ class CreateAccTest(AccsTest):
         # `somefile.txt` is still in the list but it name has another mapping
         self.assertEqual(
             self.attach_list.pathmap['somefile.txt'],
-            'Documents/PyQtAccounts/tests/func/src/attach_files/sub/somefile.txt',
+            f'{self.home}/Documents/PyQtAccounts/tests/func/src/attach_files/sub/somefile.txt',
             "Mapping from attached file name to its path isn't replaced when user "
             "tried to attach file with same name and pressed `Yes` in "
             "confirmation dialog!")
@@ -544,7 +545,7 @@ class CreateAccTest(AccsTest):
         # `pyqt5.py` is still in the list and has its mapping
         self.assertEqual(
             self.attach_list.pathmap['pyqt5.py'],
-            'Documents/PyQtAccounts/tests/func/src/attach_files/pyqt5.py',
+            f'{self.home}/Documents/PyQtAccounts/tests/func/src/attach_files/pyqt5.py',
             "File mapping was deleted when user tries to detach file "
             "associated with it but presses `No` in confirmation dialog!")
 

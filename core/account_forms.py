@@ -325,8 +325,8 @@ class CreateAccForm(CreateAcc):
         attached_files = {}
         # here we iterate trough all files specified in attach_list's `pathmap`
         for name in self.attach_list.pathmap:
-            # here we construct file path
-            path = os.environ['HOME'] + '/' + self.attach_list.pathmap[name]
+            # here we obtain file path
+            path = self.attach_list.pathmap[name]
             # then we open and read the file using mapping associated with `name`
             with open(path, 'rb') as f:
                 file = f.read()
