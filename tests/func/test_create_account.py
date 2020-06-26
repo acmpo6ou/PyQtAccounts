@@ -372,6 +372,11 @@ class CreateAccTest(AccsTest):
             'Attach list of create account form must be empty when'
             'form is just displayed!')
 
+        # and this list is not editable
+        self.assertEqual(self.attach_list.editTriggers(),
+                         QAbstractItemView.NoEditTriggers,
+                         "Attach files list must be not editable!")
+
         # there is button that Toon can use to add files to list, Toon presses
         # it and file dialog appears asking him to chose file to attach
         def mock_browse(path):

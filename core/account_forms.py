@@ -101,6 +101,7 @@ class CreateAcc(CreateForm):
         self.attach_list.pathmap = {}
         self.attach_list.clicked.connect(self.file_selected)
         self.attach_list.selected = None
+        self.attach_list.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
         self.attach_file_button = QPushButton()
         self.attach_file_button.clicked.connect(self.attach_file)
