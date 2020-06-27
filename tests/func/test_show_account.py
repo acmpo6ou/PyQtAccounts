@@ -41,6 +41,7 @@ class ShowAccountTest(AccsTest):
         super().setUp(name='database2')
         self.form = self.accs.forms['show']
         self.list = self.accs.list
+        self.attached_files = self.form.attached_files
 
         # here we initialize fake file system and copy `database` database in
         # there which we will use during tests
@@ -135,3 +136,35 @@ class ShowAccountTest(AccsTest):
             mouseboard, 'Chris Kirkman\n',
             "Username isn't copied to mouse clipboard when performed"
             " copy operation in show account form!")
+
+    def test_attach_files(self):
+        """
+        Here we test how user can download his attached files.
+        """
+        # Tom has `python account` with attached files and he wants to download
+        # them, so he chose his account in the list
+        self.list.selected(Index('python'))
+
+        # there is a list with attached files of his account
+        model = self.attached_files.model()
+        self.assertTrue(
+            model.findItems('pyqt5.py'),
+            "`pyqt5.py` is not in the attached files list of show account "
+            "form!")
+        self.assertTrue(
+            model.findItems('somefile.txt'),
+            "`somefile.txt` is not in the attached files list of show account "
+            "form!")
+        self.assertEqual(2, model.rowCount(),
+                         "Attached files list must contain only 2 items!")
+
+        # So Tom just clicks on attached file to download it and save file
+        # dialog appears where Tom chose his directory to save the file
+        def mock_browse(parent, caption, filename, folder):
+            """
+            This function is a test double for getSaveFileName, using it we will
+            simulate that user chose folder where he will save attached file.
+            """
+
+        self.monkeypatch.setattr(QFileDialog, 'getSaveFileName', mock_browse)
+        self.form.download_file(Index('pyqt5.py'))

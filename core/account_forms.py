@@ -509,6 +509,12 @@ class ShowAccountForm(QWidget):
         self.comment = QTextEdit()
         self.comment.setReadOnly(True)
 
+        self.attached_files = QListView()
+        self.attached_model = QStandardItemModel()
+        self.attached_files.setModel(self.attached_model)
+        self.attached_files.clicked.connect(self.download_file)
+        self.attached_files.setEditTriggers(QAbstractItemView.NoEditTriggers)
+
         # Here we make all label selectable so user can select their text and copy it if he wants
         # Also we set appropriate cursor for labels.
         for label in (self.account, self.name, self.email, self.password,
@@ -551,6 +557,10 @@ class ShowAccountForm(QWidget):
         mouse_copy = 'e-mail' if account.copy_email else 'username'
         self.mouse_copy.setText(f'До мишиного буферу копіюється: {mouse_copy}')
 
+        for file in account.attached_files:
+            item = QStandardItem(file)
+            self.attached_model.appendRow(item)
+
     def copy_account(self):
         """
         This method is called when user presses Ctrl+C or through menu: File -> Copy.
@@ -573,3 +583,9 @@ class ShowAccountForm(QWidget):
             # we copy username to mouseboard
             username = self.name.text().replace("Ім'я: ", '')
             os.system(f'echo {username} | xclip')
+
+    def download_file(self, file):
+        """
+        This method is invoked when user chose file from attached files list to
+        download it.
+        """
