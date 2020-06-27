@@ -589,3 +589,31 @@ class ShowAccountForm(QWidget):
         This method is invoked when user chose file from attached files list to
         download it.
         """
+        # here we show save file dialog, so user can chose where to save
+        # attached file
+        home = os.getenv('HOME')
+        path = QFileDialog.getSaveFileName(self.parent,
+                                           'Зберегти закріплений файл',
+                                           f"{home}/{file.data()}")[0]
+
+        # if user presses `Cancel` in the dialog then we do nothing
+        if not path:
+            return
+
+        try:
+            # then we open specified file to write
+            saved_file = open(path, 'wb')
+
+            # and we write all data to it
+            saved_file.write(self.account.attached_files[file.data()])
+        except Exception:
+            # if there are any errors then we show appropriate message
+            QMessageBox.critical(self.parent(), 'Помилка!',
+                                 'Операція не успішна!')
+        else:
+            # if there is no errors then we show successful message
+            QMessageBox.information(self.parent(), 'Успіх!',
+                                    'Операція успішна!')
+        finally:
+            # finally we close the file
+            saved_file.close()

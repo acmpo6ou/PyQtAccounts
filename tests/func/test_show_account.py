@@ -160,11 +160,48 @@ class ShowAccountTest(AccsTest):
 
         # So Tom just clicks on attached file to download it and save file
         # dialog appears where Tom chose his directory to save the file
-        def mock_browse(parent, caption, filename, folder):
+        def mock_browse(filename):
             """
-            This function is a test double for getSaveFileName, using it we will
-            simulate that user chose folder where he will save attached file.
+            This function creates test double of getSaveFileName using
+            `filename` which is name of attached file that we want to download.
             """
+            def wrap(parent, caption, path):
+                """
+                This function is a test double for getSaveFileName, using it we will
+                simulate that user chose folder where he will save attached file.
+                """
+                assert caption == "Зберегти закріплений файл", \
+                        "Title of save attached file dialog is incorrect!"
+                assert path == f'/home/accounts/{filename}'
+                return (f'/home/accounts/{filename}', )
 
-        self.monkeypatch.setattr(QFileDialog, 'getSaveFileName', mock_browse)
+            return wrap
+
+        self.monkeypatch.setattr(QFileDialog, 'getSaveFileName',
+                                 mock_browse('pyqt5.py'))
         self.form.download_file(Index('pyqt5.py'))
+
+        # then Toon saves another file
+        self.monkeypatch.setattr(QFileDialog, 'getSaveFileName',
+                                 mock_browse('somefile.txt'))
+        self.form.download_file(Index('somefile.txt'))
+
+        # both files are on the disk
+        self.assertTrue(
+            os.path.exists('/home/accounts/pyqt5.py'),
+            "Attached file `pyqt5.py` doesn't created when user downloaded it!"
+        )
+        self.assertTrue(
+            os.path.exists('/home/accounts/somefile.txt'),
+            "Attached file `somefile.txt` doesn't created when user downloaded it!"
+        )
+
+        # and they have appropriate content
+        self.assertEqual(
+            open('/home/accounts/somefile.txt').read(),
+            'This is a simple file.\n To test PyQtAccounts.\n Hello World!',
+            "Content of downloaded file `somefile.txt` are incorrect!")
+        self.assertEqual(
+            open('/home/accounts/pyqt5.py').read(),
+            "#!/usr/bin/env python3\nimport sys"
+            "Content of downloaded file `pyqt5.py` are incorrect!")
