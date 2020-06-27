@@ -28,7 +28,7 @@ from core.utils import *
 from PyQtAccounts import *
 
 
-class EditAccsTest(AccsTest):
+class EditAccountsTest(AccsTest):
     """
     This test class provides all functional tests for edit account form.
     """

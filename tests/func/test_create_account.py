@@ -26,7 +26,7 @@ from core.utils import *
 from PyQtAccounts import *
 
 
-class CreateAccTest(AccsTest):
+class CreateAccountTest(AccsTest):
     """
     This test class provides all functional tests about creating accounts.
     """

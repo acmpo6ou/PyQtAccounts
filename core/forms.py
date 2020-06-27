@@ -27,7 +27,7 @@ import core.widgets as widgets
 
 class CreateForm(QWidget):
     """
-    This is the base class for classes like CreateDbForm, EditDbForm and CreateAcc.
+    This is the base class for classes like CreateDbForm, EditDbForm and CreateAccount.
     It provides all same functionality that you need while creating or editing something whether
     it is database or account.
     """

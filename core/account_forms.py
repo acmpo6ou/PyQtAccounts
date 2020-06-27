@@ -37,7 +37,7 @@ import core.const
 SRC_DIR = core.const.SRC_DIR
 
 
-class CreateAcc(CreateForm):
+class CreateAccount(CreateForm):
     """
     This is a superclass which specifies CreateForm class to account forms needs.
     """
@@ -267,15 +267,15 @@ class CreateAcc(CreateForm):
             model.removeRow(filename.row())
 
 
-class CreateAccForm(CreateAcc):
+class CreateAccountForm(CreateAccount):
     """
-    This is a class which specifies CreateAcc superclass even more.
+    This is a class which specifies CreateAccount superclass even more.
     We use this class for creating account.
     """
     def __init__(self, db, helpTip, parent=None):
         """
         This constructor creates the form specifying title parameter, everything else it
-        inherits from CreateAcc superclass.
+        inherits from CreateAccount superclass.
         :param db:
         Database where we will save account once we create one.
         :param helpTip:
@@ -284,7 +284,7 @@ class CreateAccForm(CreateAcc):
         The parent of the form.
         """
         title = 'Створити акаунт'
-        CreateAcc.__init__(self, title, db, helpTip, parent)
+        CreateAccount.__init__(self, title, db, helpTip, parent)
 
     def validateName(self, event):
         """
@@ -345,15 +345,15 @@ class CreateAccForm(CreateAcc):
         self.tips['help'].setText("Виберіть акаунт")
 
 
-class EditAccForm(CreateAcc):
+class EditAccountForm(CreateAccount):
     """
-    This is a class which specifies CreateAcc superclass even more.
+    This is a class which specifies CreateAccount superclass even more.
     We use this class for editing account.
     """
     def __init__(self, db, helpTip):
         """
         This constructor creates the form specifying title parameter, adds `Delete` button
-        and changes create buttons text to `Save`, everything else it inherits from CreateAcc
+        and changes create buttons text to `Save`, everything else it inherits from CreateAccount
         superclass.
         :param db:
         Database where we will save account once we create one.
@@ -361,7 +361,7 @@ class EditAccForm(CreateAcc):
         Tip that will be displayed when form is hidden.
         """
         title = 'Редагувати акаунт'
-        CreateAcc.__init__(self, title, db, helpTip)
+        CreateAccount.__init__(self, title, db, helpTip)
         self.createButton.setText('Зберегти')
         self.deleteButton = QPushButton('Видалити')
         self.deleteButton.clicked.connect(self.delete)
@@ -420,7 +420,7 @@ class EditAccForm(CreateAcc):
             if not getAkiList(self.db):
                 self.tips['help'].setText(HELP_TIP_ACCS)
 
-    def setAcc(self, index):
+    def set_account(self, index):
         """
         This method sets all account values to all form fields,
         when user chose to edit an account.
@@ -483,7 +483,7 @@ class EditAccForm(CreateAcc):
         self.clear()
 
 
-class ShowAccForm(QWidget):
+class ShowAccountForm(QWidget):
     """
     This class is a form that shows account information,
     such as password, e-mail, date of birth etc.
@@ -532,7 +532,7 @@ class ShowAccForm(QWidget):
         layout.addWidget(self.comment)
         self.setLayout(layout)
 
-    def setAcc(self, index):
+    def set_account(self, index):
         """
         This method changes content of the form accordingly to given account index
         :param index:
@@ -551,7 +551,7 @@ class ShowAccForm(QWidget):
         mouse_copy = 'e-mail' if account.copy_email else 'username'
         self.mouse_copy.setText(f'До мишиного буферу копіюється: {mouse_copy}')
 
-    def copyAcc(self):
+    def copy_account(self):
         """
         This method is called when user presses Ctrl+C or through menu: File -> Copy.
         It copies e-mail or username to mouse buffer, depending on `copy_email`

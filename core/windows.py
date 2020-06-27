@@ -278,7 +278,7 @@ class Dbs(QWidget):
         self.forms['edit'].setDb(self.list.index)
 
 
-def selectAcc(obj, index):
+def select_account(obj, index):
     """
     Method that called when user chose account in the list.
     :param obj:
@@ -288,7 +288,7 @@ def selectAcc(obj, index):
     """
     # here we set account that chosen to show account form and we show this form
     obj.index = index
-    obj.forms['show'].setAcc(index)
+    obj.forms['show'].set_account(index)
     hide(obj.forms, obj.tips)
     obj.forms['show'].show()
 
@@ -320,7 +320,7 @@ class Accs(QWidget):
         # here we create accounts panel and list
         self.panel = Panel(self.add, self.edit)
         self.list = List(sorted(getAkiList(db)), 'img/account.png', forms,
-                         windows, tips, selectAcc)
+                         windows, tips, select_account)
 
         # and here we assign some stuff to account forms, such as account list, database name
         # tips, forms and windows
@@ -355,7 +355,7 @@ class Accs(QWidget):
         It shows edit account form.
         """
         # self.list.index is index that represents currently chosen account at the list
-        self.forms['edit'].setAcc(self.list.index)
+        self.forms['edit'].set_account(self.list.index)
 
 
 class MenuBar(QMenuBar):
@@ -533,7 +533,7 @@ class DbMenuBar(MenuBar):
         self.save.setShortcut(QKeySequence('Ctrl+S'))
 
         self.copy = QAction(QIcon('img/copy.png'), '&Copy')
-        self.copy.triggered.connect(parent.accs.forms['show'].copyAcc)
+        self.copy.triggered.connect(parent.accs.forms['show'].copy_account)
         self.copy.setShortcut(QKeySequence('Ctrl+C'))
 
         self.File.insertAction(self.quit, self.new)
@@ -593,9 +593,9 @@ class DbWindow(QMainWindow):
             helpTip = HelpTip("Виберіть акаунт")
         helpTip.show()
 
-        create_account_form = CreateAccForm(self.db, helpTip)
-        edit_account_form = EditAccForm(self.db, helpTip)
-        show_account_form = ShowAccForm(self.db)
+        create_account_form = CreateAccountForm(self.db, helpTip)
+        edit_account_form = EditAccountForm(self.db, helpTip)
+        show_account_form = ShowAccountForm(self.db)
 
         tips = {'help': helpTip}
         forms = {

@@ -29,7 +29,7 @@ from core.utils import *
 from PyQtAccounts import *
 
 
-class ShowAccTest(AccsTest):
+class ShowAccountTest(AccsTest):
     """
     This test class provides all functional tests for show account form.
     """
