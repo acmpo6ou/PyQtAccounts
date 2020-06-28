@@ -534,6 +534,7 @@ class ShowAccountForm(QWidget):
         layout.addWidget(self.password)
         layout.addWidget(self.date)
         layout.addWidget(self.mouse_copy)
+        layout.addWidget(self.attached_files)
         layout.addWidget(self.copyTip)
         layout.addWidget(self.comment)
         self.setLayout(layout)
@@ -546,6 +547,7 @@ class ShowAccountForm(QWidget):
         """
         accountname = index.data()
         account = self.db[accountname]
+        self._account = account
 
         self.account.setText('Акаунт: ' + account.account)
         self.name.setText("Ім'я: " + account.name)
@@ -592,7 +594,7 @@ class ShowAccountForm(QWidget):
         # here we show save file dialog, so user can chose where to save
         # attached file
         home = os.getenv('HOME')
-        path = QFileDialog.getSaveFileName(self.parent,
+        path = QFileDialog.getSaveFileName(self.parent(),
                                            'Зберегти закріплений файл',
                                            f"{home}/{file.data()}")[0]
 
@@ -605,7 +607,7 @@ class ShowAccountForm(QWidget):
             saved_file = open(path, 'wb')
 
             # and we write all data to it
-            saved_file.write(self.account.attached_files[file.data()])
+            saved_file.write(self._account.attached_files[file.data()])
         except Exception:
             # if there are any errors then we show appropriate message
             QMessageBox.critical(self.parent(), 'Помилка!',

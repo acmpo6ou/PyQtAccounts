@@ -177,6 +177,10 @@ class ShowAccountTest(AccsTest):
 
             return wrap
 
+        # download operation will be successful
+        self.monkeypatch.setattr(QMessageBox, 'information',
+                                 self.mess('Успіх!', 'Операція успішна!'))
+
         self.monkeypatch.setattr(QFileDialog, 'getSaveFileName',
                                  mock_browse('pyqt5.py'))
         self.form.download_file(Index('pyqt5.py'))
@@ -199,9 +203,18 @@ class ShowAccountTest(AccsTest):
         # and they have appropriate content
         self.assertEqual(
             open('/home/accounts/somefile.txt').read(),
-            'This is a simple file.\n To test PyQtAccounts.\n Hello World!',
-            "Content of downloaded file `somefile.txt` are incorrect!")
+            'This is a simple file.\nTo test PyQtAccounts.\nHello World!\n',
+            "Content of downloaded file `somefile.txt` is incorrect!")
         self.assertEqual(
             open('/home/accounts/pyqt5.py').read(),
-            "#!/usr/bin/env python3\nimport sys"
-            "Content of downloaded file `pyqt5.py` are incorrect!")
+            "#!/usr/bin/env python3\nimport sys\n",
+            "Content of downloaded file `pyqt5.py` is incorrect!")
+
+        # finally Tom tries to save file to directory where he has no
+        # permissions to write
+        self.monkeypatch.setattr(QFileDialog, 'getSaveFileName', lambda *args:
+                                 ('/', ))
+
+        # the error message appears
+        self.monkeypatch.setattr(QMessageBox, 'information',
+                                 self.mess('Помилка!', 'Операція не успішна!'))
