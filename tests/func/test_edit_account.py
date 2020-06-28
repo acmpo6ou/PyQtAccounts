@@ -372,3 +372,63 @@ class EditAccountsTest(AccsTest):
             mouseboard, 'tom@gmail.com\n',
             "Email isn't copied to mouse clipboard when performed"
             " copy operation in show account form!")
+
+    def test_edit_attached_files(self):
+        """
+        Here we test editing of attached files.
+        """
+        # we need another database for this test, `database2` contains account
+        # that has attached files
+        super().setUp(name='database2')
+        self.form = self.accs.forms['edit']
+        self.list = self.accs.list
+        self.help = self.accs.tips['help']
+
+        self.editButton = self.accs.panel.editButton
+        self.deleteButton = self.form.deleteButton
+        self.saveButton = self.form.createButton
+
+        self.account = self.form.accountInput
+        self.name = self.form.nameInput
+        self.pass_input = self.form.passField.passInput
+        self.pass_repeat_input = self.form.passRepeatField.passInput
+        self.email = self.form.emailInput
+        self.date = self.form.dateInput
+        self.comment = self.form.commentInput
+        self.username_radio = self.form.username_radio
+        self.email_radio = self.form.email_radio
+
+        self.attach_list = self.form.attach_list
+        self.attach_file_button = self.form.attach_file_button
+        self.detach_button = self.form.detach_button
+
+        # here we initialize fake file system and copy `database2` database in
+        # there which we will use during tests
+        init_src_folder(self.monkeypatch)
+        self.copyDatabase('database2')
+
+        # Bob has account with attached files that he wants to edit, so he chose
+        # it in the list
+        self.list.selected(Index('python'))
+        self.editButton.click()
+
+        # Edit form appears
+        self.checkOnlyVisible(self.form)
+
+        # and it has a list of attached files that contains 2 items
+        self.assertEqual(
+            self.attach_list.model().rowCount(), 2,
+            'Attach list of create account form must have 2 items in it!')
+
+        # it has `pyqt5.py` file
+        model = self.attach_list.model()
+        self.assertTrue(
+            model.findItems('pyqt5.py'),
+            'Attach list of edit account form must have `pyqt5.py` '
+            'file in it!')
+
+        # it has `somefile.txt` as well
+        self.assertTrue(
+            model.findItems('somefile.txt'),
+            'Attach list of edit account form must have `somefile.txt` '
+            'file in it!')
