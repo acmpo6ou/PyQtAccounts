@@ -34,9 +34,6 @@ class CreateAccountTest(AccsTest):
         """
         Here we reassign some widely used variables. 
         """
-        # we must use real home pass for tests that test attach files feature
-        self.home = f'/home/{os.getlogin()}'
-
         super().setUp()
         self.form = self.accs.forms['create']
         self.help_tip = self.accs.tips['help']
@@ -66,25 +63,6 @@ class CreateAccountTest(AccsTest):
         self.attach_list = self.form.attach_list
         self.attach_file_button = self.form.attach_file_button
         self.detach_button = self.form.detach_button
-
-    @staticmethod
-    def mock_browse(path):
-        """
-        This function constructs test double of getOpenFileName so it will
-        simulate that user chose file in open file dialog.
-        """
-        def wrap(parrent, caption, folder):
-            """
-            We use this function to monkeypatch getOpenFileName and check
-            arguments that are passed to it.
-            """
-            assert caption == "Виберіть файл для закріплення",\
-                    "Title of attach file dialog is incorrect!"
-            assert folder == os.getenv('HOME'),\
-                   "Default folder of attach file dialog must be a home folder!"
-            return (path, )
-
-        return wrap
 
     def checkNameErrors(self):
         """

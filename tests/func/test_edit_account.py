@@ -32,12 +32,12 @@ class EditAccountsTest(AccsTest):
     """
     This test class provides all functional tests for edit account form.
     """
-    def setUp(self):
+    def setUp(self, name='database'):
         """
         Here we reassign some widely used variables and initialize in-memory
         file system.
         """
-        super().setUp()
+        super().setUp(name)
         self.form = self.accs.forms['edit']
         self.list = self.accs.list
         self.help = self.accs.tips['help']
@@ -60,7 +60,7 @@ class EditAccountsTest(AccsTest):
         # databases and sometimes save those changes but we don't want to change
         # our test databases so we use fake file system
         init_src_folder(self.monkeypatch)
-        self.copyDatabase('database')
+        self.copyDatabase(name)
 
     def test_edit_content(self):
         """
@@ -106,24 +106,9 @@ class EditAccountsTest(AccsTest):
         Here we test how content of account is loaded in edit account form when
         user has username set to be copied into mouseboard.
         """
-        # we need another database for this purpose `database2` contains account
+        # we need another database for this test `database2` contains account
         # that has username set as what will be copied to mouseboard
-        super().setUp(name='database2')
-        self.form = self.accs.forms['edit']
-        self.list = self.accs.list
-        self.help = self.accs.tips['help']
-
-        self.editButton = self.accs.panel.editButton
-        self.deleteButton = self.form.deleteButton
-        self.saveButton = self.form.createButton
-
-        self.account = self.form.accountInput
-        self.name = self.form.nameInput
-        self.pass_input = self.form.passField.passInput
-        self.pass_repeat_input = self.form.passRepeatField.passInput
-        self.email = self.form.emailInput
-        self.date = self.form.dateInput
-        self.comment = self.form.commentInput
+        self.setUp(name='database2')
         self.username_radio = self.form.username_radio
         self.email_radio = self.form.email_radio
 
@@ -379,33 +364,10 @@ class EditAccountsTest(AccsTest):
         """
         # we need another database for this test, `database2` contains account
         # that has attached files
-        super().setUp(name='database2')
-        self.form = self.accs.forms['edit']
-        self.list = self.accs.list
-        self.help = self.accs.tips['help']
-
-        self.editButton = self.accs.panel.editButton
-        self.deleteButton = self.form.deleteButton
-        self.saveButton = self.form.createButton
-
-        self.account = self.form.accountInput
-        self.name = self.form.nameInput
-        self.pass_input = self.form.passField.passInput
-        self.pass_repeat_input = self.form.passRepeatField.passInput
-        self.email = self.form.emailInput
-        self.date = self.form.dateInput
-        self.comment = self.form.commentInput
-        self.username_radio = self.form.username_radio
-        self.email_radio = self.form.email_radio
-
+        self.setUp(name='database2')
         self.attach_list = self.form.attach_list
         self.attach_file_button = self.form.attach_file_button
         self.detach_button = self.form.detach_button
-
-        # here we initialize fake file system and copy `database2` database in
-        # there which we will use during tests
-        init_src_folder(self.monkeypatch)
-        self.copyDatabase('database2')
 
         # Bob has account with attached files that he wants to edit, so he chose
         # it in the list
@@ -432,3 +394,92 @@ class EditAccountsTest(AccsTest):
             model.findItems('somefile.txt'),
             'Attach list of edit account form must have `somefile.txt` '
             'file in it!')
+
+        # this files also have appropriate file mappings, which maps to None
+        # because this files are already attached
+        self.assertEqual(self.attach_list.pathmap, {
+            'somefile.txt': None,
+            'pyqt5.py': None
+        }, "File mapping of edit account form is incorrect!")
+
+        # Bob wants to detach `pyqt5.py`, so he chose it in the list and presses
+        # detach button
+        self.form.file_selected(Index('pyqt5.py'))
+
+        # He presses detach button, but suddenly changes his mind and presses
+        # `No` in confirmation dialog
+        self.monkeypatch.setattr(
+            QMessageBox, 'warning',
+            self.mess('Увага!',
+                      "Ви впевнені що хочете відкріпити <b>pyqt5.py</b>?",
+                      button=QMessageBox.No))
+        self.detach_button.click()
+
+        # `pyqt5.py` is still in the list and has its mapping
+        self.assertIn(
+            'pyqt5.py', self.attach_list.pathmap,
+            "File mapping was deleted when user tries to detach file "
+            "associated with it but presses `No` in confirmation dialog!")
+
+        self.assertTrue(
+            self.attach_list.model().findItems('pyqt5.py'),
+            "File was detached when user tries to detach it but presses `No` "
+            "in confirmation dialog!")
+
+        # Toon then changes his mind again and detaches `pyqt5.py` pressing
+        # `Yes` in confirmation dialog
+        self.monkeypatch.setattr(
+            QMessageBox, 'warning',
+            self.mess('Увага!',
+                      "Ви впевнені що хочете відкріпити <b>pyqt5.py</b>?",
+                      button=QMessageBox.Yes))
+        self.detach_button.click()
+
+        # and `pyqt5.py` is detached, there is no longer mapping for it neither
+        # it exists in the list
+        self.assertNotIn(
+            'pyqt5.py', self.attach_list.pathmap,
+            "File mapping isn't deleted when user tries to detach the file and "
+            "presses `Yes` in confirmation dialog!")
+
+        self.assertFalse(
+            self.attach_list.model().findItems('pyqt5.py'),
+            "File is not detached when user tries to detach it and presses `Yes` "
+            "in confirmation dialog!")
+
+        # there is button that Bob can use to add files to list, Bob presses
+        # it and file dialog appears asking him to chose file to attach
+        # Bob chose script.js
+        self.monkeypatch.setattr(
+            QFileDialog, 'getOpenFileName',
+            self.mock_browse(
+                f'{self.home}/Documents/PyQtAccounts/tests/func/src/attach_files/script.js'
+            ))
+
+        self.attach_file_button.click()
+
+        # `script.js` appears in the attach list
+        self.assertTrue(
+            self.attach_list.model().findItems('script.js'),
+            "File name of attached file doesn't appear in the attach list!")
+
+        # and in the dict that maps attached file name to file path
+        self.assertEqual(
+            self.attach_list.pathmap['script.js'],
+            f'{self.home}/Documents/PyQtAccounts/tests/func/src/attach_files/script.js',
+            "Mapping from attached file name to its path doesn't created!")
+
+        # satisfied with his attached files Bob presses `Save` button
+        self.saveButton.click()
+
+        # The edit account form disappears
+        self.checkOnlyVisible(self.accs.tips['help'])
+
+        # account is saved and attached_files is changed
+        acc = self.win.db['python']
+        expected_attached_files = {
+            'somefile.txt': b"Some another file.\n<h1></h1>\n"
+        }
+        self.assertEqual(
+            expected_attached_files, acc.attached_files,
+            "Attached files dictionary of edited account is incorrect!")

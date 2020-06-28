@@ -50,6 +50,9 @@ class BaseTest(unittest.TestCase):
         """
         os.environ['TESTING'] = 'True'
 
+        # we must use real home pass for some tests
+        self.home = f'/home/{os.getlogin()}'
+
     @pytest.fixture(autouse=True)
     def monkeypatching(self, monkeypatch):
         """
@@ -500,6 +503,25 @@ class AccsTest(FuncTest):
         """
         submenu = self.win.menuBar().actions()[submenu_index]
         return submenu.menu().actions()[action_index]
+
+    @staticmethod
+    def mock_browse(path):
+        """
+        This function constructs test double of getOpenFileName so it will
+        simulate that user chose file in open file dialog.
+        """
+        def wrap(parrent, caption, folder):
+            """
+            We use this function to monkeypatch getOpenFileName and check
+            arguments that are passed to it.
+            """
+            assert caption == "Виберіть файл для закріплення",\
+                    "Title of attach file dialog is incorrect!"
+            assert folder == os.getenv('HOME'),\
+                   "Default folder of attach file dialog must be a home folder!"
+            return (path, )
+
+        return wrap
 
 
 class SetupMixin:

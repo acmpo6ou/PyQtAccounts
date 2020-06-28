@@ -450,6 +450,15 @@ class EditAccountForm(CreateAccount):
         self.email_radio.setChecked(self.account.copy_email)
         self.username_radio.setChecked(not self.account.copy_email)
 
+        self.attach_model = QStandardItemModel()
+        for file in self.account.attached_files:
+            item = QStandardItem(file)
+            self.attach_model.appendRow(item)
+
+            # all files that are already attached will map to None
+            self.attach_list.pathmap[file] = None
+        self.attach_list.setModel(self.attach_model)
+
         hide(self.forms, self.tips)
         self.show()
 
