@@ -73,11 +73,17 @@ def getChangeLog():
     :return:
     list of change strings
     """
-    return [
-        change.decode().rstrip() for change in urlopen(
-            'https://raw.githubusercontent.com/Acmpo6ou/PyQtAccounts/master/change.log'
-        )
-    ]
+    try:
+        # errors may occur while we trying to get changelog, for example there is no
+        # internet connection
+        return [
+            change.decode().rstrip() for change in urlopen(
+                'https://raw.githubusercontent.com/Acmpo6ou/PyQtAccounts/master/change.log'
+            )
+        ]
+    except urllib.error.HTTPError:
+        # in cause of error we show error message
+        print("Can't get changelog because of bad internet connection.")
 
 
 class Updating(QObject):
