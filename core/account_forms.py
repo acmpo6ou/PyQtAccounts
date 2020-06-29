@@ -209,7 +209,7 @@ class CreateAccount(CreateForm):
         # user what to do – replace existing file or abort attach operation
         if name in self.attach_list.pathmap:
             answer = QMessageBox.warning(
-                self.parent,
+                self.parent(),
                 'Увага!',
                 'Файл з таким іменем вже існує, замінити?',
                 buttons=QMessageBox.Yes | QMessageBox.No)
@@ -251,7 +251,7 @@ class CreateAccount(CreateForm):
 
         # here we show confirmation dialog in case if user pressed detach button
         # by accident
-        answer = QMessageBox.warning(self.parent,
+        answer = QMessageBox.warning(self.parent(),
                                      'Увага!',
                                      'Ви впевнені що хочете відкріпити '
                                      f'<b>{selected}</b>?',
@@ -479,9 +479,22 @@ class EditAccountForm(CreateAccount):
         comment = self.commentInput.toPlainText()
         copy_email = self.email_radio.isChecked()
 
+        # here we obtain attached files
+        attached_files = {}
+        for file in self.attach_list.pathmap:
+            path = self.attach_list.pathmap[file]
+            if not path:
+                # if file maps to None then we already loaded this file, so we
+                # use it from old account
+                old_account = self.db[self.old_account]
+                attached_files[file] = old_account.attached_files[file]
+            else:
+                # else, file maps to path then we load file using this path
+                attached_files[file] = open(path, 'rb').read()
+
         # and here we create new account and also delete the old one
         account = akidump.Account(accountname, name, email, password, date,
-                                  comment, copy_email)
+                                  comment, copy_email, attached_files)
         del self.db[self.old_account]
         self.db[accountname] = account
         self.clear()

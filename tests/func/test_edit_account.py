@@ -478,7 +478,9 @@ class EditAccountsTest(AccsTest):
         # account is saved and attached_files is changed
         acc = self.win.db['python']
         expected_attached_files = {
-            'somefile.txt': b"Some another file.\n<h1></h1>\n"
+            'somefile.txt': b'This is a simple file.\nTo test PyQtAccounts.'
+            b'\nHello World!\n',
+            'script.js': b"var py = 'PyQtAccounts';\n"
         }
         self.assertEqual(
             expected_attached_files, acc.attached_files,
