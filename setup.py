@@ -743,6 +743,8 @@ if __name__ == '__main__':
 
     # here we check whether user runs installator under sudo
     if os.getuid() == 0:
+        # if yes, then we show appropriate warning, because installed with sudo
+        # PyQtAccounts will work properly only being launched with sudo
         QMessageBox.warning(
             None, 'Увага!', 'Інсталятор запущено з '
             'адміністративними привілеями, встановлена таким '

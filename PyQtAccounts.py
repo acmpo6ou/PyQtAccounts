@@ -269,5 +269,18 @@ app.setStyleSheet('''
 ''')
 
 if __name__ == '__main__':
+    # here we check whether user runs PyQtAccounts under sudo
+    if os.getuid() == 0:
+        # if yes, then we show appropriate warning, because launched with sudo
+        # PyQtAccounts will create and edit databases, but owner of them is root
+        # and normal user wont be able to edit or open those databases
+        QMessageBox.warning(
+            None, 'Увага!',
+            "PyQtAccounts запущено з адміністративними привілеями, не "
+            "рекомендовано робити це, адже PyQtAccounts буде створювати і "
+            "редагувати бази данних, але їх власник буде root і нормальний "
+            "користувач вже не зможе відкривати і редагувати такі бази данних "
+            "без рут приівлеїв.")
+
     main()
     sys.exit(app.exec_())
