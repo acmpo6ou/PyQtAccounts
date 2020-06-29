@@ -37,36 +37,6 @@ from urllib.request import urlopen
 SRC_DIR = core.const.SRC_DIR
 
 
-def time_for_updates():
-    """
-    This function checks whether its time to check for updates or not
-    :return:
-    bool, True if it is time to check for updates
-    """
-    # updates check frequency is stored in user settings
-    settings = QSettings(f'{os.getenv("HOME")}/PyTools', 'PyQtAccounts')
-    # by default we always checking for updates
-    frequency = settings.value('updates/frequency', 'always')
-
-    if frequency == 'always':
-        # if we always checking for updates we return True
-        return True
-    else:
-        # else we are getting time of the last updates check and current date
-        last_checked = settings.value('updates/last', None)
-        current = QDate.currentDate()
-
-        # if we never checked for updates yet or we checked but long ago enough we return True
-        if not last_checked or last_checked.addDays(
-                frequency.toInt()) <= current:
-            settings.setValue('updates/last', current)
-            return True
-        else:
-            # in all other cases (i.e. user has updates check frequency set to `never`) we return
-            # False
-            return False
-
-
 def getChangeLog():
     """
     This function downloads changelog from our repository.

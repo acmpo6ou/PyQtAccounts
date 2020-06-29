@@ -15,7 +15,6 @@
 
 # You should have received a copy of the GNU General Public License
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
-
 """
 This is the main module of the application, it connects everything into complete program -
 PyQtAccounts.
@@ -45,7 +44,6 @@ class Window(QMainWindow):
     """
     This class is a main window.
     """
-
     def __init__(self):
         """
         This constructor creates everything that application needs.
@@ -125,19 +123,18 @@ class Window(QMainWindow):
         self.setMenuBar(menuBar)
         self.setCentralWidget(splitter)
 
-        # here we check for updates if it is time to check for them
-        if time_for_updates():
-            def mess(changes, log):
-                if changes:
-                    self.res = UpdatesAvailable(self, log)
+        # here we check for updates
+        def mess(changes, log):
+            if changes:
+                self.res = UpdatesAvailable(self, log)
 
-            # we start the checking process in another thread to prevent blocking of UI
-            thread = QThread(parent=self)
-            updating = Updating()
-            updating.moveToThread(thread)
-            updating.result.connect(mess)
-            thread.started.connect(updating.run)
-            thread.start()
+        # we start the checking process in another thread to prevent blocking of UI
+        thread = QThread(parent=self)
+        updating = Updating()
+        updating.moveToThread(thread)
+        updating.result.connect(mess)
+        thread.started.connect(updating.run)
+        thread.start()
 
         # here we create settings dialog
         self.settings = Settings(self)
@@ -156,7 +153,8 @@ class Window(QMainWindow):
             return
 
         # here we show confirm message
-        action = QMessageBox.question(self, 'Увага!', 'Ви певні що хочете вийти?')
+        action = QMessageBox.question(self, 'Увага!',
+                                      'Ви певні що хочете вийти?')
 
         if action == QMessageBox.No:
             # if user answered no we do nothing (i.e ignore close event)
@@ -175,7 +173,6 @@ class ErrorWindow(QMessageBox):
     """
     This class is a window that we show if program caused some errors.
     """
-
     def __init__(self, text, err):
         super().__init__()
         # here we set window title, icon and text. We also have detailed description which
@@ -191,7 +188,6 @@ class WarningWindow(QMessageBox):
     """
     This class is a window that we show if we want to warn user about something.
     """
-
     def __init__(self, text):
         super().__init__()
         # here we set window title, icon and text.
@@ -213,8 +209,7 @@ def main():
     # here we check whether program is initialized by checking does .git dir exists in program
     # folder, if it doesn't we show initialization warning
     if '.git' not in os.listdir('.'):
-        return WarningWindow(
-            '''
+        return WarningWindow('''
             <h3>Програму не ініціалізовано!</h3>
             <p>Завантажте файл <b><i>setup.py</i></b> з нашого github репозиторія.</p>
             <p>Запустіть його і пройдіть всі кроки інсталяції.</p>
@@ -245,10 +240,11 @@ def main():
         for req in reqs_pip:
             if req in err.msg:
                 req = req
-                mess = ('<p>Здається не всі бібліотеки встановлені.</p>'
-                        f'<p>Переконайтеся що ви встановили бібліотеку {req}.</p>'
-                        '<p>Якщо ні, спробуйте ввести в термінал цю кофманду:</p>'
-                        f'<p><b>pip3 install {req}</b></p>')
+                mess = (
+                    '<p>Здається не всі бібліотеки встановлені.</p>'
+                    f'<p>Переконайтеся що ви встановили бібліотеку {req}.</p>'
+                    '<p>Якщо ні, спробуйте ввести в термінал цю кофманду:</p>'
+                    f'<p><b>pip3 install {req}</b></p>')
                 return ErrorWindow(mess, err)
     except RecursionError:  # to prevent fatal python error
         raise
