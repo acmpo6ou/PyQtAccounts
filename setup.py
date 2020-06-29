@@ -740,6 +740,15 @@ if __name__ == '__main__':
     ''')
     app.setWindowIcon(
         QIcon('/usr/share/icons/Mint-X/mimetypes/96/application-pgp-keys.svg'))
+
+    # here we check whether user runs installator under sudo
+    if os.getuid() == 0:
+        QMessageBox.warning(
+            None, 'Увага!', 'Інсталятор запущено з '
+            'адміністративними привілеями, встановлена таким '
+            'чином програма може працювати некоректно після її '
+            'запуску без адміністративних привілеїв.')
+
     wizard = InstallationWizard()
     wizard.show()
     sys.exit(app.exec_())
