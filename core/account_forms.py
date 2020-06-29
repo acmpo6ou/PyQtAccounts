@@ -218,7 +218,7 @@ class CreateAccount(CreateForm):
         # exists, so here we add it only when it isn't exist yet
         else:
             # here we add attached file to attach list
-            item = QStandardItem(name)
+            item = QStandardItem(QIcon('img/mail-attachment.svg'), name)
             self.attach_list.model().appendRow(item)
 
         # here we check `answer` variable if it is `Yes` then we create mapping
@@ -452,7 +452,7 @@ class EditAccountForm(CreateAccount):
 
         self.attach_model = QStandardItemModel()
         for file in self.account.attached_files:
-            item = QStandardItem(file)
+            item = QStandardItem(QIcon('img/mail-attachment.svg'), file)
             self.attach_model.appendRow(item)
 
             # all files that are already attached will map to None
@@ -585,7 +585,7 @@ class ShowAccountForm(QWidget):
         self.attached_model = QStandardItemModel()
         self.attached_files.setModel(self.attached_model)
         for file in account.attached_files:
-            item = QStandardItem(file)
+            item = QStandardItem(QIcon('img/mail-attachment.svg'), file)
             self.attached_model.appendRow(item)
 
     def copy_account(self):
