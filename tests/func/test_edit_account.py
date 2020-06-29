@@ -485,3 +485,14 @@ class EditAccountsTest(AccsTest):
         self.assertEqual(
             expected_attached_files, acc.attached_files,
             "Attached files dictionary of edited account is incorrect!")
+
+        # Bob then opens show account form to see changes in attach files list
+        self.list.selected(Index('python'))
+
+        # show account form appears
+        form = self.accs.forms['show']
+        self.checkOnlyVisible(form)
+
+        # there is attached files list that has 2 items
+        self.assertEqual(form.attached_files.model().rowCount(), 2,
+                         "Attached files list must have only 2 items!")

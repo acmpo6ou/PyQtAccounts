@@ -581,6 +581,9 @@ class ShowAccountForm(QWidget):
         mouse_copy = 'e-mail' if account.copy_email else 'username'
         self.mouse_copy.setText(f'До мишиного буферу копіюється: {mouse_copy}')
 
+        # to clear the model
+        self.attached_model = QStandardItemModel()
+        self.attached_files.setModel(self.attached_model)
         for file in account.attached_files:
             item = QStandardItem(file)
             self.attached_model.appendRow(item)
