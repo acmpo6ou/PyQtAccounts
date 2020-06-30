@@ -75,7 +75,11 @@ class Updating(QObject):
         # we fetch all changes and if there new ones then changes list wouldn't be empty
         # also we get changelog which we will show at the updating dialog if there are updates
         changes = list(repo.iter_commits('master..origin/master'))
-        changelog = getChangeLog()
+
+        # here we obtain changelog only if necessary, when there are changes,
+        # because if we will obtain it always then OS will cache it and user may
+        # get old changelog
+        changelog = getChangeLog() if changes else []
 
         # after everything is done we emit resulting changes and changelog
         self.result.emit(bool(changes), changelog)
