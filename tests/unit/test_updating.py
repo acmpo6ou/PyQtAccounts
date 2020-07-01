@@ -103,7 +103,7 @@ class UpdatingTest(UnitTest):
         This test tests program behavior when there are no new commits in programs github 
         repository (i.e. there are no updates).
         """
-        # here we create test double of Repo class with fake iter_commits method which will 
+        # here we create test double of Repo class with fake iter_commits method which will
         # simulate inexistance of new commits.
         mock_Repo = Mock()
         mock_Repo.iter_commits = self.mock_iter_no_commits
@@ -120,7 +120,7 @@ class UpdatingTest(UnitTest):
             getChangelog function (which we monkeypatched).
             """
             assert not changes, 'Changes must be False, because there are no updates available!'
-            assert log == ['Some changelog'], 'Incorrect changelog!'
+            assert log == [], 'Incorrect changelog!'
 
         # here we create instance of Updating process, connect check_result as signal handler of
         # result and run the process
