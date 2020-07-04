@@ -344,6 +344,11 @@ class CreateAccountForm(CreateAccount):
         self.clear()
         self.tips['help'].setText("Виберіть акаунт")
 
+        # also here we update completion of the form because we created new
+        # account
+        set_form_completers(self, self.db)
+        set_form_completers(self.forms['edit'], self.db)
+
 
 class EditAccountForm(CreateAccount):
     """
@@ -503,6 +508,10 @@ class EditAccountForm(CreateAccount):
         self.remove_item(self.old_account)
         self.add_item(accountname)
         self.clear()
+
+        # also here we update completion of the form because we edited account
+        set_form_completers(self, self.db)
+        set_form_completers(self.forms['create'], self.db)
 
 
 class ShowAccountForm(QWidget):

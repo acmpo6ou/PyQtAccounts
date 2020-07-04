@@ -597,31 +597,8 @@ class DbWindow(QMainWindow):
         edit_account_form = EditAccountForm(self.db, helpTip)
         show_account_form = ShowAccountForm(self.db)
 
-        # here we create sets of all emails, names and account names of
-        # accounts of given database, so we can use them for completion
-        emails = set()
-        names = set()
-        accountnames = set()
-        for account in db:
-            a = db[account]
-            accountnames.add(account)
-            emails.add(a.email)
-            names.add(a.name)
-
-        # here we create completer for email field of create account form
-        completer = QCompleter(emails)
-        completer.setCaseSensitivity(Qt.CaseInsensitive)
-        create_account_form.emailInput.setCompleter(completer)
-
-        # here we create completer for name field of create account form
-        completer = QCompleter(names)
-        completer.setCaseSensitivity(Qt.CaseInsensitive)
-        create_account_form.nameInput.setCompleter(completer)
-
-        # here we create completer for accountname field of create account form
-        completer = QCompleter(accountnames)
-        completer.setCaseSensitivity(Qt.CaseInsensitive)
-        create_account_form.accountInput.setCompleter(completer)
+        set_form_completers(create_account_form, db)
+        set_form_completers(edit_account_form, db)
 
         tips = {'help': helpTip}
         forms = {
@@ -629,6 +606,10 @@ class DbWindow(QMainWindow):
             'edit': edit_account_form,
             'show': show_account_form
         }
+
+        create_account_form.forms = forms
+        edit_account_form.forms = forms
+        show_account_form.forms = forms
 
         splitter = QSplitter()
         for tip in tips:

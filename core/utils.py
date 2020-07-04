@@ -26,6 +26,9 @@ from string import *
 from core.const import *
 import core.const
 
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
+
 
 def getDbList():
     """
@@ -112,3 +115,38 @@ class Index:
         'main'
         """
         return self.name
+
+
+def set_form_completers(form, db):
+    """
+    We use this function to set completion for name, email and account name
+    fields of the given form.
+    From `db` (which is database) we get all names,
+    emails and account names to create completers.
+    """
+
+    # here we create sets of all emails, names and account names of
+    # accounts of given database, so we can use them for completion
+    emails = set()
+    names = set()
+    accountnames = set()
+    for account in db:
+        a = db[account]
+        accountnames.add(account)
+        emails.add(a.email)
+        names.add(a.name)
+
+    # here we create completer for email field of create account form
+    completer = QCompleter(emails)
+    completer.setCaseSensitivity(Qt.CaseInsensitive)
+    form.emailInput.setCompleter(completer)
+
+    # here we create completer for name field of create account form
+    completer = QCompleter(names)
+    completer.setCaseSensitivity(Qt.CaseInsensitive)
+    form.nameInput.setCompleter(completer)
+
+    # here we create completer for accountname field of create account form
+    completer = QCompleter(accountnames)
+    completer.setCaseSensitivity(Qt.CaseInsensitive)
+    form.accountInput.setCompleter(completer)
