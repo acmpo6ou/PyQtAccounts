@@ -36,10 +36,13 @@ class CompletionTest(AccsTest):
 
         self.form = self.accs.forms['create']
         self.addButton = self.accs.panel.addButton
+        self.createButton = self.form.createButton
 
         self.account_name = self.form.accountInput
         self.name = self.form.nameInput
         self.email = self.form.emailInput
+        self.pass_input = self.form.passField.passInput
+        self.pass_repeat_input = self.form.passRepeatField.passInput
 
     def test_completion(self):
         """
@@ -86,3 +89,52 @@ class CompletionTest(AccsTest):
         self.assertEqual(
             expected_accountnames, set(c.model().stringList()),
             "Account name completer of create account form is incorrect!")
+
+    def test_completion_updates(self):
+        """
+        Here we test that completion updates when user creates new account.
+        """
+        # Tony has some accounts in his database and he want to create another
+        # account
+        self.addButton.click()
+
+        # so he inputs name, password, email and account name
+        self.name.setText('Tony Stark')
+        self.account_name.setText('google')
+        self.email.setText('google@gmail.com')
+        self.pass_input.setText('core')
+        self.pass_repeat_input.setText('core')
+
+        # and presses create button
+        self.createButton.click()
+
+        # he opens create form again
+        self.addButton.click()
+
+        # and all fields has their completion updated:
+        # emails
+        c = self.email.completer()
+        expected_emails = {
+            'bobgreen@gmail.com', 'spheromancer@habr.com', 'tom@gmail.com',
+            'google@gmail.com'
+        }
+        self.assertEqual(
+            expected_emails, set(c.model().stringList()),
+            "Email completer of create account form isn't updated after "
+            "creating new account!")
+
+        # names
+        c = self.name.completer()
+        expected_names = {'Bob', 'Lea', 'Tom', 'Tony Stark'}
+        self.assertEqual(
+            expected_names, set(c.model().stringList()),
+            "Name completer of create account form isn't updated after "
+            "creating new account!")
+
+        # account names
+        c = self.account_name.completer()
+        expected_accountnames = {'gmail', 'mega', 'habr', 'google'}
+        self.assertEqual(
+            expected_accountnames, set(c.model().stringList()),
+            "Account name completer of create account form isn't updated after "
+            "creating new account!")
