@@ -54,14 +54,35 @@ class CompletionTest(AccsTest):
         # and email field has an e-mail completion
         c = self.email.completer()
         self.assertIsNotNone(c, "E-mail field doesn't has its completer!")
+        print(c.model().stringList())
 
         # and it has all emails of database
-        self.assertTrue(
-            c.model().findItems('bobgreen@gmail.com'),
-            "Not enough e-mails in email completer of create account form!")
-        self.assertTrue(
-            c.model().findItems('spheromancer@habr.com'),
-            "Not enough e-mails in email completer of create account form!")
-        self.assertTrue(
-            c.model().findItems('tom@gmail.com'),
-            "Not enough e-mails in email completer of create account form!")
+        expected_emails = {
+            'bobgreen@gmail.com', 'spheromancer@habr.com', 'tom@gmail.com'
+        }
+        self.assertEqual(
+            expected_emails, set(c.model().stringList()),
+            "Email completer of create account form is incorrect!")
+
+        # and name field has a name completion
+        c = self.name.completer()
+        self.assertIsNotNone(c, "Name field doesn't has its completer!")
+        print(c.model().stringList())
+
+        # and it has all names of database
+        expected_names = {'Bob', 'Lea', 'Tom'}
+        self.assertEqual(
+            expected_names, set(c.model().stringList()),
+            "Name completer of create account form is incorrect!")
+
+        # and accountname field has an account name completion
+        c = self.account_name.completer()
+        self.assertIsNotNone(c,
+                             "Account name field doesn't has its completer!")
+        print(c.model().stringList())
+
+        # and it has all accountnames of database
+        expected_accountnames = {'gmail', 'mega', 'habr'}
+        self.assertEqual(
+            expected_accountnames, set(c.model().stringList()),
+            "Account name completer of create account form is incorrect!")
