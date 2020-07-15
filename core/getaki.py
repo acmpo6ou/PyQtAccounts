@@ -107,8 +107,7 @@ def encryptDatabase(dbname, db, password):
     key = base64.urlsafe_b64encode(kdf.derive(password))
     f = Fernet(key)
     data = akidump.dumps(db)
-    token = f.encrypt(data)
-    return token
+    return f.encrypt(data)
 
 
 def newDatabase(dbname, password):

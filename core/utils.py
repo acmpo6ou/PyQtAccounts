@@ -56,8 +56,7 @@ def getVersion():
     """
     repo = git.Repo('.')
     tags = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
-    version = tags[-1]
-    return version
+    return tags[-1]
 
 
 def hide(*args):

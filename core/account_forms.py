@@ -182,7 +182,7 @@ class CreateAccount(CreateForm):
         self.hide()
         self.helpTip.show()
 
-    def attach_file(self):
+    def attach_file(self):  # sourcery skip: use-assigned-variable
         """
         This method is invoked when user presses on attache file button.
         """

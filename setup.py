@@ -697,24 +697,23 @@ class FinishPage(QWizardPage):
                           startmenu=startmenu,
                           executable='/bin/bash')
 
-            # fixing .ico icon issue, make_shortcut function adds .ico extension to icon path
-            # (i.e. our '/img/icon.svg' becomes '/img/icon.svg.ico'), so we remove .ico from our
-            # icon path
-            home = os.getenv('HOME')
-            if desktop:
-                desktop = open(home + '/Desktop/PyQtAccounts.desktop').read()
-                with open(home + '/Desktop/PyQtAccounts.desktop', 'w') as file:
-                    file.write(desktop.replace('.ico', ''))
+        # fixing .ico icon issue, make_shortcut function adds .ico extension to icon path
+        # (i.e. our '/img/icon.svg' becomes '/img/icon.svg.ico'), so we remove .ico from our
+        # icon path
+        home = os.getenv('HOME')
+        if desktop:
+            desktop = open(home + '/Desktop/PyQtAccounts.desktop').read()
+            with open(home + '/Desktop/PyQtAccounts.desktop', 'w') as file:
+                file.write(desktop.replace('.ico', ''))
 
-            if startmenu:
-                menu = open(
+        if startmenu:
+            menu = open(
+                home + '/.local/share/applications/PyQtAccounts.desktop').read()
+            with open(
                     home +
-                    '/.local/share/applications/PyQtAccounts.desktop').read()
-                with open(
-                        home +
-                        '/.local/share/applications/PyQtAccounts.desktop',
-                        'w') as file:
-                    file.write(menu.replace('.ico', ''))
+                    '/.local/share/applications/PyQtAccounts.desktop',
+                    'w') as file:
+                file.write(menu.replace('.ico', ''))
 
         # here we create run.sh script which will start our application
         run = ('#!/bin/bash\n\n'

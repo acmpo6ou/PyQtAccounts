@@ -31,8 +31,8 @@ class CreateForm(QWidget):
     It provides all same functionality that you need while creating or editing something whether
     it is database or account.
     """
-    def __init__(self, title, namePlaceholder, nameError, nameTip, passTip, \
-                 helpTip, \
+    def __init__(self, title, namePlaceholder, nameError, nameTip, passTip,
+                 helpTip,
                  parent=None):
         """
         This constructor creates the form adding all needed widgets to it.

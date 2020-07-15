@@ -32,7 +32,9 @@ from core.const import *
 import core.const
 from core.utils import *
 from core.widgets import *
+
 from urllib.request import urlopen
+import urllib
 
 SRC_DIR = core.const.SRC_DIR
 

@@ -153,10 +153,10 @@ class List(QListView):
     """
     This class is list of accounts or databases.
     """
-    def __init__(self, list, icon, forms, windows, tips, select):
+    def __init__(self, lst, icon, forms, windows, tips, select):
         """
         This is constructor of the list.
-        :param list:
+        :param lst:
         list of items that will be shown at the list widget.
         :param icon:
         icon that will be shown near every item of the list.
@@ -181,7 +181,7 @@ class List(QListView):
         self.model = QStandardItemModel()
         self.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
-        for name in list:
+        for name in lst:
             item = QStandardItem(self.icon, name)
             self.model.appendRow(item)
         self.setModel(self.model)
@@ -562,6 +562,7 @@ class DbWindow(QMainWindow):
     This class is a database window.
     """
     def __init__(self, windows, name, db, password):
+        # sourcery skip: use-dict-items
         """
         This is a constructor of window, it initializes all forms, tips and other widgets.
         :param windows:

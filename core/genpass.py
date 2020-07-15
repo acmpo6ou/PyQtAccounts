@@ -51,7 +51,7 @@ def gen(symbols, length):
         symbs += string.punctuation
 
     password = ''
-    for i in range(length):
+    for _ in range(length):
         password += random.choice(symbs)
     return password
 

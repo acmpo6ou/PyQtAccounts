@@ -121,7 +121,7 @@ class EditDbForm(CreateForm):
         passTip = ("Якщо ви не хочете придумувати пароль ви можете\n"
                    "натиснути кнопку 'Згенерувати', аби згенерувати його.")
         nameError = 'База даних з таким іменем вже існує!'
-        CreateForm.__init__(self, title, namePlaceholder, nameError, nameTip, passTip, \
+        CreateForm.__init__(self, title, namePlaceholder, nameError, nameTip, passTip,
                             tips['help'], parent)
         self.windows = windows
         self.hide()
