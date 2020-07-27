@@ -22,6 +22,8 @@ This module provides helper functions for PyQtAccounts.
 import glob
 import git
 import os
+import re
+
 from string import *
 from core.const import *
 import core.const
@@ -85,11 +87,10 @@ def validName(name):
     >>> validName('hello_this.is(allowed-characters)')  # '.()-_' -- are allowed characters
     'hello_this.is(allowed-characters)'
     """
-    valid = ascii_letters + digits + '.()-_'
-    result = ''
-    for c in name:
-        if c in valid:
-            result += c
+    valid = "[-a-zA-Z0-9.()_]"  # this are all characters that are valid
+    # here we get list of all valid characters from name
+    valid_chars = re.findall(valid, name)
+    result = ''.join(valid_chars)  # finally we join them
     return result
 
 
