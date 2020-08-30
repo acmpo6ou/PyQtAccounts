@@ -266,7 +266,13 @@ app.setStyleSheet('''
 *{
     font-size: 24px;
 }
+
+QLineEdit{
+    font-family: Ubuntu Mono, Ubuntu;
+}
 ''')
+# also above we set monospace font for all line edit fields, so user could read passwords from them
+# easily
 
 if __name__ == '__main__':
     # here we check whether user runs PyQtAccounts under sudo
