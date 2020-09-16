@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright (c) 2020 Kolvakh Bogdan
+# Copyright (c) 2020 Kolvakh Bohdan
 # This file is part of PyQtAccounts.
 
 # PyQtAccounts is free software: you can redistribute it and/or modify
@@ -695,7 +695,7 @@ class About(QDialog):
             '''<pre>
 
 
-            Author: Kolvakh Bogdan
+            Author: Kolvakh Bohdan
             Version {}
             <b>PyQtAccounts</b> — is simple account database manager made 
             using Python 3 and PyQt5.
@@ -710,7 +710,7 @@ class About(QDialog):
             that we do not saving or sharing any private data such as your 
             account passwords or databases.
             </span>
-            (c) Copyright 2020 Kolvakh Bogdan
+            (c) Copyright 2020 Kolvakh Bohdan
             </pre>'''.format(version)
         self.aboutLabel = QLabel(self.about)
         self.aboutLabel.setOpenExternalLinks(True)
