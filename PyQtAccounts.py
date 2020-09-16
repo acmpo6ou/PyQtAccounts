@@ -267,7 +267,7 @@ app.setStyleSheet('''
     font-size: 24px;
 }
 
-QLineEdit{
+QLineEdit, QLabel, QLineEdit{
     font-family: Ubuntu Mono, Ubuntu;
 }
 ''')
