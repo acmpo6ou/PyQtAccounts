@@ -1,3 +1,5 @@
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/Acmpo6ou/PyQtAccounts)
 # PyQtAccounts
 **PyQtAccounts** — is simple account database manager made using Python 3 and PyQt5.
 You can easily manage your accounts and store them safely in encrypted databases.
