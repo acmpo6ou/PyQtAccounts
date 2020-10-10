@@ -1,3 +1,6 @@
-pytest==6.1.1
-pytest-qt==1.2.0
-pytest-cov==2.10.1
+pytest
+pytest-qt
+pytest-cov
+gitpython
+cryptography
+pyshortcuts
