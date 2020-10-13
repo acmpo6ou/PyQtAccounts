@@ -416,6 +416,7 @@ class MenuBar(QMenuBar):
                                               "Немає оновленнь.")
             # here we assign resulting dialog to main window, so we can test those dialogs.
             parent.res = res
+            thread.exit()
 
         # here we create process and start in another thread
         thread = QThread(parent=self)

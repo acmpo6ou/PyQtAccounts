@@ -127,6 +127,7 @@ class Window(QMainWindow):
         def mess(changes, log):
             if changes:
                 self.res = UpdatesAvailable(self, log)
+            thread.exit()
 
         # we start the checking process in another thread to prevent blocking of UI
         thread = QThread(parent=self)
