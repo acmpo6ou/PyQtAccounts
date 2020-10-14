@@ -19,7 +19,7 @@ These are some libraries that you should install in order to run `setup.py`:
 * git
 * xclip
 
-To install them use this commands:
+To install them use this command:
 ```bash
 sudo apt install xclip git python3-pip python3-pyqt5
 ```
