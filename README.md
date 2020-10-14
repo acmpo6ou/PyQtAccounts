@@ -24,15 +24,4 @@ To install them use this commands:
 sudo apt install xclip git python3-pip python3-pyqt5
 ```
 
-**Note**, that if you get this error:
-```
-ModuleNotFoundError: No module named 'pyshortcuts'
-```
-You should install `pyshortcuts` with pip:
-```bash
-pip3 install pyshortcuts
-```
-
-That's it, all other libraries will be installed by `setup.py`
-
 Copyright (c) 2020 Kolvakh Bohdan
