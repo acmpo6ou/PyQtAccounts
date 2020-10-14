@@ -313,6 +313,15 @@ class Dbs(QWidget):
             if not getDbList():
                 self.tips['help'].setText(HELP_TIP_DB)
 
+            # here we close database window if it were opened
+            for win in self.windows:
+                if win.name == name:
+                    win.ask = False
+                    self.windows.remove(win)
+                    win.closeEvent = lambda *args: None
+                    win.close()
+                    break
+
 
 def select_account(obj, index):
     """
