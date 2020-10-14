@@ -69,18 +69,19 @@ class Window(QMainWindow):
             helpTip = HelpTip("Виберіть базу данних")
         helpTip.show()
 
+        # and warnings
         alreadyOpen = HelpTip('Базу данних вже відкрито')
-
         editTip = WarningTip('Ви повинні відкрити базу данних перед тим як '
                              'редагувати її!')
-
         exportTip = WarningTip("Виберіть базу данних яку хочете експортувати.")
+        deleteTip = WarningTip("Виберіть базу данних яку хочете видалити.")
 
         tips = {
             'help': helpTip,
             'already-open': alreadyOpen,
             'edit-w': editTip,
-            'export': exportTip
+            'export': exportTip,
+            'delete': deleteTip
         }
 
         # and here we create all forms

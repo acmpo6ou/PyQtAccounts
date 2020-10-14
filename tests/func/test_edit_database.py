@@ -184,7 +184,7 @@ class EditDbTest(DbsTest):
         """
         Here we test delete button of edit database form.
         """
-        # we don't realy want to delete our real database so we copy it into the
+        # we don't really want to delete our real database so we copy it into the
         # fake file system
         init_src_folder(self.monkeypatch)
         self.copyDatabase('database')
@@ -222,6 +222,7 @@ class EditDbTest(DbsTest):
 
         # Edit form disappears
         self.checkOnlyVisible(self.help)
+
 
     def test_no_change(self):
         """

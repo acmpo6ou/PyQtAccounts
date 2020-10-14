@@ -289,6 +289,13 @@ class Dbs(QWidget):
         """
         This method deletes database showing confirmation dialog.
         """
+        # if user didn't select any database we show warning
+        if not self.list.index:
+            hide(self.forms, self.tips)
+            self.tips['delete'].show()
+            return
+
+        # here we get name of currently selected database
         name = self.list.index.data()
 
         # first is the main window
@@ -311,7 +318,12 @@ class Dbs(QWidget):
 
             # if there is no databases left we show appropriate tip
             if not getDbList():
+                hide(self.forms, self.tips)
                 self.tips['help'].setText(HELP_TIP_DB)
+            else:
+                hide(self.forms, self.tips)
+                self.tips['help'].setText("Виберіть базу данних")
+            self.tips['help'].show()
 
             # here we close database window if it were opened
             for win in self.windows:
