@@ -20,6 +20,9 @@ This module provides helper functions for PyQtAccounts.
 """
 
 import glob
+import sys
+from io import StringIO
+
 import git
 import os
 import re
@@ -59,6 +62,15 @@ def getVersion():
     repo = git.Repo('.')
     tags = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
     return tags[-1]
+
+
+def get_remote_version():
+    """
+    This function returns latest version of the remote repo.
+    """
+    g = git.cmd.Git()
+    blob = g.ls_remote('https://github.com/Acmpo6ou/PyQtAccounts', sort='-v:refname', tags=True)
+    return blob.split('\n')[0].split('/')[-1]
 
 
 def hide(*args):

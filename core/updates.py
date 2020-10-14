@@ -74,9 +74,11 @@ class Updating(QObject):
         origin = repo.remote()
         origin.fetch()
 
-        # we fetch all changes and if there new ones then changes list wouldn't be empty
-        # also we get changelog which we will show at the updating dialog if there are updates
-        changes = list(repo.iter_commits('master..origin/master'))
+        # here we get current and remote version, then we compare them if they don't match then
+        # there is a new version on remote repo
+        remote_version = get_remote_version()
+        current_version = getVersion()
+        changes = current_version != remote_version
 
         # here we obtain changelog only if necessary, when there are changes,
         # because if we will obtain it always then OS will cache it and user may
