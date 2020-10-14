@@ -77,7 +77,7 @@ class Updating(QObject):
         # here we get current and remote version, then we compare them if they don't match then
         # there is a new version on remote repo
         remote_version = get_remote_version()
-        current_version = getVersion()
+        current_version = str(getVersion())
         changes = current_version != remote_version
 
         # here we obtain changelog only if necessary, when there are changes,
