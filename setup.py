@@ -27,7 +27,6 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
-from pyshortcuts import make_shortcut
 
 # Testing stuff
 try:
@@ -688,6 +687,7 @@ class FinishPage(QWizardPage):
         # here we create shortcuts if at least one of shortcut checkboxes are checked
         if desktop or startmenu:
             # we use make_shortcut function from pyshortcuts module for this.
+            from pyshortcuts import make_shortcut
             make_shortcut(name='PyQtAccounts',
                           script=cwd + '/run.sh',
                           description='Simple account database manager.',
