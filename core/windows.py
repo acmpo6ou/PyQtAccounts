@@ -123,7 +123,7 @@ class Panel(QHBoxLayout):
     """
     This class is a panel for buttons, it has 2 buttons: `add` and `edit`.
     """
-    def __init__(self, add, edit):
+    def __init__(self, add, edit, delete=None):
         """
         This is constructor of the panel.
         :param add:
@@ -147,6 +147,14 @@ class Panel(QHBoxLayout):
 
         self.addWidget(self.addButton)
         self.addWidget(self.editButton)
+
+        if delete:
+            # this is `delete` button it calls delete function when user presses it.
+            self.deleteButton = QPushButton()
+            self.deleteButton.setIcon(QIcon('img/delete.svg'))
+            self.deleteButton.setIconSize(QSize(22, 22))
+            self.deleteButton.clicked.connect(delete)
+            self.addWidget(self.deleteButton)
 
 
 class List(QListView):
@@ -242,7 +250,7 @@ class Dbs(QWidget):
         self.tips = tips
 
         # here we create database panel and list
-        self.panel = Panel(self.add, self.edit)
+        self.panel = Panel(self.add, self.edit, self.delete)
         self.list = List(sorted(getDbList()), 'img/icon.svg', forms, windows,
                          tips, selectDb)
 
@@ -276,6 +284,34 @@ class Dbs(QWidget):
         """
         # self.list.index is index that represents currently chosen database at the list
         self.forms['edit'].setDb(self.list.index)
+
+    def delete(self):
+        """
+        This method deletes database showing confirmation dialog.
+        """
+        name = self.list.index.data()
+
+        # first is the main window
+        action = QMessageBox.warning(self.windows[0],
+                                     'Увага!',
+                                     'Ви певні що хочете видалити базу данних '
+                                     '<i><b>{}</b></i>'.format(name),
+                                     buttons=QMessageBox.No | QMessageBox.Yes,
+                                     defaultButton=QMessageBox.No)
+
+        # If users answer is `Yes` we delete database
+        if action == QMessageBox.Yes:
+            os.remove(f'{core.const.SRC_DIR}/{name}.db')
+            os.remove(f'{core.const.SRC_DIR}/{name}.bin')
+
+            # and we update database list
+            for item in self.list.model.findItems(name):
+                self.list.model.removeRow(item.row())
+            self.list.model.sort(0)
+
+            # if there is no databases left we show appropriate tip
+            if not getDbList():
+                self.tips['help'].setText(HELP_TIP_DB)
 
 
 def select_account(obj, index):
