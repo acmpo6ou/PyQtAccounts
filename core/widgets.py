@@ -218,3 +218,42 @@ class GenPassDialog(QDialog):
         self.form.passField.passInput.setText(password)
         self.form.passRepeatField.passInput.setText(password)
         self.hide()
+
+
+# here are constants that define styles of GTK buttons for GTKButton class
+
+BUTTON_TEMPLATE = """
+    QPushButton {{
+        border-radius: 4px;
+        color: #ffffff;
+        background-color: #{};
+        font-size: 28px;
+        min-height: 40px;
+        min-width: 128px;
+        outline: none;
+    }}
+    QPushButton:hover {{
+        background-color: #{};
+    }}
+    QPushButton:pressed {{
+        background-color: #{};
+    }}
+"""
+
+APPLY_BUTTON = BUTTON_TEMPLATE.format("6db442", "8ad064", "5a9a37")
+DELETE_BUTTON = BUTTON_TEMPLATE.format("f04a50", "e96b7c", "d60326")
+INFO_BUTTON = BUTTON_TEMPLATE.format("f04a50", "e96b7c", "d60326")
+
+
+class GTKButton(QPushButton):
+    """
+    This is a gtk styled button.
+    """
+    def __init__(self, button_type, *args, **kwargs):
+        """
+        :param button_type:
+        The type of the button, i.e. red, green, blue. Defined by a constant
+        """
+        super().__init__(*args, **kwargs)
+        self.setStyleSheet(button_type)
+        # self.setFlat(True)
