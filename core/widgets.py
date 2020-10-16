@@ -227,7 +227,7 @@ BUTTON_TEMPLATE = """
         border-radius: 4px;
         color: #ffffff;
         background-color: #{};
-        font-size: 28px;
+        font-size: 24px;
         min-height: 40px;
         min-width: 128px;
         outline: none;
@@ -242,7 +242,7 @@ BUTTON_TEMPLATE = """
 
 APPLY_BUTTON = BUTTON_TEMPLATE.format("6db442", "8ad064", "5a9a37")
 DELETE_BUTTON = BUTTON_TEMPLATE.format("f04a50", "e96b7c", "d60326")
-INFO_BUTTON = BUTTON_TEMPLATE.format("f04a50", "e96b7c", "d60326")
+INFO_BUTTON = BUTTON_TEMPLATE.format("4a90d9", "4EA5E6", "417EBF")
 
 
 class GTKButton(QPushButton):
