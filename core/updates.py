@@ -69,18 +69,14 @@ class Updating(QObject):
         """
         This method does all updating work, such as getting changelog.
         """
-        # here we get current version before fetching everything from remote repo
-        current_version = str(getVersion())
-
         import git
         repo = git.Repo('.')
         origin = repo.remote()
         origin.fetch()
 
-        # here we get current and remote version, then we compare them if they don't match then
-        # there is a new version on remote repo
-        remote_version = get_remote_version()
-        changes = current_version != remote_version
+        # we fetch all changes and if there new ones then changes list wouldn't be empty
+        # also we get changelog which we will show at the updating dialog if there are updates
+        changes = list(repo.iter_commits('master..origin/master'))
 
         # here we obtain changelog only if necessary, when there are changes,
         # because if we will obtain it always then OS will cache it and user may
