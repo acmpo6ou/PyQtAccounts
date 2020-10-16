@@ -83,10 +83,14 @@ class CreateDbForm(CreateForm):
         if name in getDbList():
             self.nameError.show()
             self.createButton.setEnabled(False)
+            self.createButton.setStyleSheet(APPLY_BUTTON_DISABLED)
+            self.createButton.setStyleSheet(APPLY_BUTTON_DISABLED)
+
             self.validate['name'] = False
         elif name == '':
             self.nameFilledError.show()
             self.createButton.setEnabled(False)
+            self.createButton.setStyleSheet(APPLY_BUTTON_DISABLED)
             self.validate['name'] = False
         else:
             self.validate['name'] = True
@@ -95,6 +99,7 @@ class CreateDbForm(CreateForm):
 
         if self.validate['pass'] and self.validate['name']:
             self.createButton.setEnabled(True)
+            self.createButton.setStyleSheet(APPLY_BUTTON)
 
 
 class EditDbForm(CreateForm):
@@ -128,7 +133,7 @@ class EditDbForm(CreateForm):
         self.tips = tips
 
         self.createButton.setText('Зберегти')
-        self.deleteButton = QPushButton('Видалити')
+        self.deleteButton = GTKButton(DELETE_BUTTON, 'Видалити')
         self.deleteButton.clicked.connect(self.delete)
         self.buttonsLayout.insertWidget(1, self.deleteButton)
 
@@ -163,10 +168,12 @@ class EditDbForm(CreateForm):
         if name in getDbList() and name != self.db.name:
             self.nameError.show()
             self.createButton.setEnabled(False)
+            self.createButton.setStyleSheet(APPLY_BUTTON_DISABLED)
             self.validate['name'] = False
         elif name == '':
             self.nameFilledError.show()
             self.createButton.setEnabled(False)
+            self.createButton.setStyleSheet(APPLY_BUTTON_DISABLED)
             self.validate['name'] = False
         else:
             self.validate['name'] = True
@@ -175,6 +182,7 @@ class EditDbForm(CreateForm):
 
         if self.validate['pass'] and self.validate['name']:
             self.createButton.setEnabled(True)
+            self.createButton.setStyleSheet(APPLY_BUTTON)
 
     def delete(self, event):
         """

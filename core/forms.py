@@ -101,9 +101,10 @@ class CreateForm(QWidget):
         self.errors.layout().addWidget(self.nameFilledError)
 
         # Here are buttons of the form
-        self.createButton = QPushButton('Створити')
+        self.createButton = widgets.GTKButton(widgets.APPLY_BUTTON, 'Створити')
         self.createButton.setEnabled(False)
-        self.generateButton = QPushButton('Згенерувати')
+        self.createButton.setStyleSheet(widgets.APPLY_BUTTON_DISABLED)
+        self.generateButton = widgets.GTKButton(widgets.INFO_BUTTON, 'Згенерувати')
         self.cancelButton = QPushButton('Скасувати')
         self.createButton.clicked.connect(self.create)
         self.generateButton.clicked.connect(self.generate)
@@ -139,10 +140,12 @@ class CreateForm(QWidget):
         if passInput != passRepeatInput:
             self.passEqError.show()
             self.createButton.setEnabled(False)
+            self.createButton.setStyleSheet(widgets.APPLY_BUTTON_DISABLED)
             self.validate['pass'] = False
         elif passInput == '' or passRepeatInput == '':
             self.passFilledError.show()
             self.createButton.setEnabled(False)
+            self.createButton.setStyleSheet(widgets.APPLY_BUTTON_DISABLED)
             self.validate['pass'] = False
         else:
             self.validate['pass'] = True
@@ -151,6 +154,7 @@ class CreateForm(QWidget):
 
         if self.validate['pass'] and self.validate['name']:
             self.createButton.setEnabled(True)
+            self.createButton.setStyleSheet(widgets.APPLY_BUTTON)
 
     def generate(self, event):
         """
@@ -173,6 +177,7 @@ class CreateForm(QWidget):
             err.hide()
 
         self.createButton.setEnabled(False)
+        self.createButton.setStyleSheet(widgets.APPLY_BUTTON_DISABLED)
         self.hide()
         self.helpTip.show()
 

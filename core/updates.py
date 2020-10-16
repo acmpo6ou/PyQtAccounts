@@ -134,8 +134,8 @@ class UpdatesAvailable(QWidget):
         self.changelogLabel = QLabel(changelog)
         self.changelogLabel.setWordWrap(True)
 
-        self.laterButton = QPushButton('Пізніше')
-        self.updateButton = QPushButton('Оновити')
+        self.laterButton = GTKButton(DELETE_BUTTON, 'Пізніше')
+        self.updateButton = GTKButton(APPLY_BUTTON, 'Оновити')
         self.laterButton.clicked.connect(self.hide)
         self.updateButton.clicked.connect(self.applyUpdate)
 

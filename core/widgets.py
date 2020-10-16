@@ -186,8 +186,8 @@ class GenPassDialog(QDialog):
         self.includeTip = Tip("Не рекомендуємо змінювати ці параметри,\n"
                               "адже вони можуть вплинути на силу пароля.")
 
-        self.buttonCancel = QPushButton('Скасувати')
-        self.buttonGenerate = QPushButton('Згенерувати')
+        self.buttonCancel = GTKButton(DELETE_BUTTON, 'Скасувати')
+        self.buttonGenerate = GTKButton(APPLY_BUTTON, 'Згенерувати')
         self.buttonCancel.clicked.connect(self.hide)
         self.buttonGenerate.clicked.connect(self.generate)
 
@@ -241,6 +241,7 @@ BUTTON_TEMPLATE = """
 """
 
 APPLY_BUTTON = BUTTON_TEMPLATE.format("6db442", "8ad064", "5a9a37")
+APPLY_BUTTON_DISABLED = ""
 DELETE_BUTTON = BUTTON_TEMPLATE.format("f04a50", "e96b7c", "d60326")
 INFO_BUTTON = BUTTON_TEMPLATE.format("4a90d9", "4EA5E6", "417EBF")
 
@@ -256,4 +257,3 @@ class GTKButton(QPushButton):
         """
         super().__init__(*args, **kwargs)
         self.setStyleSheet(button_type)
-        # self.setFlat(True)

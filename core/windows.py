@@ -847,7 +847,7 @@ class Settings(QDialog):
         mainDbLayout.dbs = dbs
         self.mainDbLayout = mainDbLayout
 
-        self.saveButton = QPushButton('Зберегти')
+        self.saveButton = GTKButton(APPLY_BUTTON, 'Зберегти')
         self.saveButton.clicked.connect(self.save)
         self.closeButton = QPushButton('Скасувати')
         self.closeButton.clicked.connect(self.hide)

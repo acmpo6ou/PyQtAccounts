@@ -179,6 +179,8 @@ class CreateAccount(CreateForm):
             err.hide()
 
         self.createButton.setEnabled(False)
+        self.createButton.setStyleSheet(APPLY_BUTTON_DISABLED)
+        self.createButton.setStyleSheet(APPLY_BUTTON_DISABLED)
         self.hide()
         self.helpTip.show()
 
@@ -294,10 +296,12 @@ class CreateAccountForm(CreateAccount):
         if name in getAkiList(self.db):
             self.nameError.show()
             self.createButton.setEnabled(False)
+            self.createButton.setStyleSheet(APPLY_BUTTON_DISABLED)
             self.validate['name'] = False
         elif name == '':
             self.nameFilledError.show()
             self.createButton.setEnabled(False)
+            self.createButton.setStyleSheet(APPLY_BUTTON_DISABLED)
             self.validate['name'] = False
         else:
             self.validate['name'] = True
@@ -306,6 +310,7 @@ class CreateAccountForm(CreateAccount):
 
         if self.validate['pass'] and self.validate['name']:
             self.createButton.setEnabled(True)
+            self.createButton.setStyleSheet(APPLY_BUTTON)
 
     def create(self, event):
         """
@@ -368,7 +373,7 @@ class EditAccountForm(CreateAccount):
         title = 'Редагувати акаунт'
         CreateAccount.__init__(self, title, db, helpTip)
         self.createButton.setText('Зберегти')
-        self.deleteButton = QPushButton('Видалити')
+        self.deleteButton = GTKButton(DELETE_BUTTON, 'Видалити')
         self.deleteButton.clicked.connect(self.delete)
         self.buttonsLayout.insertWidget(1, self.deleteButton)
 
@@ -381,10 +386,12 @@ class EditAccountForm(CreateAccount):
         if name in getAkiList(self.db) and name != self.account.account:
             self.nameError.show()
             self.createButton.setEnabled(False)
+            self.createButton.setStyleSheet(APPLY_BUTTON_DISABLED)
             self.validate['name'] = False
         elif name == '':
             self.nameFilledError.show()
             self.createButton.setEnabled(False)
+            self.createButton.setStyleSheet(APPLY_BUTTON_DISABLED)
             self.validate['name'] = False
         else:
             self.validate['name'] = True
@@ -393,6 +400,7 @@ class EditAccountForm(CreateAccount):
 
         if self.validate['pass'] and self.validate['name']:
             self.createButton.setEnabled(True)
+            self.createButton.setStyleSheet(APPLY_BUTTON)
 
     def delete(self):
         """
