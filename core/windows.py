@@ -19,20 +19,12 @@
 This module provides all classes that represent windows or other big elements of program.
 """
 
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from core.testutils import QWidget
-
-import os
-
-from core.widgets import *
-from core.updates import *
-import core.const
-from core.utils import *
-from core.getaki import *
 import tarfile
+
+import core.const
 from core.account_forms import *
+from core.getaki import *
+from core.updates import *
 
 
 def export(name, path, parent):
@@ -679,7 +671,10 @@ class DbWindow(QMainWindow):
 
         # and here we create accounts panel and list by instantiating Accs class
         accs = Accs(name, db, forms, tips, windows)
-        accs.setMaximumWidth(200)
+        sets = QSettings(f'{os.getenv("HOME")}/PyTools', 'PyQtAccounts')
+        list_width = sets.value('advanced/list_width', 200, type=int)
+        accs.setMaximumWidth(list_width)
+
         splitter.addWidget(accs)
         accs.forms = forms
         accs.tips = tips
@@ -688,6 +683,8 @@ class DbWindow(QMainWindow):
         # here we create menu bar for window
         self.menu = DbMenuBar(self)
         self.setMenuBar(self.menu)
+
+        self.settings = windows[0].settings
 
         self.setCentralWidget(splitter)
         self.show()
@@ -847,6 +844,25 @@ class Settings(QDialog):
         mainDbLayout.dbs = dbs
         self.mainDbLayout = mainDbLayout
 
+        widthHeader = QLabel("<h4>Ширина списку</h4>")
+        widthTip = Tip("Встановлення дуже великого значення дозволяє вільно рухати розділювач")
+        list_width = self.settings.value('advanced/list_width', 200, type=int)
+
+        widthNumber = QSpinBox()
+        widthNumber.setMinimum(0)
+        widthNumber.setMaximum(2000)
+        widthNumber.setValue(list_width)
+
+        widthTipLayout = QHBoxLayout()
+        widthTipLayout.addWidget(widthNumber)
+        widthTipLayout.addWidget(widthTip)
+
+        widthLayout = QVBoxLayout()
+        widthLayout.addWidget(widthHeader)
+        widthLayout.addLayout(widthTipLayout)
+        widthLayout.widthNumber = widthNumber
+        self.widthLayout = widthLayout
+
         self.saveButton = GTKButton(APPLY_BUTTON, 'Зберегти')
         self.saveButton.clicked.connect(self.save)
         self.closeButton = QPushButton('Скасувати')
@@ -858,6 +874,7 @@ class Settings(QDialog):
 
         layout = QVBoxLayout()
         layout.addLayout(mainDbLayout)
+        layout.addLayout(widthLayout)
         layout.addLayout(buttonsLayout)
         self.setLayout(layout)
 
@@ -870,4 +887,7 @@ class Settings(QDialog):
         self.settings.setValue('advanced/is_main_db', is_main_db)
         main_db = self.mainDbLayout.dbs.currentText()
         self.settings.setValue('advanced/main_db', main_db)
+
+        list_width = self.widthLayout.widthNumber.value()
+        self.settings.setValue('advanced/list_width', list_width)
         self.hide()

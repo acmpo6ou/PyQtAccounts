@@ -95,9 +95,13 @@ class Window(QMainWindow):
             'open': open_db_form
         }
 
+        # settings
+        sets = QSettings(f'{os.getenv("HOME")}/PyTools', 'PyQtAccounts')
+
         # here we instantiate Dbs class and add it to splitter which will split Dbs and forms
         dbs = Dbs(forms, windows, tips)
-        dbs.setMaximumWidth(200)
+        list_width = sets.value('advanced/list_width', 200, type=int)
+        dbs.setMaximumWidth(list_width)
 
         splitter = QSplitter()
         for tip in tips:
@@ -110,7 +114,6 @@ class Window(QMainWindow):
         self.dbs = dbs
 
         # here we obtain the main database feature settings
-        sets = QSettings(f'{os.getenv("HOME")}/PyTools', 'PyQtAccounts')
         is_main_db = sets.value('advanced/is_main_db', False, type=bool)
         main_db = sets.value('advanced/main_db', '', type=str)
 
