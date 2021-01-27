@@ -24,4 +24,4 @@ To install them use this command:
 sudo apt install xclip git python3-pip python3-pyqt5
 ```
 
-Copyright (c) 2020 Kolvakh Bohdan
+Copyright (c) 2020-2021 Bohdan Kolvakh
