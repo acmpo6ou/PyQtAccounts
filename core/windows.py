@@ -1,7 +1,20 @@
 #!/usr/bin/env python3
 
-#  Copyright (c) 2020-2021. Kolvakh Bohdan
+#  Copyright (c) 2020-2021. Bohdan Kolvakh
 #  This file is part of PyQtAccounts.
+#
+#  PyQtAccounts is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  PyQtAccounts is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
 #
 #  PyQtAccounts is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -763,7 +776,7 @@ class About(QDialog):
             '''<pre>
 
 
-            Author: Kolvakh Bohdan
+            Author: Bohdan Kolvakh
             Version {}
             <b>PyQtAccounts</b> — is simple account database manager made 
             using Python 3 and PyQt5.
@@ -778,7 +791,7 @@ class About(QDialog):
             that we do not saving or sharing any private data such as your 
             account passwords or databases.
             </span>
-            (c) Copyright 2020 Kolvakh Bohdan
+            (c) Copyright 2020 Bohdan Kolvakh
             </pre>'''.format(version)
         self.aboutLabel = QLabel(self.about)
         self.aboutLabel.setOpenExternalLinks(True)
