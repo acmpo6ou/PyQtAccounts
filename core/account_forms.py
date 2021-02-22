@@ -45,19 +45,11 @@
 This module provides classes for account forms.
 """
 
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from core.testutils import QWidget
-
 import core.akidump as akidump
-import os
-
-from core.forms import *
-from core.utils import *
-from core.widgets import *
-from core.const import *
 import core.const
+from core.const import *
+from core.forms import *
+from core.widgets import *
 
 # This is mostly for testing
 SRC_DIR = core.const.SRC_DIR
@@ -568,7 +560,12 @@ class ShowAccountForm(QWidget):
         self.account = QLabel()
         self.name = QLabel()
         self.email = QLabel()
-        self.password = QLabel()
+
+        # display password only when hovering over the password label
+        self.password = QLabel('Пароль: ' + '•' * 32)
+        self.password.enterEvent = self.showPassword
+        self.password.leaveEvent = self.hidePassword
+
         self.date = QLabel()
         self.mouse_copy = QLabel()
         self.comment = QTextEdit()
@@ -580,7 +577,7 @@ class ShowAccountForm(QWidget):
         self.attached_files.clicked.connect(self.download_file)
         self.attached_files.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
-        # Here we make all label selectable so user can select their text and copy it if he wants
+        # Here we make all label selectable so user can select their text and copy it if he wants to
         # Also we set appropriate cursor for labels.
         for label in (self.account, self.name, self.email, self.password,
                       self.date, self.comment):
@@ -604,6 +601,20 @@ class ShowAccountForm(QWidget):
         layout.addWidget(self.comment)
         self.setLayout(layout)
 
+    def showPassword(self, event):
+        """
+        This method is called when user hovers over the password label.
+        In such circumstances we should display password.
+        """
+        self.password.setText('Пароль: ' + self._account.password.decode())
+
+    def hidePassword(self, event):
+        """
+        This method is called when user hovers from the password label.
+        In such circumstances we should hide password.
+        """
+        self.password.setText('Пароль: ' + '•' * 32)
+
     def set_account(self, index):
         """
         This method changes content of the form accordingly to given account index
@@ -617,7 +628,6 @@ class ShowAccountForm(QWidget):
         self.account.setText('Акаунт: ' + account.account)
         self.name.setText("Ім'я: " + account.name)
         self.email.setText('E-mail: ' + account.email)
-        self.password.setText('Пароль: ' + account.password.decode())
         self.date.setText('Дата: ' + account.date)
         self.comment.setText('Коментарій: ' + account.comment)
 
@@ -639,7 +649,7 @@ class ShowAccountForm(QWidget):
         """
         # to copy password
         clipboard = QGuiApplication.clipboard()
-        clipboard.setText(self.password.text().replace('Пароль: ', ''))
+        clipboard.setText(self._account.password)
 
         # we need this to know what will be copied to mouseboard
         mouse_copy = self.mouse_copy.text().replace(
@@ -647,12 +657,10 @@ class ShowAccountForm(QWidget):
 
         # and here we check if mouse_copy contains `e-mail` then we have to copy e-mail
         if mouse_copy == 'e-mail':
-            email = self.email.text().replace('E-mail: ', '')
-            os.system(f'echo {email} | xclip')
+            os.system(f'echo {self._account.email} | xclip')
         else:
             # we copy username to mouseboard
-            username = self.name.text().replace("Ім'я: ", '')
-            os.system(f'echo {username} | xclip')
+            os.system(f'echo {self._account.username} | xclip')
 
     def download_file(self, file):
         """
