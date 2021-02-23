@@ -649,7 +649,7 @@ class ShowAccountForm(QWidget):
         """
         # to copy password
         clipboard = QGuiApplication.clipboard()
-        clipboard.setText(self._account.password)
+        clipboard.setText(self._account.password.decode())
 
         # we need this to know what will be copied to mouseboard
         mouse_copy = self.mouse_copy.text().replace(
