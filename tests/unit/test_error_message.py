@@ -62,6 +62,7 @@ class ErrorMsgTest(UnitTest):
     """
     This class tests PyQtAccounts error messages.
     """
+
     def test_error_message(self):
         """
         This test tests ErrorWindow class.
@@ -71,16 +72,22 @@ class ErrorMsgTest(UnitTest):
 
         # There is an error in the program
         def mock_Window():
-            raise Exception('Error message!')
+            raise Exception("Error message!")
 
-        self.monkeypatch.setattr('PyQtAccounts.Window', mock_Window)
+        self.monkeypatch.setattr("PyQtAccounts.Window", mock_Window)
 
         # Emily launches PyQtAccounts
         msg = PyQtAccounts.main()
 
         # The error message appears saying that program must shutdown itself due to the error
-        self.assertEqual('Помилка!', msg.windowTitle(), 'Error window title is incorrect!')
-        self.assertEqual('Вибачте програма повинна припинити роботу через помилку.',
-                         msg.text(), 'Error window message is incorrect!')
-        self.assertEqual('Error message!', msg.detailedText(),
-                         'Error window details are incorrect!')
+        self.assertEqual(
+            "Помилка!", msg.windowTitle(), "Error window title is incorrect!"
+        )
+        self.assertEqual(
+            "Вибачте програма повинна припинити роботу через помилку.",
+            msg.text(),
+            "Error window message is incorrect!",
+        )
+        self.assertEqual(
+            "Error message!", msg.detailedText(), "Error window details are incorrect!"
+        )

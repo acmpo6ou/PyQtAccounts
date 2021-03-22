@@ -60,6 +60,7 @@ class HelpTipTest(SettingsMixin, DbsTest):
     """
     This test class tests help tip of main window.
     """
+
     def setUp(self):
         """
         Here we do some setup.
@@ -71,8 +72,8 @@ class HelpTipTest(SettingsMixin, DbsTest):
         """
         We use this method to open `database` database.
         """
-        self.dbs.list.selected(Index('database'))
-        self.open_form.passField.passInput.setText('some_password')
+        self.dbs.list.selected(Index("database"))
+        self.open_form.passField.passInput.setText("some_password")
         self.open_form.openButton.click()
 
     def test_no_dbs(self):
@@ -80,15 +81,16 @@ class HelpTipTest(SettingsMixin, DbsTest):
         This test tests help tip when user has no databases.
         """
         # Ross opens up PyQtAccounts, he has no database yet
-        self.monkeypatch.setattr(glob, 'glob', lambda path: [])
+        self.monkeypatch.setattr(glob, "glob", lambda path: [])
         window = Window()
 
         # There is help tip saying how he can create new database
-        tip = window.dbs.tips['help']
+        tip = window.dbs.tips["help"]
         self.assertEqual(
-            tip.text(), HELP_TIP_DB,
-            'Help tip in main window has incorrect value when user'
-            'has no databases!')
+            tip.text(),
+            HELP_TIP_DB,
+            "Help tip in main window has incorrect value when user" "has no databases!",
+        )
 
     def test_has_dbs(self):
         """
@@ -98,11 +100,12 @@ class HelpTipTest(SettingsMixin, DbsTest):
         window = Window()
 
         # There is help tip saying that she need to chose database
-        tip = window.dbs.tips['help']
+        tip = window.dbs.tips["help"]
         self.assertEqual(
-            tip.text(), "Виберіть базу данних",
-            'Help tip in main window has incorrect value when user'
-            'has databases!')
+            tip.text(),
+            "Виберіть базу данних",
+            "Help tip in main window has incorrect value when user" "has databases!",
+        )
 
     def test_delete_last_database(self):
         """
@@ -111,16 +114,17 @@ class HelpTipTest(SettingsMixin, DbsTest):
         # Tom has one database called `database`
         window = Window()
         self.dbs = window.dbs
-        self.open_form = window.dbs.forms['open']
+        self.open_form = window.dbs.forms["open"]
         init_src_folder(self.monkeypatch)
-        self.copyDatabase('database')
+        self.copyDatabase("database")
 
         # help tip says that he should chose database
-        tip = window.dbs.tips['help']
+        tip = window.dbs.tips["help"]
         self.assertEqual(
-            tip.text(), "Виберіть базу данних",
-            'Help tip in main window has incorrect value when user'
-            'has databases!')
+            tip.text(),
+            "Виберіть базу данних",
+            "Help tip in main window has incorrect value when user" "has databases!",
+        )
 
         # Tom than opens his database
         self.openDatabase()
@@ -130,18 +134,23 @@ class HelpTipTest(SettingsMixin, DbsTest):
 
         # and then he deletes his last database
         self.monkeypatch.setattr(
-            QMessageBox, 'warning',
+            QMessageBox,
+            "warning",
             self.mess(
-                'Увага!',
-                'Ви певні що хочете видалити базу данних <i><b>database</b></i>',
-                QMessageBox.Yes))
-        self.dbs.forms['edit'].deleteButton.click()
+                "Увага!",
+                "Ви певні що хочете видалити базу данних <i><b>database</b></i>",
+                QMessageBox.Yes,
+            ),
+        )
+        self.dbs.forms["edit"].deleteButton.click()
 
         # help tip message changes, telling Tom how he can create new database
         self.assertEqual(
-            tip.text(), HELP_TIP_DB,
-            'Help tip in main window has incorrect value when user'
-            'has deleted his last database!')
+            tip.text(),
+            HELP_TIP_DB,
+            "Help tip in main window has incorrect value when user"
+            "has deleted his last database!",
+        )
 
     def test_delete_database_not_last(self):
         """
@@ -151,17 +160,18 @@ class HelpTipTest(SettingsMixin, DbsTest):
         # Tom has two databases called `database` and `main`
         window = Window()
         self.dbs = window.dbs
-        self.open_form = window.dbs.forms['open']
+        self.open_form = window.dbs.forms["open"]
         init_src_folder(self.monkeypatch)
-        self.copyDatabase('database')
-        self.copyDatabase('main')
+        self.copyDatabase("database")
+        self.copyDatabase("main")
 
         # help tip says that he should chose database
-        tip = window.dbs.tips['help']
+        tip = window.dbs.tips["help"]
         self.assertEqual(
-            tip.text(), "Виберіть базу данних",
-            'Help tip in main window has incorrect value when user'
-            'has databases!')
+            tip.text(),
+            "Виберіть базу данних",
+            "Help tip in main window has incorrect value when user" "has databases!",
+        )
 
         # Tom than opens his `database`
         self.openDatabase()
@@ -171,15 +181,19 @@ class HelpTipTest(SettingsMixin, DbsTest):
 
         # and then he deletes his `database` which isn't last
         self.monkeypatch.setattr(
-            QMessageBox, 'warning',
+            QMessageBox,
+            "warning",
             self.mess(
-                'Увага!',
-                'Ви певні що хочете видалити базу данних <i><b>database</b></i>',
-                QMessageBox.Yes))
-        self.dbs.forms['edit'].deleteButton.click()
+                "Увага!",
+                "Ви певні що хочете видалити базу данних <i><b>database</b></i>",
+                QMessageBox.Yes,
+            ),
+        )
+        self.dbs.forms["edit"].deleteButton.click()
 
         # everything is OK and message of help tip hasn't changed
         self.assertEqual(
-            tip.text(), "Виберіть базу данних",
-            'Help tip in main window has incorrect value when user'
-            'has databases!')
+            tip.text(),
+            "Виберіть базу данних",
+            "Help tip in main window has incorrect value when user" "has databases!",
+        )

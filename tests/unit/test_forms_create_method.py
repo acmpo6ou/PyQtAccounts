@@ -56,6 +56,7 @@ class FormsCreateTest(UnitTest):
     """
     This class tests `create` abstract method of CreateForm.
     """
+
     def test_create_method_not_implemented(self):
         # here we create subclass of CreateForm
         class MyForm(CreateForm):

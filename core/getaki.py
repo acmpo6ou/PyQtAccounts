@@ -63,7 +63,7 @@ def generateSalt(saltfile):
     represents path where file with salt will be located.
     """
     salt = os.urandom(16)
-    with open(saltfile, 'wb') as file:
+    with open(saltfile, "wb") as file:
         file.write(salt)
 
 
@@ -81,22 +81,24 @@ def openDatabase(dbname, password):
     # here we construct path to database and its salt file by concatenating SRC_DIR constant,
     # database name and .db or .bin extension,
     # SRC_DIR represents name of folder in which database files are stored.
-    dbfile = f'{core.const.SRC_DIR}/' + dbname + '.db'
-    saltfile = f'{core.const.SRC_DIR}/' + dbname + '.bin'
+    dbfile = f"{core.const.SRC_DIR}/" + dbname + ".db"
+    saltfile = f"{core.const.SRC_DIR}/" + dbname + ".bin"
 
-    with open(saltfile, 'rb') as file:
+    with open(saltfile, "rb") as file:
         salt = file.read()
 
     # here we using fernet encryption function to decrypt and deserialize database.
-    kdf = PBKDF2HMAC(algorithm=hashes.SHA256(),
-                     length=32,
-                     salt=salt,
-                     iterations=100000,
-                     backend=default_backend())
+    kdf = PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=salt,
+        iterations=100000,
+        backend=default_backend(),
+    )
     key = base64.urlsafe_b64encode(kdf.derive(password))
     f = Fernet(key)
 
-    with open(dbfile, 'rb') as db:
+    with open(dbfile, "rb") as db:
         token = db.read()
 
     data = f.decrypt(token)
@@ -119,17 +121,19 @@ def encryptDatabase(dbname, db, password):
     """
     # here we construct path to salt file of database by concatenating SRC_DIR constant,
     # database name and .bin extension
-    saltfile = f'{core.const.SRC_DIR}/' + dbname + '.bin'
+    saltfile = f"{core.const.SRC_DIR}/" + dbname + ".bin"
 
-    with open(saltfile, 'rb') as file:
+    with open(saltfile, "rb") as file:
         salt = file.read()
 
     # here we using fernet encryption function to encrypt and serialize database.
-    kdf = PBKDF2HMAC(algorithm=hashes.SHA256(),
-                     length=32,
-                     salt=salt,
-                     iterations=100000,
-                     backend=default_backend())
+    kdf = PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=salt,
+        iterations=100000,
+        backend=default_backend(),
+    )
     key = base64.urlsafe_b64encode(kdf.derive(password))
     f = Fernet(key)
     data = akidump.dumps(db)
@@ -147,13 +151,13 @@ def newDatabase(dbname, password):
     # here we construct path to database and its salt file by concatenating SRC_DIR constant,
     # database name and .db or .bin extension,
     # SRC_DIR represents name of folder in which database files are stored.
-    saltfile = f'{core.const.SRC_DIR}/' + dbname + '.bin'
-    dbfile = f'{core.const.SRC_DIR}/' + dbname + '.db'
+    saltfile = f"{core.const.SRC_DIR}/" + dbname + ".bin"
+    dbfile = f"{core.const.SRC_DIR}/" + dbname + ".db"
 
     generateSalt(saltfile)
     token = encryptDatabase(dbname, {}, password)
 
-    with open(dbfile, 'wb') as file:
+    with open(dbfile, "wb") as file:
         file.write(token)
 
 

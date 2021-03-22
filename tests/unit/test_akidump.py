@@ -61,29 +61,31 @@ class AkidumpTest(UnitTest):
         """
         # Tom has database with gmail account
         account = Account(
-            account='gmail',
-            name='Tom',
-            email='tom@gmail.com',
-            password=b'123',
-            date='01.01.1990',
-            comment='My gmail account.',
+            account="gmail",
+            name="Tom",
+            email="tom@gmail.com",
+            password=b"123",
+            date="01.01.1990",
+            comment="My gmail account.",
             copy_email=True,
-            attach_files={'somefile.txt': b"Some another file.\n<h1></h1>\n"})
-        self.db = {'gmail': account}
+            attach_files={"somefile.txt": b"Some another file.\n<h1></h1>\n"},
+        )
+        self.db = {"gmail": account}
 
     def test_account_serialization(self):
         """
         Here we test how json will serialize our Account class using our
         `to_dict` method that converts our Account instance to dictionary.
         """
-        dump = json.dumps(self.db['gmail'].to_dict())
+        dump = json.dumps(self.db["gmail"].to_dict())
         self.assertEqual(
             dump,
             '{"account": "gmail", "name": "Tom", "email": "tom@gmail.com", '
             '"password": "123", "date": "01.01.1990", '
             '"comment": "My gmail account.", "copy_email": true, '
             '"attach_files": {"somefile.txt": "U29tZSBhbm90aGVyIGZpbGUuCjxoMT48L2gxPgo="}}',
-            '`to_dict` method of Account class is incorrect!')
+            "`to_dict` method of Account class is incorrect!",
+        )
 
     def test_dumps(self):
         """
@@ -96,11 +98,12 @@ class AkidumpTest(UnitTest):
 
         # then we check that it is dumped appropriately
         self.assertEqual(
-            dump, b'{"gmail": {"account": "gmail", "name": "Tom", "email": '
+            dump,
+            b'{"gmail": {"account": "gmail", "name": "Tom", "email": '
             b'"tom@gmail.com", "password": "123", "date": "01.01.1990", '
             b'"comment": "My gmail account.", "copy_email": true, '
             b'"attach_files": {"somefile.txt": "U29tZSBhbm90aGVyIGZpbGUuCjxoMT48L2gxPgo="}}}',
-            "Serialization of `dumps` function from core.akidump module is incorrect!"
+            "Serialization of `dumps` function from core.akidump module is incorrect!",
         )
 
     def test_loads_obsolete(self):
@@ -111,41 +114,48 @@ class AkidumpTest(UnitTest):
         # here we monkeypatch SRC_DIR which is the pass to src directory where
         # openDatabase looks for database files, we will change SRC_DIR to
         # `tests/src` as it is a directory were our test databases are
-        self.monkeypatch.setattr('core.const.SRC_DIR', 'tests/src')
+        self.monkeypatch.setattr("core.const.SRC_DIR", "tests/src")
 
         # we will use openDatabase from core.getaki module which uses loads
         # function from akidump to deserialize database
         db = openDatabase(
-            'database',  # `database` serialized in obsolete way
-            b'some_password')
+            "database", b"some_password"  # `database` serialized in obsolete way
+        )
 
         # here we check whether it deserialized appropriately
         # we expect next 3 accounts in deserialized database
-        habr = Account(account='habr',
-                       name='Lea',
-                       email='spheromancer@habr.com',
-                       password=b'habr_password',
-                       date='19.05.1990',
-                       comment='Habr account.',
-                       copy_email=True)
-        gmail = Account(account='gmail',
-                        name='Bob',
-                        email='bobgreen@gmail.com',
-                        password=b'$z#5G_UG~K;I9U9$',
-                        date='19.05.1990',
-                        comment='Gmail account.',
-                        copy_email=True)
-        mega = Account(account='mega',
-                       name='Tom',
-                       email='tom@gmail.com',
-                       password=b'tom',
-                       date='01.01.2000',
-                       comment='Mega account.',
-                       copy_email=True)
-        expected_db = {'habr': habr, 'gmail': gmail, 'mega': mega}
+        habr = Account(
+            account="habr",
+            name="Lea",
+            email="spheromancer@habr.com",
+            password=b"habr_password",
+            date="19.05.1990",
+            comment="Habr account.",
+            copy_email=True,
+        )
+        gmail = Account(
+            account="gmail",
+            name="Bob",
+            email="bobgreen@gmail.com",
+            password=b"$z#5G_UG~K;I9U9$",
+            date="19.05.1990",
+            comment="Gmail account.",
+            copy_email=True,
+        )
+        mega = Account(
+            account="mega",
+            name="Tom",
+            email="tom@gmail.com",
+            password=b"tom",
+            date="01.01.2000",
+            comment="Mega account.",
+            copy_email=True,
+        )
+        expected_db = {"habr": habr, "gmail": gmail, "mega": mega}
         self.assertTrue(
             isEqual(db, expected_db),
-            '`loads` deserialization of obsolete data is incorrect!')
+            "`loads` deserialization of obsolete data is incorrect!",
+        )
 
     def test_loads_json(self):
         """
@@ -164,8 +174,9 @@ class AkidumpTest(UnitTest):
         loaded = loads(data)
 
         # and here we check results
-        self.assertEqual(loaded, self.db,
-                         '`loads` deserialization of json data is incorrect!')
+        self.assertEqual(
+            loaded, self.db, "`loads` deserialization of json data is incorrect!"
+        )
 
     def test_loads_json_no_attached_files(self):
         """
@@ -174,26 +185,33 @@ class AkidumpTest(UnitTest):
         attached files in the account.
         """
         # here are our json serialized data
-        data = (b'{"gmail": {"account": "gmail", "name": "Tom", "email": '
-                b'"tom@gmail.com", "password": "123", "date": "01.01.1990", '
-                b'"comment": "My gmail account.", "copy_email": true}}')
+        data = (
+            b'{"gmail": {"account": "gmail", "name": "Tom", "email": '
+            b'"tom@gmail.com", "password": "123", "date": "01.01.1990", '
+            b'"comment": "My gmail account.", "copy_email": true}}'
+        )
 
         # and here we use loads to deserialize it
         loaded = loads(data)
 
         # here is what we expect
-        account = Account(account='gmail',
-                          name='Tom',
-                          email='tom@gmail.com',
-                          password=b'123',
-                          date='01.01.1990',
-                          comment='My gmail account.',
-                          copy_email=True)
+        account = Account(
+            account="gmail",
+            name="Tom",
+            email="tom@gmail.com",
+            password=b"123",
+            date="01.01.1990",
+            comment="My gmail account.",
+            copy_email=True,
+        )
 
-        db = {'gmail': account}
+        db = {"gmail": account}
 
         # and here we check results
         self.assertEqual(
-            loaded, db, '`loads` deserialization of json data is incorrect '
-            'when we try to deserialize data that contains account'
-            'without attached files!')
+            loaded,
+            db,
+            "`loads` deserialization of json data is incorrect "
+            "when we try to deserialize data that contains account"
+            "without attached files!",
+        )

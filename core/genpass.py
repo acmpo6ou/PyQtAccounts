@@ -63,7 +63,7 @@ def gen(symbols, length):
     :return:
     password string
     """
-    symbs = ''
+    symbs = ""
     if "d" in symbols:
         symbs += string.digits
 
@@ -76,7 +76,7 @@ def gen(symbols, length):
     if "p" in symbols:
         symbs += string.punctuation
 
-    password = ''
+    password = ""
     for _ in range(length):
         password += random.choice(symbs)
     return password
@@ -117,13 +117,13 @@ def main(symbols, length=16):
 
         try:
             # here we check password
-            if 'd' in symbols:
+            if "d" in symbols:
                 checkHasOneOf(string.digits, password)
-            if 'l' in symbols:
+            if "l" in symbols:
                 checkHasOneOf(string.ascii_lowercase, password)
-            if 'u' in symbols:
+            if "u" in symbols:
                 checkHasOneOf(string.ascii_uppercase, password)
-            if 'p' in symbols:
+            if "p" in symbols:
                 checkHasOneOf(string.punctuation, password)
 
             # if everything is OK then we return generated password

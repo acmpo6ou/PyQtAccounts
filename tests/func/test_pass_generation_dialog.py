@@ -59,13 +59,14 @@ class TestPassGenerationDialog(DbsTest):
     This test class provides all functional tests for password generation
     dialog.
     """
+
     def setUp(self):
         """
         Here we reassign some widely used variables.
         """
         super().setUp()
         self.dbs.panel.addButton.click()
-        self.form = self.dbs.forms['create']
+        self.form = self.dbs.forms["create"]
         self.form.generateButton.click()
         self.dialog = self.form.dialog
         self.gen = self.dialog.buttonGenerate
@@ -79,13 +80,13 @@ class TestPassGenerationDialog(DbsTest):
         # Passwords in fields must always be equal
         pass1 = self.pass_input.text()
         pass2 = self.pass_repeat_input.text()
-        self.assertEqual(pass1, pass2, 'Passwords in fields are differ!')
+        self.assertEqual(pass1, pass2, "Passwords in fields are differ!")
 
     def checkHasOneOf(self, string, symbols):
         """
         We use this method to check that given `string` has characters from
-        `symbols`. It is useful when we want to check for example that generated 
-        password has digits when user checked checkbox that represents 
+        `symbols`. It is useful when we want to check for example that generated
+        password has digits when user checked checkbox that represents
         whether to include digits or not.
         """
         # here we iterate trough all characters of `symbols`
@@ -99,8 +100,8 @@ class TestPassGenerationDialog(DbsTest):
     def checkNotHasOneOf(self, string, symbols):
         """
         We use this method to check that given `string` has no characters from
-        `symbols`. It is useful when we want to check for example that generated 
-        password has no digits when user unchecked checkbox that represents 
+        `symbols`. It is useful when we want to check for example that generated
+        password has no digits when user unchecked checkbox that represents
         whether to include digits or not.
         """
         # here we use checkHasOneOf method to check that `string` contains no `symbols`
@@ -124,9 +125,11 @@ class TestPassGenerationDialog(DbsTest):
 
         # Password appears in both password fields and it has length 16 by default
         self.assertEqual(
-            len(self.pass_input.text()), 16,
-            'Length of generated password and length specified in'
-            'spinbox of generate password dialog are differ!')
+            len(self.pass_input.text()),
+            16,
+            "Length of generated password and length specified in"
+            "spinbox of generate password dialog are differ!",
+        )
         self.checkPassEqual()
 
         # Tom then changes length to 32 and presses generate
@@ -135,9 +138,11 @@ class TestPassGenerationDialog(DbsTest):
 
         # Password appears in both password fields and it has length 32 as well
         self.assertEqual(
-            len(self.pass_input.text()), 32,
-            'Length of generated password and length specified in'
-            'spinbox of generate password dialog are differ!')
+            len(self.pass_input.text()),
+            32,
+            "Length of generated password and length specified in"
+            "spinbox of generate password dialog are differ!",
+        )
         self.checkPassEqual()
 
     def check_symbols(self, flag, symbols):
@@ -179,8 +184,12 @@ class TestPassGenerationDialog(DbsTest):
 
         # and here we create lists of flags (i.e. checkboxes) and symbols
         # associated with them
-        flags = (dialog.digitsFlag, dialog.lowerFlag, dialog.upperFlag,
-                 dialog.punctuationFlag)
+        flags = (
+            dialog.digitsFlag,
+            dialog.lowerFlag,
+            dialog.upperFlag,
+            dialog.punctuationFlag,
+        )
         symbols = (digits, ascii_lowercase, ascii_uppercase, punctuation)
 
         # finally we use check_symbols method to check dialog behavior when

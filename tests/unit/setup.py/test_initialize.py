@@ -59,6 +59,7 @@ class InitializeTest(UnitTest):
     """
     This class provides all unit tests for Initialize class.
     """
+
     def check_progress(self, progress):
         """
         This function is a signal handler for Initialize process.
@@ -96,10 +97,16 @@ class InitializeTest(UnitTest):
             signal which we will emit to send progress of cloning
             """
             # here we check some parameters
-            self.assertEqual(path, 'https://github.com/Acmpo6ou/PyQtAccounts',
-                             'Path to PyQtAccounts repository is incorrect!')
-            self.assertEqual(folder, '/home/accounts/PyQtAccounts',
-                             'Path to installation folder is incorrect!')
+            self.assertEqual(
+                path,
+                "https://github.com/Acmpo6ou/PyQtAccounts",
+                "Path to PyQtAccounts repository is incorrect!",
+            )
+            self.assertEqual(
+                folder,
+                "/home/accounts/PyQtAccounts",
+                "Path to installation folder is incorrect!",
+            )
 
             # here we simulate progress by emitting a series of progress signals with increasing
             # progress values
@@ -110,24 +117,30 @@ class InitializeTest(UnitTest):
             progress.update(None, 120, 120)
 
         # and here we patch clone_from method of Repo with our mock_clone function
-        self.monkeypatch.setattr('git.Repo.clone_from', mock_clone)
+        self.monkeypatch.setattr("git.Repo.clone_from", mock_clone)
 
         # then we create Initialize process, connect it signals to appropriate signal handlers
         # and start process
-        init = Initialize('/home/accounts')
+        init = Initialize("/home/accounts")
         init.progress.connect(self.check_progress)
         init.result.connect(self.check_result)
         init.run()
 
         # finally we check results
-        self.assertEqual(self.res, 0, 'Initialization process emitted nonzero result but it should'
-                                      'be zero!')
-        self.assertEqual(self.progress, [0, 25, 50, 75, 100], 'Progress of clone is incorrect!')
+        self.assertEqual(
+            self.res,
+            0,
+            "Initialization process emitted nonzero result but it should" "be zero!",
+        )
+        self.assertEqual(
+            self.progress, [0, 25, 50, 75, 100], "Progress of clone is incorrect!"
+        )
 
     def test_initialize_errors(self):
         """
         This test tests process behavior when there are errors during initialization.
         """
+
         def mock_clone(path, folder, progress):
             """
             This function is a test double of clone_from method from Repo class.
@@ -139,19 +152,23 @@ class InitializeTest(UnitTest):
             :param progress:
             signal which we will emit to send progress of cloning
             """
-            raise Exception('Error!')
+            raise Exception("Error!")
 
         # here we monkeypatch clone_from method of Repo class
-        self.monkeypatch.setattr('git.Repo.clone_from', mock_clone)
+        self.monkeypatch.setattr("git.Repo.clone_from", mock_clone)
 
         # then we create Initialize process, connect it signals to appropriate signal handlers
         # and start process
-        init = Initialize('/home/accounts')
+        init = Initialize("/home/accounts")
         init.progress.connect(self.check_progress)
         init.result.connect(self.check_result)
         init.run()
 
         # finally we check that process has emitted nonzero result
-        self.assertEqual(self.res, 1, 'Initialization process emitted zero result but it should'
-                                      'emit a nonzero one since there are errors occur during the '
-                                      'process.')
+        self.assertEqual(
+            self.res,
+            1,
+            "Initialization process emitted zero result but it should"
+            "emit a nonzero one since there are errors occur during the "
+            "process.",
+        )

@@ -60,6 +60,7 @@ class RequirementsPageTest(UnitTest, SetupMixin):
     """
     This class provides all functional tests for RequirementsPage.
     """
+
     def test_install_no_pip(self):
         """
         Here we test how installation goes when we have no pip installed (i.e.
@@ -68,11 +69,11 @@ class RequirementsPageTest(UnitTest, SetupMixin):
         # Toon wants to install PyQtAccounts
         # He hasn't installed pip and some of dependencies
         self.test_reqs = Reqs()
-        self.test_reqs.to_install = ['cryptography', 'gitpython']
-        self.test_reqs.cant_install = ['pip3']
-        self.test_reqs.installed.remove('pyshortcuts')
-        self.test_reqs.installed.remove('gitpython')
-        self.test_reqs.installed.remove('pip3')
+        self.test_reqs.to_install = ["cryptography", "gitpython"]
+        self.test_reqs.cant_install = ["pip3"]
+        self.test_reqs.installed.remove("pyshortcuts")
+        self.test_reqs.installed.remove("gitpython")
+        self.test_reqs.installed.remove("pip3")
 
         # and he presses install button
         page = RequirementsPage(reqs=self.test_reqs)
@@ -82,11 +83,14 @@ class RequirementsPageTest(UnitTest, SetupMixin):
         self.assertTrue(
             page.errors.visibility,
             "Error message isn't displayed when user wants to "
-            "install unsatisfied dependencies and has no pip installed!")
+            "install unsatisfied dependencies and has no pip installed!",
+        )
         self.assertEqual(
-            page.errors.toPlainText(), 'Встановіть пакет pip3!',
+            page.errors.toPlainText(),
+            "Встановіть пакет pip3!",
             "Error message is incorrect when user wants to "
-            "install unsatisfied dependencies and has no pip installed!")
+            "install unsatisfied dependencies and has no pip installed!",
+        )
 
     def test_install_button(self):
         """
@@ -96,9 +100,9 @@ class RequirementsPageTest(UnitTest, SetupMixin):
         # Tom wants to install PyQtAccounts
         # He hasn't installed some pip dependencies
         self.test_reqs = Reqs()
-        self.test_reqs.to_install = ['cryptography', 'gitpython']
-        self.test_reqs.installed.remove('cryptography')
-        self.test_reqs.installed.remove('gitpython')
+        self.test_reqs.to_install = ["cryptography", "gitpython"]
+        self.test_reqs.installed.remove("cryptography")
+        self.test_reqs.installed.remove("gitpython")
 
         # installation will be successful
         os.system = self.mock_system(False)
@@ -109,61 +113,75 @@ class RequirementsPageTest(UnitTest, SetupMixin):
 
         # He has pip3 installed so errors are cleared and hidden
         self.assertEqual(
-            page.errors.toPlainText(), '',
+            page.errors.toPlainText(),
+            "",
             "Error message must be empty when user wants to "
-            "install unsatisfied dependencies and HAS pip installed!")
+            "install unsatisfied dependencies and HAS pip installed!",
+        )
         self.assertFalse(
             page.errors.visibility,
             "Error message is displayed when user wants to "
-            "install unsatisfied dependencies and HAS pip installed!")
+            "install unsatisfied dependencies and HAS pip installed!",
+        )
 
         # install button is disabled
         self.assertFalse(
             page.installButton.isEnabled(),
             "Install button is enabled during installation, must "
             "be disabled to avoid creating many threads that will install pip"
-            "dependencies at the same time and that will crash program!")
+            "dependencies at the same time and that will crash program!",
+        )
 
         # install label and progress are shown
-        self.assertTrue(page.installLabel.visibility,
-                        "Install label isn't displayed during installation!")
+        self.assertTrue(
+            page.installLabel.visibility,
+            "Install label isn't displayed during installation!",
+        )
         self.assertTrue(
             page.installProgress.visibility,
-            "Install progressbar doesn't displayed during installation!")
+            "Install progressbar doesn't displayed during installation!",
+        )
 
         # some time pass and progress bar moves to 50%
         QTest.qWait(150)
         self.assertEqual(
-            page.installProgress.value(), 50,
+            page.installProgress.value(),
+            50,
             "Progress bar doesn't update to 50% when ½ of installation"
-            "process is done!")
+            "process is done!",
+        )
 
         # finally it shows 100% and everything is installed without any errors
         QTest.qWait(150)
         self.assertEqual(
-            page.installProgress.value(), 100,
+            page.installProgress.value(),
+            100,
             "Progress bar doesn't update to 100% when installation "
-            "process has finished!")
+            "process has finished!",
+        )
         self.assertEqual(
-            page.errors.toPlainText(), '',
-            "Error text must be empty when installation is"
-            "successful!")
+            page.errors.toPlainText(),
+            "",
+            "Error text must be empty when installation is" "successful!",
+        )
         self.assertFalse(
             page.errors.visibility,
-            "Error must be hidden when installation is successful!")
+            "Error must be hidden when installation is successful!",
+        )
 
         # install label says that everything is installed successfully
         self.assertEqual(
             page.installLabel.text(),
             '<p style="color: #37FF91;">Встановлено!</p>',
             "Install label must show successful message when"
-            "installation has finished successfully!")
+            "installation has finished successfully!",
+        )
 
         # tips are hidden
         self.assertFalse(
             page.reqsTips.visibility,
-            "Tips must be hidden when installation has finished"
-            "successfully!")
+            "Tips must be hidden when installation has finished" "successfully!",
+        )
 
     def test_errors_during_installation(self):
         """
@@ -172,13 +190,13 @@ class RequirementsPageTest(UnitTest, SetupMixin):
         # Tom wants to install PyQtAccounts
         # He hasn't installed some pip dependencies
         self.test_reqs = Reqs()
-        self.test_reqs.to_install = ['cryptography', 'gitpython']
-        self.test_reqs.installed.remove('cryptography')
-        self.test_reqs.installed.remove('gitpython')
+        self.test_reqs.to_install = ["cryptography", "gitpython"]
+        self.test_reqs.installed.remove("cryptography")
+        self.test_reqs.installed.remove("gitpython")
 
         # installation will be unsuccessful, so os.system will return nonzero
         # exit code
-        self.monkeypatch.setattr('os.system', lambda command: True)
+        self.monkeypatch.setattr("os.system", lambda command: True)
 
         # He presses install button
         page = RequirementsPage(reqs=self.test_reqs)
@@ -186,15 +204,18 @@ class RequirementsPageTest(UnitTest, SetupMixin):
 
         # Some errors appears during installation.
         def errors_visible():
-            assert page.errors.visibility,\
-                    "Error message doesn't displayed when there are errors" \
-                    "during installation!"
+            assert page.errors.visibility, (
+                "Error message doesn't displayed when there are errors"
+                "during installation!"
+            )
 
         self.qbot.waitUntil(errors_visible)
 
-        INSTALL_ERRORS_TEXT = ('Не вдалося встановити cryptography\n'
-                               'Не вдалося встановити gitpython\n')
+        INSTALL_ERRORS_TEXT = (
+            "Не вдалося встановити cryptography\n" "Не вдалося встановити gitpython\n"
+        )
         self.assertEqual(
-            page.errors.toPlainText(), INSTALL_ERRORS_TEXT,
-            "Error message is incorrect when there are errors"
-            "during installation!")
+            page.errors.toPlainText(),
+            INSTALL_ERRORS_TEXT,
+            "Error message is incorrect when there are errors" "during installation!",
+        )

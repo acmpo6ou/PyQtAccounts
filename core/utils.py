@@ -64,8 +64,8 @@ def getDbList():
     Function finds databases by their .db files.
     """
     return [
-        os.path.basename(db).replace('.db', '')
-        for db in glob.glob(f'{core.const.SRC_DIR}/*.db')
+        os.path.basename(db).replace(".db", "")
+        for db in glob.glob(f"{core.const.SRC_DIR}/*.db")
     ]
 
 
@@ -81,7 +81,7 @@ def getVersion():
     This function returns current version of the program.
     Actually it returns last tag of program repository sorted by date.
     """
-    repo = git.Repo('.')
+    repo = git.Repo(".")
     tags = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
     return tags[-1]
 
@@ -115,7 +115,7 @@ def validName(name):
     valid = "[-a-zA-Z0-9.()_]"  # this are all characters that are valid
     # here we get list of all valid characters from name
     valid_chars = re.findall(valid, name)
-    result = ''.join(valid_chars)  # finally we join them
+    result = "".join(valid_chars)  # finally we join them
     return result
 
 
@@ -128,6 +128,7 @@ class Index:
     We need this class to implement main database setting: when on startup we automatically
     select main database which specified as `main_db` value of QSettings.
     """
+
     def __init__(self, name):
         self.name = name
 

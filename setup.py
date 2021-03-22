@@ -61,8 +61,8 @@ except ImportError:
     pass
 
 # this is a lists of program dependencies: system (that we can't install through pip) and pip.
-reqs_list = ('git', 'pip3', 'xclip')
-reqs_pip = ('setuptools', 'cryptography', 'gitpython', 'pyshortcuts')
+reqs_list = ("git", "pip3", "xclip")
+reqs_pip = ("setuptools", "cryptography", "gitpython", "pyshortcuts")
 
 # this function is only for testing
 testing = lambda *args: None
@@ -75,6 +75,7 @@ class Reqs:
     second called `to_install` - those are dependencies that we need to install with pip.
     third called `installed` - those that are already installed.
     """
+
     def __init__(self):
         """
         This constructor creates all lists.
@@ -86,10 +87,10 @@ class Reqs:
         # here we iterate through all system dependencies and use `which` shell command
         # to determine whether it exists or not, if not os.system will return nonzero code
         for req in reqs_list:
-            if os.system('which ' + req):
+            if os.system("which " + req):
                 # if `which` can't find dependency it will return nonzero status code, it
                 # means that dependency isn't installed so we add it to cant_install list
-                self.cant_install.append(req.replace('pip3', 'python3-pip'))
+                self.cant_install.append(req.replace("pip3", "python3-pip"))
             else:
                 # else we add it to installed list
                 self.installed.append(req)
@@ -99,9 +100,9 @@ class Reqs:
         for req in reqs_pip:
             try:
                 # this function call is only for testing because we can't mock __import__
-                testing(req.replace('gitpython', 'git'))
+                testing(req.replace("gitpython", "git"))
                 # we need to import `git` but it represents `gitpython` package
-                __import__(req.replace('gitpython', 'git'))
+                __import__(req.replace("gitpython", "git"))
             except ImportError:
                 # if we catch ImportError we add dependency to `to_install` list.
                 self.to_install.append(req)
@@ -115,13 +116,13 @@ class ReqsList(QListView):
     This is a customized QListView widget, it represents list of dependencies.
     Icon near every dependency represents whether it installed or not.
     """
+
     def __init__(self, reqs):
         QListView.__init__(self)
 
         # here we create icons and model, also we don't want our list to be editable
-        installed = QIcon('/usr/share/icons/Humanity/actions/48/gtk-yes.svg')
-        not_installed = QIcon(
-            '/usr/share/icons/Humanity/actions/48/stock_not.svg')
+        installed = QIcon("/usr/share/icons/Humanity/actions/48/gtk-yes.svg")
+        not_installed = QIcon("/usr/share/icons/Humanity/actions/48/stock_not.svg")
         self.model = QStandardItemModel()
         self.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
@@ -147,6 +148,7 @@ class ReqsTips(QTextEdit):
     This class is customized QTextEdit that will show tips about dependencies, for example how to
     install system and pip dependencies.
     """
+
     def __init__(self, reqs):
         QTextEdit.__init__(self)
         # we don't want our tips to be editable
@@ -157,24 +159,26 @@ class ReqsTips(QTextEdit):
         if not (reqs.cant_install or reqs.to_install):
             tips = '<p style="color: #37FF91;">Всі залежності встановленно!</p>'
         else:
-            tips = ''
+            tips = ""
 
         # else we iterate through all not installed dependencies (both system and pip)
         # and we add tips for each dependency saying how to install it.
         if reqs.cant_install:
-            tips += '''<p>Будь-ласка встановіть пакети <i><b>{0}</b></i> 
+            tips += """<p>Будь-ласка встановіть пакети <i><b>{0}</b></i> 
             самостійно.</p>
             <p>Для їх встановлення потрібні права адміністратора.</p>
             <p>Введіть в терміналі таку команду:</p>
-            <p><b>sudo apt install {0}</b></p>'''.format(' '.join(
-                [req for req in reqs.cant_install]))
+            <p><b>sudo apt install {0}</b></p>""".format(
+                " ".join([req for req in reqs.cant_install])
+            )
 
         if reqs.to_install:
-            tips += '''<p>Пакети <i><b>{}</b></i> ми можемо встановити для вас, для цього 
+            tips += """<p>Пакети <i><b>{}</b></i> ми можемо встановити для вас, для цього 
             натисніть кнопку "Встановити".</p>
             <p>Але спершу не забудьте перевірити наявність пакету 
-            <i><b>pip3</b></i>!</p>'''.format(', '.join(
-                [req for req in reqs.to_install]))
+            <i><b>pip3</b></i>!</p>""".format(
+                ", ".join([req for req in reqs.to_install])
+            )
 
         self.setHtml(tips)
 
@@ -183,19 +187,21 @@ class Errors(QTextEdit):
     """
     This class is a error messages QTextEdit, it has red color of its text.
     """
+
     def __init__(self):
         QTextEdit.__init__(self)
         self.setReadOnly(True)
         self.hide()
-        self.setTextColor(QColor('#f26666'))
+        self.setTextColor(QColor("#f26666"))
 
 
 class Title(QLabel):
     """
     This class is a simple QLabel that wraps its text to <h4> tag and centers it.
     """
-    def __init__(self, text=''):
-        QLabel.__init__(self, '<h4>{}</h4>'.format(text))
+
+    def __init__(self, text=""):
+        QLabel.__init__(self, "<h4>{}</h4>".format(text))
         self.setAlignment(Qt.AlignHCenter)
 
 
@@ -203,6 +209,7 @@ class InstallationWizard(QWizard):
     """
     This is main component of the program - installation wizard, it connects all pages together.
     """
+
     def __init__(self, parent=None):
         """
         This constructor creates all the wizard pages adding all needed attributes to them,
@@ -227,20 +234,20 @@ class WelcomePage(QWizardPage):
     """
     This is the first page of the wizard, it simply greets user.
     """
+
     def __init__(self, parent=None):
         super(WelcomePage, self).__init__(parent)
         # There is an icon of PyQtAccounts on the welcome page.
         self.setPixmap(
             QWizard.WatermarkPixmap,
-            QPixmap(
-                '/usr/share/icons/Mint-X/mimetypes/96/application-pgp-keys.svg'
-            ))
+            QPixmap("/usr/share/icons/Mint-X/mimetypes/96/application-pgp-keys.svg"),
+        )
 
         # Greetings
-        self.title = Title(
-            '<pre>Вітаємо у майстрі встановлення\n PyQtAccounts!</pre>')
-        self.text = QLabel('<pre><br>Ми допоможемо вам пройти всі кроки \n'
-                           'встановлення.</pre>')
+        self.title = Title("<pre>Вітаємо у майстрі встановлення\n PyQtAccounts!</pre>")
+        self.text = QLabel(
+            "<pre><br>Ми допоможемо вам пройти всі кроки \n" "встановлення.</pre>"
+        )
 
         layout = QVBoxLayout()
         layout.addWidget(self.title)
@@ -252,6 +259,7 @@ class PipInstall(QObject):
     """
     This object represents the process of installing pip dependencies.
     """
+
     # signals that are emit result of installing and fact that process has ended.
     result = pyqtSignal(int, str)
     finish = pyqtSignal()
@@ -273,7 +281,7 @@ class PipInstall(QObject):
         # here we iterate trough all not installed pip dependencies and install them emitting
         # results (i.e. success or failure)
         for req in self.reqs.to_install:
-            res = os.system('pip3 install ' + req)
+            res = os.system("pip3 install " + req)
             self.result.emit(res, req)
 
         # at the end of the loop we emit finish signal to exit thread which contains our process
@@ -286,14 +294,17 @@ class RequirementsPage(QWizardPage):
     we show user which dependencies he has installed, which has not and how to install them.
     It also contains install button to install unsatisfied pip dependencies.
     """
+
     def __init__(self, parent=None, reqs=Reqs()):
         super(RequirementsPage, self).__init__(parent)
         self._thread = None
         # Title and tip of the page
-        self.title = Title('Залежності')
-        self.text = QLabel('<pre>PyQtAccounts вимагає наявності\n'
-                           'певних пакетів. Ось перелік тих які\n'
-                           'встановлені, або не встановленні у вас:</pre>')
+        self.title = Title("Залежності")
+        self.text = QLabel(
+            "<pre>PyQtAccounts вимагає наявності\n"
+            "певних пакетів. Ось перелік тих які\n"
+            "встановлені, або не встановленні у вас:</pre>"
+        )
 
         # here we create requirements list and tips by instantiating ReqsList and ReqsTips.
         # also we create errors field for error messages that may occur in process of installation
@@ -305,7 +316,7 @@ class RequirementsPage(QWizardPage):
 
         # here are installation label and progressbar that we show during installation
         installation = QHBoxLayout()
-        self.installLabel = QLabel('Інсталяція...')
+        self.installLabel = QLabel("Інсталяція...")
         self.installProgress = QProgressBar()
         installation.addWidget(self.installLabel)
         installation.addWidget(self.installProgress)
@@ -336,14 +347,14 @@ class RequirementsPage(QWizardPage):
         installed and starts installation process.
         """
         # here we hide and clear installation errors if they are shown
-        self.errors.setText('')
+        self.errors.setText("")
         self.errors.hide()
 
         # if user hasn't installed pip then we can't perform the installation of pip dependencies
         # so here we check whether pip installed or not and if its not we show appropriate error.
-        if 'pip3' in self.reqs.cant_install:
+        if "pip3" in self.reqs.cant_install:
             self.errors.show()
-            self.errors.setText('Встановіть пакет pip3!')
+            self.errors.setText("Встановіть пакет pip3!")
             return
 
         # here we disable install button to prevent user from pressing it again while last
@@ -388,7 +399,7 @@ class RequirementsPage(QWizardPage):
         # if there are any errors during installation we show appropriate error message
         if res:
             text = self.errors.toPlainText()
-            self.errors.setText(text + 'Не вдалося встановити ' + req + '\n')
+            self.errors.setText(text + "Не вдалося встановити " + req + "\n")
             self.errors.show()
             return
 
@@ -402,8 +413,7 @@ class RequirementsPage(QWizardPage):
         # if progress is greater than or equal 100% then installation has finished.
         # so here we hide tips and show successful installation label.
         if self.progress >= 100:
-            self.installLabel.setText(
-                '<p style="color: #37FF91;">Встановлено!</p>')
+            self.installLabel.setText('<p style="color: #37FF91;">Встановлено!</p>')
             self.reqsTips.hide()
 
         # at the end we emit completeChanged signal to check have we installed everything yet or
@@ -432,6 +442,7 @@ class Initialize(QObject):
     """
     This object represents the process of downloading the program itself from our github repository.
     """
+
     # signals that are emit result of initialization, fact that process has ended and progress of
     # initialization (downloading PyQtAccounts from repository).
     result = pyqtSignal(int)
@@ -445,7 +456,7 @@ class Initialize(QObject):
         path to folder where we will download PyQtAccounts
         """
         QObject.__init__(self)
-        self.folder = folder + '/PyQtAccounts'
+        self.folder = folder + "/PyQtAccounts"
 
     def run(self):
         """
@@ -459,6 +470,7 @@ class Initialize(QObject):
             downloaded and total number of objects, then it calculates how much percents of objects
             are already downloaded.
             """
+
             def __init__(self, progress):
                 """
                 In this constructor we just save `progress` variable.
@@ -468,7 +480,7 @@ class Initialize(QObject):
                 git.remote.RemoteProgress.__init__(self)
                 self.progress = progress
 
-            def update(self, op_code, cur_count, max_count=None, message=''):
+            def update(self, op_code, cur_count, max_count=None, message=""):
                 """
                 This method does all calculation of progress percents and emits them using progress
                 signal.
@@ -484,9 +496,11 @@ class Initialize(QObject):
         try:
             # here we trying to clone our stable github repository in folder that user gave us
             # also we want to track the progress of clone process to show it on progressbar.
-            git.Repo.clone_from('https://github.com/Acmpo6ou/PyQtAccounts',
-                                self.folder,
-                                progress=Progress(self.progress))
+            git.Repo.clone_from(
+                "https://github.com/Acmpo6ou/PyQtAccounts",
+                self.folder,
+                progress=Progress(self.progress),
+            )
         except RecursionError:  # to prevent fatal python error
             raise
         except Exception:
@@ -508,6 +522,7 @@ class InitPage(QWizardPage):
     Initialization page provides everything that we need to clone PyQtAccounts from github
     repository.
     """
+
     def __init__(self, parent=None):
         super(InitPage, self).__init__(parent)
         # here we define _thread attribute where we will store an instance of our thread in which
@@ -515,11 +530,11 @@ class InitPage(QWizardPage):
         self._thread = None
 
         # folder attribute which stores directory where we will clone PyQtAccounts
-        self.folder = os.getenv('HOME')
+        self.folder = os.getenv("HOME")
 
         # title of the page, errors field for errors of initialization, progressbar to represent
         # the process of initializing
-        self.title = Title('Ініціалізація')
+        self.title = Title("Ініціалізація")
         self.errors = Errors()
         self.progress = QProgressBar()
 
@@ -529,8 +544,9 @@ class InitPage(QWizardPage):
         # button that says `Browse...`, the chose folder dialog popups when user clicks it
         # label that represents path to directory being chosen
         self.initLabel = QLabel(
-            'Виберіть папку в яку ви хочете встановити PyQtAccounts:')
-        self.browseButton = QPushButton('Browse...')
+            "Виберіть папку в яку ви хочете встановити PyQtAccounts:"
+        )
+        self.browseButton = QPushButton("Browse...")
         self.browseButton.clicked.connect(self.browse)
         self.browseLabel = QLabel(self.folder)
 
@@ -540,7 +556,7 @@ class InitPage(QWizardPage):
         browseLayout.addWidget(self.browseLabel)
 
         # `Initialize` button that starts initialization process when user clicks it
-        self.initButton = QPushButton('Ініціалізувати')
+        self.initButton = QPushButton("Ініціалізувати")
         self.initButton.clicked.connect(self.init)
 
         # here we define system menu and desktop checkboxes (and helpful labels for them)
@@ -548,14 +564,14 @@ class InitPage(QWizardPage):
         desktopIcon = QHBoxLayout()
         self.desktopCheckbox = QCheckBox()
         self.desktopCheckbox.setChecked(True)
-        desktopLabel = QLabel('додати ярлик запуску на робочий стіл')
+        desktopLabel = QLabel("додати ярлик запуску на робочий стіл")
         desktopIcon.addWidget(self.desktopCheckbox)
         desktopIcon.addWidget(desktopLabel)
 
         menuIcon = QHBoxLayout()
         self.menuCheckbox = QCheckBox()
         self.menuCheckbox.setChecked(True)
-        menuLabel = QLabel('додати пункт запуску в меню')
+        menuLabel = QLabel("додати пункт запуску в меню")
         menuIcon.addWidget(self.menuCheckbox)
         menuIcon.addWidget(menuLabel)
 
@@ -581,10 +597,9 @@ class InitPage(QWizardPage):
         wizard = self.parent()
 
         # here we show directory dialog with appropriate title and opened directory.
-        folder = QFileDialog.getExistingDirectory(wizard,
-                                                  'Installation directory',
-                                                  self.folder,
-                                                  QFileDialog.ShowDirsOnly)
+        folder = QFileDialog.getExistingDirectory(
+            wizard, "Installation directory", self.folder, QFileDialog.ShowDirsOnly
+        )
 
         # if user chose folder we save its path to `folder` attribute of the page and update
         # text of browse label.
@@ -609,7 +624,7 @@ class InitPage(QWizardPage):
         # if PyQtAccounts folder in the path that is chosen by user already exist then we can't
         # clone repository there, so we just pretend that initialization is already complete
         # showing 100% on the progressbar
-        if 'PyQtAccounts' in os.listdir(self.folder):
+        if "PyQtAccounts" in os.listdir(self.folder):
             self.progress.setValue(100)
 
         # if progress attribute of the page doesn't equals 100 we start initialization process in
@@ -642,7 +657,7 @@ class InitPage(QWizardPage):
         """
         # here we clear and hide errors field if it already displayed
         self.errors.hide()
-        self.errors.setText('')
+        self.errors.setText("")
 
         # here we check result code and if it is nonzero we show error message advising
         # user to check his internet connection and rights to write to folder that he defined
@@ -650,9 +665,10 @@ class InitPage(QWizardPage):
         if res:
             self.errors.show()
             self.errors.setText(
-                'Помилка ініціалізації!\n'
+                "Помилка ініціалізації!\n"
                 "Відсутнє мережеве з'єднання, або відмовлено у доступі на "
-                "запис у папку інсталяції.")
+                "запис у папку інсталяції."
+            )
 
     def init_progress(self, progress):
         """
@@ -684,14 +700,15 @@ class FinishPage(QWizardPage):
     checkbox states on the initialization page, it also creates run.sh file which will initialize
     environment for PyQtAccounts and will run it.
     """
+
     def __init__(self, parent=None):
         """
         This constructor simply creates title and success label.
         """
         super(FinishPage, self).__init__(parent)
 
-        self.title = Title('Finish')
-        self.text = QLabel('Успішно установлено PyQtAccounts!')
+        self.title = Title("Finish")
+        self.text = QLabel("Успішно установлено PyQtAccounts!")
 
         layout = QVBoxLayout()
         layout.addWidget(self.title)
@@ -706,7 +723,7 @@ class FinishPage(QWizardPage):
         # here we obtain states of the shortcuts checkboxes on the initialization page and path
         # to program folder
         initPage = self._parent.initPage
-        cwd = initPage.folder + '/PyQtAccounts/'
+        cwd = initPage.folder + "/PyQtAccounts/"
         desktop = initPage.desktopCheckbox.isChecked()
         startmenu = initPage.menuCheckbox.isChecked()
 
@@ -714,67 +731,76 @@ class FinishPage(QWizardPage):
         if desktop or startmenu:
             # we use make_shortcut function from pyshortcuts module for this.
             from pyshortcuts import make_shortcut
-            make_shortcut(name='PyQtAccounts',
-                          script=cwd + '/run.sh',
-                          description='Simple account database manager.',
-                          icon=cwd + '/img/icon.svg',
-                          terminal=False,
-                          desktop=desktop,
-                          startmenu=startmenu,
-                          executable='/bin/bash')
+
+            make_shortcut(
+                name="PyQtAccounts",
+                script=cwd + "/run.sh",
+                description="Simple account database manager.",
+                icon=cwd + "/img/icon.svg",
+                terminal=False,
+                desktop=desktop,
+                startmenu=startmenu,
+                executable="/bin/bash",
+            )
 
         # fixing .ico icon issue, make_shortcut function adds .ico extension to icon path
         # (i.e. our '/img/icon.svg' becomes '/img/icon.svg.ico'), so we remove .ico from our
         # icon path
-        home = os.getenv('HOME')
+        home = os.getenv("HOME")
         if desktop:
-            desktop = open(home + '/Desktop/PyQtAccounts.desktop').read()
-            with open(home + '/Desktop/PyQtAccounts.desktop', 'w') as file:
-                file.write(desktop.replace('.ico', ''))
+            desktop = open(home + "/Desktop/PyQtAccounts.desktop").read()
+            with open(home + "/Desktop/PyQtAccounts.desktop", "w") as file:
+                file.write(desktop.replace(".ico", ""))
 
         if startmenu:
-            menu = open(
-                home + '/.local/share/applications/PyQtAccounts.desktop').read()
+            menu = open(home + "/.local/share/applications/PyQtAccounts.desktop").read()
             with open(
-                    home +
-                    '/.local/share/applications/PyQtAccounts.desktop',
-                    'w') as file:
-                file.write(menu.replace('.ico', ''))
+                home + "/.local/share/applications/PyQtAccounts.desktop", "w"
+            ) as file:
+                file.write(menu.replace(".ico", ""))
 
         # here we create run.sh script which will start our application
-        run = ('#!/bin/bash\n\n'
-               f'cd {cwd}\n'
-               f'export PYTHONPATH="$PYTHONPATH:{cwd}"\n'
-               'python3 PyQtAccounts.py')
+        run = (
+            "#!/bin/bash\n\n"
+            f"cd {cwd}\n"
+            f'export PYTHONPATH="$PYTHONPATH:{cwd}"\n'
+            "python3 PyQtAccounts.py"
+        )
 
-        with open(cwd + 'run.sh', 'w') as runfile:
+        with open(cwd + "run.sh", "w") as runfile:
             runfile.write(run)
 
         # here we give the script permissions for execution
-        os.chmod(cwd + 'run.sh', 0o755)
+        os.chmod(cwd + "run.sh", 0o755)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # here we create application instance, set normal font size and icon
     app = QApplication(sys.argv)
-    app.setStyleSheet('''
+    app.setStyleSheet(
+        """
     *{
         font-family: Ubuntu, Ubuntu Mono;
         font-size: 24px;
     }
-    ''')
+    """
+    )
     app.setWindowIcon(
-        QIcon('/usr/share/icons/Mint-X/mimetypes/96/application-pgp-keys.svg'))
+        QIcon("/usr/share/icons/Mint-X/mimetypes/96/application-pgp-keys.svg")
+    )
 
     # here we check whether user runs installator under sudo
     if os.getuid() == 0:
         # if yes, then we show appropriate warning, because installed with sudo
         # PyQtAccounts will work properly only being launched with sudo
         QMessageBox.warning(
-            None, 'Увага!', 'Інсталятор запущено з '
-            'адміністративними привілеями, встановлена таким '
-            'чином програма може працювати некоректно після її '
-            'запуску без адміністративних привілеїв.')
+            None,
+            "Увага!",
+            "Інсталятор запущено з "
+            "адміністративними привілеями, встановлена таким "
+            "чином програма може працювати некоректно після її "
+            "запуску без адміністративних привілеїв.",
+        )
 
     wizard = InstallationWizard()
     wizard.show()

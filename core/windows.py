@@ -70,21 +70,24 @@ def export(name, path, parent):
         # ├── <database name>.bin
         # └── <database name>.db
 
-        file = tarfile.open(path, 'w')
-        file.add(f'{core.const.SRC_DIR}/{name}.db')
-        file.add(f'{core.const.SRC_DIR}/{name}.bin')
+        file = tarfile.open(path, "w")
+        file.add(f"{core.const.SRC_DIR}/{name}.db")
+        file.add(f"{core.const.SRC_DIR}/{name}.bin")
         file.close()
     except RecursionError:  # to prevent fatal python error
         raise
     except Exception:
         # if there are some errors we show error message
-        QMessageBox.critical(parent, 'Помилка!', 'Експорт бази данних '
-                             'завершився невдачею.')
+        QMessageBox.critical(
+            parent, "Помилка!", "Експорт бази данних " "завершився невдачею."
+        )
     else:
         # if not we show success message
         QMessageBox.information(
-            parent, 'Експорт', 'Успішно експортовано базу '
-            'данних <i><b>{}</b></i>'.format(name))
+            parent,
+            "Експорт",
+            "Успішно експортовано базу " "данних <i><b>{}</b></i>".format(name),
+        )
 
 
 def _import(path, parent):
@@ -101,17 +104,16 @@ def _import(path, parent):
         for i, file in enumerate(tar.getmembers()):
             # here we check integrity of the tarfile, if there are any database file missing
             # we throw an exception
-            if '.db' not in file.name and '.bin' not in file.name:
-                raise TypeError('Невірний файл!')
+            if ".db" not in file.name and ".bin" not in file.name:
+                raise TypeError("Невірний файл!")
 
         # here we obtain name of the database through its files names
-        name = os.path.basename(file.name).replace('.db',
-                                                   '').replace('.bin', '')
+        name = os.path.basename(file.name).replace(".db", "").replace(".bin", "")
 
         # here we check whether number of files in archive is 2, if not we throw exception,
         # because file might be corrupted
         if i != 1:
-            raise TypeError('Невірний файл!')
+            raise TypeError("Невірний файл!")
         tar.extractall(core.const.SRC_PATH)
 
         # and here we update database list
@@ -124,23 +126,26 @@ def _import(path, parent):
         item = QStandardItem(_list.icon, name)
         model.appendRow(item)
         model.sort(0)
-        parent.dbs.tips['help'].setText("Виберіть базу данних")
+        parent.dbs.tips["help"].setText("Виберіть базу данних")
     except RecursionError:  # to prevent fatal python error
         raise
     except Exception as err:
         # if there are some errors we show error message
-        QMessageBox.critical(parent, 'Помилка!', str(err))
+        QMessageBox.critical(parent, "Помилка!", str(err))
     else:
         # if not we show success message
         QMessageBox.information(
-            parent, 'Імпорт',
-            'Успішно імпортовано базу данних <i><b>{}</b></i>'.format(name))
+            parent,
+            "Імпорт",
+            "Успішно імпортовано базу данних <i><b>{}</b></i>".format(name),
+        )
 
 
 class Panel(QHBoxLayout):
     """
     This class is a panel for buttons, it has 2 buttons: `add` and `edit`.
     """
+
     def __init__(self, add, edit, delete=None):
         """
         This is constructor of the panel.
@@ -153,13 +158,13 @@ class Panel(QHBoxLayout):
 
         # this is `add` button it calls add function when user presses it.
         self.addButton = QPushButton()
-        self.addButton.setIcon(QIcon('img/list-add.png'))
+        self.addButton.setIcon(QIcon("img/list-add.png"))
         self.addButton.setIconSize(QSize(22, 22))
         self.addButton.clicked.connect(add)
 
         # this is `edit` button it calls edit function when user presses it.
         self.editButton = QPushButton()
-        self.editButton.setIcon(QIcon('img/edit.svg'))
+        self.editButton.setIcon(QIcon("img/edit.svg"))
         self.editButton.setIconSize(QSize(22, 22))
         self.editButton.clicked.connect(edit)
 
@@ -169,7 +174,7 @@ class Panel(QHBoxLayout):
         if delete:
             # this is `delete` button it calls delete function when user presses it.
             self.deleteButton = QPushButton()
-            self.deleteButton.setIcon(QIcon('img/delete.svg'))
+            self.deleteButton.setIcon(QIcon("img/delete.svg"))
             self.deleteButton.setIconSize(QSize(22, 22))
             self.deleteButton.clicked.connect(delete)
             self.addWidget(self.deleteButton)
@@ -179,6 +184,7 @@ class List(QListView):
     """
     This class is list of accounts or databases.
     """
+
     def __init__(self, lst, icon, forms, windows, tips, select):
         """
         This is constructor of the list.
@@ -238,20 +244,21 @@ def selectDb(obj, index):
     for win in obj.windows:
         if index.data() == win.name:
             hide(obj.forms, obj.tips)
-            obj.tips['already-open'].show()
+            obj.tips["already-open"].show()
             return
 
     # if there is no database window opened yet we show open database form.
-    obj.forms['open'].setDb(index)
+    obj.forms["open"].setDb(index)
     hide(obj.forms, obj.tips)
-    obj.forms['open'].show()
-    obj.forms['open'].passField.passInput.setFocus()
+    obj.forms["open"].show()
+    obj.forms["open"].passField.passInput.setFocus()
 
 
 class Dbs(QWidget):
     """
     This class is a container for everything that about databases.
     """
+
     def __init__(self, forms, windows, tips):
         """
         This is constructor that creates database panel and list.
@@ -269,18 +276,19 @@ class Dbs(QWidget):
 
         # here we create database panel and list
         self.panel = Panel(self.add, self.edit, self.delete)
-        self.list = List(sorted(getDbList()), 'img/icon.svg', forms, windows,
-                         tips, selectDb)
+        self.list = List(
+            sorted(getDbList()), "img/icon.svg", forms, windows, tips, selectDb
+        )
 
         # and here we assign some stuff to database forms, such as database list, database model,
         # tips and forms
-        self.forms['edit'].model = self.list.model
-        self.forms['edit'].list = self.list
-        self.forms['edit'].tips = tips
-        self.forms['edit'].forms = forms
+        self.forms["edit"].model = self.list.model
+        self.forms["edit"].list = self.list
+        self.forms["edit"].tips = tips
+        self.forms["edit"].forms = forms
 
-        self.forms['create'].list = self.list
-        self.forms['create'].tips = tips
+        self.forms["create"].list = self.list
+        self.forms["create"].tips = tips
 
         layout = QVBoxLayout()
         layout.addLayout(self.panel)
@@ -293,7 +301,7 @@ class Dbs(QWidget):
         It shows create database form.
         """
         hide(self.forms, self.tips)
-        self.forms['create'].show()
+        self.forms["create"].show()
 
     def edit(self):
         """
@@ -301,7 +309,7 @@ class Dbs(QWidget):
         It shows edit database form.
         """
         # self.list.index is index that represents currently chosen database at the list
-        self.forms['edit'].setDb(self.list.index)
+        self.forms["edit"].setDb(self.list.index)
 
     def delete(self):
         """
@@ -310,24 +318,25 @@ class Dbs(QWidget):
         # if user didn't select any database we show warning
         if not self.list.index:
             hide(self.forms, self.tips)
-            self.tips['delete'].show()
+            self.tips["delete"].show()
             return
 
         # here we get name of currently selected database
         name = self.list.index.data()
 
         # first is the main window
-        action = QMessageBox.warning(self.windows[0],
-                                     'Увага!',
-                                     'Ви певні що хочете видалити базу данних '
-                                     '<i><b>{}</b></i>'.format(name),
-                                     buttons=QMessageBox.No | QMessageBox.Yes,
-                                     defaultButton=QMessageBox.No)
+        action = QMessageBox.warning(
+            self.windows[0],
+            "Увага!",
+            "Ви певні що хочете видалити базу данних " "<i><b>{}</b></i>".format(name),
+            buttons=QMessageBox.No | QMessageBox.Yes,
+            defaultButton=QMessageBox.No,
+        )
 
         # If users answer is `Yes` we delete database
         if action == QMessageBox.Yes:
-            os.remove(f'{core.const.SRC_DIR}/{name}.db')
-            os.remove(f'{core.const.SRC_DIR}/{name}.bin')
+            os.remove(f"{core.const.SRC_DIR}/{name}.db")
+            os.remove(f"{core.const.SRC_DIR}/{name}.bin")
 
             # and we update database list
             for item in self.list.model.findItems(name):
@@ -337,11 +346,11 @@ class Dbs(QWidget):
             # if there is no databases left we show appropriate tip
             if not getDbList():
                 hide(self.forms, self.tips)
-                self.tips['help'].setText(HELP_TIP_DB)
+                self.tips["help"].setText(HELP_TIP_DB)
             else:
                 hide(self.forms, self.tips)
-                self.tips['help'].setText("Виберіть базу данних")
-            self.tips['help'].show()
+                self.tips["help"].setText("Виберіть базу данних")
+            self.tips["help"].show()
 
             # here we close database window if it were opened
             for win in self.windows:
@@ -363,15 +372,16 @@ def select_account(obj, index):
     """
     # here we set account that chosen to show account form and we show this form
     obj.index = index
-    obj.forms['show'].set_account(index)
+    obj.forms["show"].set_account(index)
     hide(obj.forms, obj.tips)
-    obj.forms['show'].show()
+    obj.forms["show"].show()
 
 
 class Accs(QWidget):
     """
     This class is a container for everything that about accounts.
     """
+
     def __init__(self, name, db, forms, tips, windows):
         """
         This is constructor that creates account panel and list.
@@ -394,22 +404,28 @@ class Accs(QWidget):
 
         # here we create accounts panel and list
         self.panel = Panel(self.add, self.edit)
-        self.list = List(sorted(getAkiList(db)), 'img/account.png', forms,
-                         windows, tips, select_account)
+        self.list = List(
+            sorted(getAkiList(db)),
+            "img/account.png",
+            forms,
+            windows,
+            tips,
+            select_account,
+        )
 
         # and here we assign some stuff to account forms, such as account list, database name
         # tips, forms and windows
-        self.forms['create'].list = self.list
-        self.forms['create'].tips = tips
+        self.forms["create"].list = self.list
+        self.forms["create"].tips = tips
 
-        self.forms['show'].tips = tips
-        self.forms['show'].forms = forms
+        self.forms["show"].tips = tips
+        self.forms["show"].forms = forms
 
-        self.forms['edit'].forms = forms
-        self.forms['edit'].tips = tips
-        self.forms['edit'].list = self.list
-        self.forms['edit'].windows = windows
-        self.forms['edit'].name = name
+        self.forms["edit"].forms = forms
+        self.forms["edit"].tips = tips
+        self.forms["edit"].list = self.list
+        self.forms["edit"].windows = windows
+        self.forms["edit"].name = name
 
         self.layout = QVBoxLayout()
         self.layout.addLayout(self.panel)
@@ -422,7 +438,7 @@ class Accs(QWidget):
         It shows create account form.
         """
         hide(self.forms, self.tips)
-        self.forms['create'].show()
+        self.forms["create"].show()
 
     def edit(self):
         """
@@ -430,7 +446,7 @@ class Accs(QWidget):
         It shows edit account form.
         """
         # self.list.index is index that represents currently chosen account at the list
-        self.forms['edit'].set_account(self.list.index)
+        self.forms["edit"].set_account(self.list.index)
 
 
 class MenuBar(QMenuBar):
@@ -438,6 +454,7 @@ class MenuBar(QMenuBar):
     This class is superclass for other menu bars (i.e. for main window and database windows menu
     bars).
     """
+
     def __init__(self, parent):
         """
         This is a base constructor for menu bars.
@@ -449,25 +466,39 @@ class MenuBar(QMenuBar):
         self._thread = None
 
         # here we define every action that all menu bars are using
-        self.File = self.addMenu('&File')
-        self.quit = self.File.addAction(QIcon('img/quit.svg'), '&Quit',
-                                        parent.close, QKeySequence('Ctrl+Q'))
+        self.File = self.addMenu("&File")
+        self.quit = self.File.addAction(
+            QIcon("img/quit.svg"), "&Quit", parent.close, QKeySequence("Ctrl+Q")
+        )
 
-        self.Edit = self.addMenu('&Edit')
-        self.Edit.addAction(QIcon('img/preferences.png'), '&Preferences',
-                            self.preferences, QKeySequence('Ctrl+P'))
+        self.Edit = self.addMenu("&Edit")
+        self.Edit.addAction(
+            QIcon("img/preferences.png"),
+            "&Preferences",
+            self.preferences,
+            QKeySequence("Ctrl+P"),
+        )
 
-        self.Updates = self.addMenu('&Updates')
-        self.Updates.addAction(QIcon('img/update-available.svg'),
-                               '&Check for updates', self.checkForUpdates)
-        self.Updates.addAction(QIcon('img/changelog.svg'), '&View changelog',
-                               lambda: ShowChangelog(parent))
+        self.Updates = self.addMenu("&Updates")
+        self.Updates.addAction(
+            QIcon("img/update-available.svg"),
+            "&Check for updates",
+            self.checkForUpdates,
+        )
+        self.Updates.addAction(
+            QIcon("img/changelog.svg"), "&View changelog", lambda: ShowChangelog(parent)
+        )
 
-        self.Help = self.addMenu('&Help')  # first is the main window
-        self.Help.addAction(QIcon('img/info.png'), 'About',
-                            parent.windows[0].about.exec, QKeySequence('F1'))
-        self.Help.addAction(QIcon('img/qt5.png'), 'PyQt5',
-                            lambda: QMessageBox.aboutQt(parent))
+        self.Help = self.addMenu("&Help")  # first is the main window
+        self.Help.addAction(
+            QIcon("img/info.png"),
+            "About",
+            parent.windows[0].about.exec,
+            QKeySequence("F1"),
+        )
+        self.Help.addAction(
+            QIcon("img/qt5.png"), "PyQt5", lambda: QMessageBox.aboutQt(parent)
+        )
 
     def preferences(self):
         """
@@ -481,14 +512,14 @@ class MenuBar(QMenuBar):
         This method called when user goes to menu: Updates -> Check for updates.
         It runs process of checking for updates in another thread.
         """
+
         def mess(parent, changes, log):
             if changes:
                 # if there are updates we show updates available dialog.
                 res = UpdatesAvailable(parent, log)
             else:
                 # else we show message saying that there are no updates.
-                res = QMessageBox.information(parent, "Оновлення",
-                                              "Немає оновленнь.")
+                res = QMessageBox.information(parent, "Оновлення", "Немає оновленнь.")
             # here we assign resulting dialog to main window, so we can test those dialogs.
             parent.res = res
             thread.exit()
@@ -497,8 +528,7 @@ class MenuBar(QMenuBar):
         thread = QThread(parent=self)
         updating = Updating()
         updating.moveToThread(thread)
-        updating.result.connect(
-            lambda changes, log: mess(self.parent, changes, log))
+        updating.result.connect(lambda changes, log: mess(self.parent, changes, log))
         thread.started.connect(updating.run)
         thread.start()
 
@@ -511,6 +541,7 @@ class AppMenuBar(MenuBar):
     This class inherits from MenuBar, and it specifies actions that will be in the main window
     menu bar.
     """
+
     def __init__(self, parent):
         """
         This is the constructor of menu bar, it adds new actions to menu bar that already created
@@ -521,17 +552,17 @@ class AppMenuBar(MenuBar):
         MenuBar.__init__(self, parent)
 
         # here we add actions specific to databases
-        self.new = QAction(QIcon('img/list-add.svg'), '&New database...')
+        self.new = QAction(QIcon("img/list-add.svg"), "&New database...")
         self.new.triggered.connect(parent.dbs.panel.addButton.click)
-        self.new.setShortcut(QKeySequence('Ctrl+N'))
+        self.new.setShortcut(QKeySequence("Ctrl+N"))
 
-        self._import = QAction(QIcon('img/import.png'), '&Import database...')
+        self._import = QAction(QIcon("img/import.png"), "&Import database...")
         self._import.triggered.connect(self.Import)
-        self._import.setShortcut(QKeySequence('Ctrl+I'))
+        self._import.setShortcut(QKeySequence("Ctrl+I"))
 
-        self.export = QAction(QIcon('img/export.png'), '&Export database...')
+        self.export = QAction(QIcon("img/export.png"), "&Export database...")
         self.export.triggered.connect(self.Export)
-        self.export.setShortcut(QKeySequence('Ctrl+E'))
+        self.export.setShortcut(QKeySequence("Ctrl+E"))
 
         self.File.insertAction(self.quit, self.new)
         self.File.insertAction(self.quit, self._import)
@@ -544,10 +575,10 @@ class AppMenuBar(MenuBar):
         calls export function with all parameters specified.
         """
         # by default we show home directory at the `Chose directory dialog`
-        home = os.getenv('HOME')
-        path = QFileDialog.getOpenFileName(caption='Імпортувати базу данних',
-                                           filter='Tarball (*.tar)',
-                                           directory=home)[0]
+        home = os.getenv("HOME")
+        path = QFileDialog.getOpenFileName(
+            caption="Імпортувати базу данних", filter="Tarball (*.tar)", directory=home
+        )[0]
         # if user pressed `cancel` button we abort export, if not we call _import function
         if path:
             _import(path, self.parent)
@@ -567,21 +598,23 @@ class AppMenuBar(MenuBar):
             tips = self.parent.dbs.tips
             forms = self.parent.dbs.forms
             hide(tips, forms)
-            tips['export'].show()
+            tips["export"].show()
             return
 
         # by default we show home directory at the `Chose directory dialog`
-        home = os.getenv('HOME')
-        path = QFileDialog.getSaveFileName(caption='Експортувати базу данних',
-                                           filter='Tarball (*.tar)',
-                                           directory=f'{home}/{name}.tar')[0]
+        home = os.getenv("HOME")
+        path = QFileDialog.getSaveFileName(
+            caption="Експортувати базу данних",
+            filter="Tarball (*.tar)",
+            directory=f"{home}/{name}.tar",
+        )[0]
 
         # if user pressed `cancel` button we abort export
         if not path:
             return
         # if user typed name of tarfile without .tad extension we add it to name.
-        if not path.endswith('.tar'):
-            path += '.tar'
+        if not path.endswith(".tar"):
+            path += ".tar"
         # then we call export function
         export(name, path, self.parent)
 
@@ -590,6 +623,7 @@ class DbMenuBar(MenuBar):
     """
     This class is a menu bar for database window.
     """
+
     def __init__(self, parent):
         """
         This is the constructor of menu bar, it adds new actions to menu bar that already created
@@ -600,17 +634,17 @@ class DbMenuBar(MenuBar):
         MenuBar.__init__(self, parent)
 
         # here we add actions specific to accounts
-        self.new = QAction(QIcon('img/list-add.svg'), '&New account...')
+        self.new = QAction(QIcon("img/list-add.svg"), "&New account...")
         self.new.triggered.connect(parent.accs.panel.addButton.click)
-        self.new.setShortcut(QKeySequence('Ctrl+N'))
+        self.new.setShortcut(QKeySequence("Ctrl+N"))
 
-        self.save = QAction(QIcon('img/save.png'), '&Save')
+        self.save = QAction(QIcon("img/save.png"), "&Save")
         self.save.triggered.connect(self.Save)
-        self.save.setShortcut(QKeySequence('Ctrl+S'))
+        self.save.setShortcut(QKeySequence("Ctrl+S"))
 
-        self.copy = QAction(QIcon('img/copy.png'), '&Copy')
-        self.copy.triggered.connect(parent.accs.forms['show'].copy_account)
-        self.copy.setShortcut(QKeySequence('Ctrl+C'))
+        self.copy = QAction(QIcon("img/copy.png"), "&Copy")
+        self.copy.triggered.connect(parent.accs.forms["show"].copy_account)
+        self.copy.setShortcut(QKeySequence("Ctrl+C"))
 
         self.File.insertAction(self.quit, self.new)
         self.File.insertAction(self.quit, self.save)
@@ -628,8 +662,8 @@ class DbMenuBar(MenuBar):
 
         # then we encrypt that database and save it to file
         token = encryptDatabase(name, db, password)
-        dbfile = f'{core.const.SRC_DIR}/{name}.db'
-        with open(dbfile, 'wb') as file:
+        dbfile = f"{core.const.SRC_DIR}/{name}.db"
+        with open(dbfile, "wb") as file:
             file.write(token)
 
 
@@ -637,6 +671,7 @@ class DbWindow(QMainWindow):
     """
     This class is a database window.
     """
+
     def __init__(self, windows, name, db, password):
         # sourcery skip: use-dict-items
         """
@@ -653,7 +688,7 @@ class DbWindow(QMainWindow):
         QMainWindow.__init__(self)
         self.resize(1000, 500)
         self.setWindowTitle(name)
-        self.setWindowIcon(QIcon('img/account.png'))
+        self.setWindowIcon(QIcon("img/account.png"))
         self.name = name
         self.db = db
         self.password = password
@@ -677,11 +712,11 @@ class DbWindow(QMainWindow):
         set_form_completers(create_account_form, db)
         set_form_completers(edit_account_form, db)
 
-        tips = {'help': helpTip}
+        tips = {"help": helpTip}
         forms = {
-            'create': create_account_form,
-            'edit': edit_account_form,
-            'show': show_account_form
+            "create": create_account_form,
+            "edit": edit_account_form,
+            "show": show_account_form,
         }
 
         create_account_form.forms = forms
@@ -697,8 +732,8 @@ class DbWindow(QMainWindow):
 
         # and here we create accounts panel and list by instantiating Accs class
         accs = Accs(name, db, forms, tips, windows)
-        sets = QSettings(f'{os.getenv("HOME")}/PyTools', 'PyQtAccounts')
-        list_width = sets.value('advanced/list_width', 200, type=int)
+        sets = QSettings(f'{os.getenv("HOME")}/PyTools', "PyQtAccounts")
+        list_width = sets.value("advanced/list_width", 200, type=int)
         accs.setMaximumWidth(list_width)
 
         splitter.addWidget(accs)
@@ -733,9 +768,12 @@ class DbWindow(QMainWindow):
         # here we asking user does he sure about exit
         if self.ask:
             action = QMessageBox.question(
-                self, 'Увага!', 'Ви певні що хочете вийти?\n'
-                'Усі незбережені зміни буде втрачено!\n'
-                'Натисніть Ctrl+S аби зберегти зміни.')
+                self,
+                "Увага!",
+                "Ви певні що хочете вийти?\n"
+                "Усі незбережені зміни буде втрачено!\n"
+                "Натисніть Ctrl+S аби зберегти зміни.",
+            )
         else:
             action = QMessageBox.Yes
 
@@ -752,15 +790,16 @@ class About(QDialog):
     This class is an About dialog, it appears when user goes to menu: Help -> About or presses F1.
     This dialog provides all helpful information about PyQtAccounts such as license, credits etc.
     """
+
     def __init__(self):
         QDialog.__init__(self)
         self.resize(300, 500)
 
         # here we create dialog title with icon
-        self.title = QLabel('<h3>About PyQtAccounts</h3>')
+        self.title = QLabel("<h3>About PyQtAccounts</h3>")
         self.title.setMinimumWidth(800)
         self.icon = QLabel()
-        icon = QPixmap('img/icon.svg')
+        icon = QPixmap("img/icon.svg")
         self.icon.setPixmap(icon)
 
         self.titleLayout = QHBoxLayout()
@@ -768,12 +807,10 @@ class About(QDialog):
         self.titleLayout.addWidget(self.title)
 
         # and here we obtain current programs version to use it in about section of dialog
-        version = str(
-            getVersion())[1:]  # to prevent the appearance of the `v` symbol
+        version = str(getVersion())[1:]  # to prevent the appearance of the `v` symbol
 
         # this is `about` label, it provides information about PyQtAccounts
-        self.about = \
-            '''<pre>
+        self.about = """<pre>
 
 
             Author: Bohdan Kolvakh
@@ -792,26 +829,26 @@ class About(QDialog):
             account passwords or databases.
             </span>
             (c) Copyright 2020 Bohdan Kolvakh
-            </pre>'''.format(version)
+            </pre>""".format(
+            version
+        )
         self.aboutLabel = QLabel(self.about)
         self.aboutLabel.setOpenExternalLinks(True)
 
         # here we load license from COPYING file and set it as text to license label
-        self.license = \
-            '<pre>{}</pre>'.format(open('COPYING').read())
+        self.license = "<pre>{}</pre>".format(open("COPYING").read())
         self.licenseText = QTextEdit(self.license)
         self.licenseText.setReadOnly(True)
 
         # here we load credits from COPYING file and set it as text to credits label
-        self.credits = \
-            '<pre>{}</pre>'.format(open('CREDITS').read())
+        self.credits = "<pre>{}</pre>".format(open("CREDITS").read())
         self.creditsText = QLabel(self.credits)
 
         # here we create tab widget, so each label has its own tab
         self.content = QTabWidget()
-        self.content.addTab(self.aboutLabel, 'About')
-        self.content.addTab(self.licenseText, 'License')
-        self.content.addTab(self.creditsText, 'Credits')
+        self.content.addTab(self.aboutLabel, "About")
+        self.content.addTab(self.licenseText, "License")
+        self.content.addTab(self.creditsText, "Credits")
 
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
@@ -824,6 +861,7 @@ class Settings(QDialog):
     This is settings dialog it appears when uer goes to menu: Edit -> Preferences or presses
     Ctrl+P.
     """
+
     def __init__(self, parent):
         """
         This is constructor of the dialog.
@@ -831,31 +869,32 @@ class Settings(QDialog):
         main window
         """
         QDialog.__init__(self, parent)
-        self.setWindowTitle('Settings - PyQtAccounts')
+        self.setWindowTitle("Settings - PyQtAccounts")
         # here we open user settings that store in his home directory
-        self.settings = QSettings(f'{os.getenv("HOME")}/PyTools',
-                                  'PyQtAccounts')
+        self.settings = QSettings(f'{os.getenv("HOME")}/PyTools', "PyQtAccounts")
 
         # here we create title and label for main database feature
         # feature when we auto select main database on startup (database that user chose as main).
-        header = QLabel('<h4>Швидке введення</h4>')
-        label = QLabel('Головна база данних:')
+        header = QLabel("<h4>Швидке введення</h4>")
+        label = QLabel("Головна база данних:")
 
         # here we create checkbox to switch database feature and combobox to chose main database.
         checkbox = QCheckBox(
-            'Показувати форму для введення пароля одразу після запуску')
+            "Показувати форму для введення пароля одразу після запуску"
+        )
         checkbox.setChecked(
-            self.settings.value('advanced/is_main_db', False, type=bool))
+            self.settings.value("advanced/is_main_db", False, type=bool)
+        )
 
         dbs = QComboBox()
         dbs.setModel(parent.dbs.list.model)
         dbs.model = parent.dbs.list.model
-        main_db = self.settings.value('advanced/main_db', '', type=str)
+        main_db = self.settings.value("advanced/main_db", "", type=str)
         if main_db:
             dbs.setCurrentText(main_db)
-        elif 'main' in getDbList():
+        elif "main" in getDbList():
             # by default current is main database
-            dbs.setCurrentText('main')
+            dbs.setCurrentText("main")
 
         mainLayout = QHBoxLayout()
         mainLayout.addWidget(label)
@@ -871,8 +910,10 @@ class Settings(QDialog):
         self.mainDbLayout = mainDbLayout
 
         widthHeader = QLabel("<h4>Ширина списку</h4>")
-        widthTip = Tip("Встановлення дуже великого значення дозволяє вільно рухати розділювач")
-        list_width = self.settings.value('advanced/list_width', 200, type=int)
+        widthTip = Tip(
+            "Встановлення дуже великого значення дозволяє вільно рухати розділювач"
+        )
+        list_width = self.settings.value("advanced/list_width", 200, type=int)
 
         widthNumber = QSpinBox()
         widthNumber.setMinimum(0)
@@ -889,9 +930,9 @@ class Settings(QDialog):
         widthLayout.widthNumber = widthNumber
         self.widthLayout = widthLayout
 
-        self.saveButton = GTKButton(APPLY_BUTTON, 'Зберегти')
+        self.saveButton = GTKButton(APPLY_BUTTON, "Зберегти")
         self.saveButton.clicked.connect(self.save)
-        self.closeButton = QPushButton('Скасувати')
+        self.closeButton = QPushButton("Скасувати")
         self.closeButton.clicked.connect(self.hide)
 
         buttonsLayout = QHBoxLayout()
@@ -910,10 +951,10 @@ class Settings(QDialog):
         """
         # here we save all settings to file and hide our dialog.
         is_main_db = self.mainDbLayout.checkbox.isChecked()
-        self.settings.setValue('advanced/is_main_db', is_main_db)
+        self.settings.setValue("advanced/is_main_db", is_main_db)
         main_db = self.mainDbLayout.dbs.currentText()
-        self.settings.setValue('advanced/main_db', main_db)
+        self.settings.setValue("advanced/main_db", main_db)
 
         list_width = self.widthLayout.widthNumber.value()
-        self.settings.setValue('advanced/list_width', list_width)
+        self.settings.setValue("advanced/list_width", list_width)
         self.hide()

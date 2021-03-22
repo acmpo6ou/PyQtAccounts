@@ -67,38 +67,53 @@ class InitPageTest(UnitTest):
     """
     This test class provides all tests for initialization page.
     """
+
     def test_page(self):
         """
         This test tests page itself.
         """
         # here we set environment variable to fake in-memory folder and create
         # initialization page
-        self.monkeypatch.setenv('HOME', '/home/accounts')
+        self.monkeypatch.setenv("HOME", "/home/accounts")
         page = InitPage()
 
         # here we check some default attributes of init page.
-        self.assertIsNone(page._thread, 
-                          '_thread must be set to None when constructing instance')
-        self.assertEqual(page.folder, '/home/accounts',
-                         'folder attribute of InitPage must be set to'
-                         '`/home/accounts` by default!')
+        self.assertIsNone(
+            page._thread, "_thread must be set to None when constructing instance"
+        )
+        self.assertEqual(
+            page.folder,
+            "/home/accounts",
+            "folder attribute of InitPage must be set to"
+            "`/home/accounts` by default!",
+        )
 
-        self.assertEqual(page.title.text(), '<h4>Ініціалізація</h4>',
-                         'Page title is incorrect!')
-        self.assertEqual(page.initLabel.text(),
-                         'Виберіть папку в яку ви хочете встановити PyQtAccounts:',
-                         'Browse tip is incorrect!')
-        self.assertEqual(page.browseLabel.text(), '/home/accounts', 'Browse label is incorrect!')
+        self.assertEqual(
+            page.title.text(), "<h4>Ініціалізація</h4>", "Page title is incorrect!"
+        )
+        self.assertEqual(
+            page.initLabel.text(),
+            "Виберіть папку в яку ви хочете встановити PyQtAccounts:",
+            "Browse tip is incorrect!",
+        )
+        self.assertEqual(
+            page.browseLabel.text(), "/home/accounts", "Browse label is incorrect!"
+        )
 
-        self.assertTrue(page.menuCheckbox.isChecked(),
-                        'Menu shortcut checkbox at initialization page must be checked!')
-        self.assertTrue(page.desktopCheckbox.isChecked(),
-                        'Desktop shortcut checkbox at initialization page must be checked!')
+        self.assertTrue(
+            page.menuCheckbox.isChecked(),
+            "Menu shortcut checkbox at initialization page must be checked!",
+        )
+        self.assertTrue(
+            page.desktopCheckbox.isChecked(),
+            "Desktop shortcut checkbox at initialization page must be checked!",
+        )
 
     def test_browse(self):
         """
         This test tests browse widget of init page.
         """
+
         def mock_browse(parent, title, folder, dirs_only_flag):
             """
             This function is a mock for for getExistingDirectory from QFileDialog.
@@ -116,14 +131,18 @@ class InitPageTest(UnitTest):
             path to fake directory that we simulate is chosen by user
             """
             # here we check parameters listed above
-            assert title == 'Installation directory', 'Directory dialog title is incorrect.'
-            assert folder == os.getenv('HOME'), 'Default directory of directory dialog must be ' \
-                                                'a home folder (i.e. /home/accounts)!'
+            assert (
+                title == "Installation directory"
+            ), "Directory dialog title is incorrect."
+            assert folder == os.getenv("HOME"), (
+                "Default directory of directory dialog must be "
+                "a home folder (i.e. /home/accounts)!"
+            )
             assert dirs_only_flag == QFileDialog.ShowDirsOnly
-            return '/home/accounts/myprograms'
+            return "/home/accounts/myprograms"
 
         # here we patch getExistingDirectory
-        self.monkeypatch.setattr(QFileDialog, 'getExistingDirectory', mock_browse)
+        self.monkeypatch.setattr(QFileDialog, "getExistingDirectory", mock_browse)
 
         # then we create init page and click on button of browse widget
         page = InitPage()
@@ -131,12 +150,18 @@ class InitPageTest(UnitTest):
 
         # here we check does `folder` attribute and label of browse widget have changed to
         # directory hat we chose in dialog
-        self.assertEqual(page.folder, '/home/accounts/myprograms',
-                         'folder of init page is incorrect, must change after we chose another'
-                         ' in browse dialog!')
-        self.assertEqual(page.browseLabel.text(), '/home/accounts/myprograms',
-                         'folder of browse label is incorrect, must change after we chose another'
-                         ' in browse dialog!')
+        self.assertEqual(
+            page.folder,
+            "/home/accounts/myprograms",
+            "folder of init page is incorrect, must change after we chose another"
+            " in browse dialog!",
+        )
+        self.assertEqual(
+            page.browseLabel.text(),
+            "/home/accounts/myprograms",
+            "folder of browse label is incorrect, must change after we chose another"
+            " in browse dialog!",
+        )
 
     def test_is_complete(self):
         """
@@ -148,14 +173,18 @@ class InitPageTest(UnitTest):
         page = InitPage()
         page.progress.setValue(0)
         # then we check that `Next` button is disabled
-        self.assertFalse(page.isComplete(), '`Next` button must be disabled when init progress is'
-                                            'not complete!')
+        self.assertFalse(
+            page.isComplete(),
+            "`Next` button must be disabled when init progress is" "not complete!",
+        )
 
         # here we set progress to 100% (i.e. to represent that init process is complete
         page.progress.setValue(100)
         # then we check is `Next` button enabled
-        self.assertTrue(page.isComplete(), '`Next` button must be enabled when init progress is'
-                                           'complete!')
+        self.assertTrue(
+            page.isComplete(),
+            "`Next` button must be enabled when init progress is" "complete!",
+        )
 
     def test_init_already(self):
         """
@@ -165,7 +194,7 @@ class InitPageTest(UnitTest):
         """
         # here we monkeypatch os.listdir so it will return `PyQtAccounts` in list of current
         # directory and program will think that PyQtAccounts is already installed
-        self.monkeypatch.setattr('os.listdir', lambda path: ['PyQtAccounts'])
+        self.monkeypatch.setattr("os.listdir", lambda path: ["PyQtAccounts"])
 
         # then we create init page and click init button
         page = InitPage()
@@ -174,15 +203,18 @@ class InitPageTest(UnitTest):
         # here we check that progressbar displays 100% now
 
         # here we check that progressbar displays 100% now
-        self.assertEqual(page.progress.value(), 100,
-                         'Progressbar must display 100% when program is already installed and '
-                         'user clicks on initialize button!')
+        self.assertEqual(
+            page.progress.value(),
+            100,
+            "Progressbar must display 100% when program is already installed and "
+            "user clicks on initialize button!",
+        )
 
     def test_init(self):
         # Tom wants to initialize PyQtAccounts in his home directory
         init_accounts_folder()
         page = InitPage()
-        self.assertEqual(page.browseLabel.text(), '/home/accounts')
+        self.assertEqual(page.browseLabel.text(), "/home/accounts")
 
         # Everything seems fine so he presses `Initialize` button
         page.initButton.click()
@@ -190,18 +222,19 @@ class InitPageTest(UnitTest):
         # some time passes and initialization is complete
         def is_finished():
             assert page._thread.isFinished()
+
         self.qbot.waitUntil(is_finished, timeout=3000)
 
         # Progressbar shows 100% and program initialized with all its folder structure
         self.assertEqual(page.progress.value(), 100)
-        self.assertTrue(os.path.exists('/home/accounts/PyQtAccounts'))
-        self.assertTrue(os.path.exists('/home/accounts/PyQtAccounts/src'))
-        self.assertTrue(os.path.exists('/home/accounts/PyQtAccounts/core'))
-        self.assertTrue(os.path.exists('/home/accounts/PyQtAccounts/COPYING'))
-        self.assertTrue(os.path.exists('/home/accounts/PyQtAccounts/CREDITS'))
-        self.assertTrue(os.path.exists('/home/accounts/PyQtAccounts/change.log'))
-        self.assertTrue(os.path.exists('/home/accounts/PyQtAccounts/setup.py'))
-        self.assertTrue(os.path.exists('/home/accounts/PyQtAccounts/img'))
+        self.assertTrue(os.path.exists("/home/accounts/PyQtAccounts"))
+        self.assertTrue(os.path.exists("/home/accounts/PyQtAccounts/src"))
+        self.assertTrue(os.path.exists("/home/accounts/PyQtAccounts/core"))
+        self.assertTrue(os.path.exists("/home/accounts/PyQtAccounts/COPYING"))
+        self.assertTrue(os.path.exists("/home/accounts/PyQtAccounts/CREDITS"))
+        self.assertTrue(os.path.exists("/home/accounts/PyQtAccounts/change.log"))
+        self.assertTrue(os.path.exists("/home/accounts/PyQtAccounts/setup.py"))
+        self.assertTrue(os.path.exists("/home/accounts/PyQtAccounts/img"))
 
     def test_init_fail_when_no_permissions(self):
         """
@@ -211,14 +244,20 @@ class InitPageTest(UnitTest):
         """
         # Tom wants to install PyQtAccounts in `/` folder
         page = InitPage()
-        page.folder = '/'  # we have no permissions to write in root folder
+        page.folder = "/"  # we have no permissions to write in root folder
 
         # so he presses init button
         page.initButton.click()
 
         # error message appears saying that he has no permission to write in `/` folder
         def errors_visible():
-            assert page.errors.visibility, "Initialization error message is not displayed!"
+            assert (
+                page.errors.visibility
+            ), "Initialization error message is not displayed!"
+
         self.qbot.waitUntil(errors_visible)
-        self.assertEqual(page.errors.toPlainText(), INIT_ERROR, 'Error message of initialization '
-                                                                'is incorrect!')
+        self.assertEqual(
+            page.errors.toPlainText(),
+            INIT_ERROR,
+            "Error message of initialization " "is incorrect!",
+        )

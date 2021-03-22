@@ -75,8 +75,9 @@ def getChangeLog():
         # errors may occur while we trying to get changelog, for example there is no
         # internet connection
         return [
-            change.decode().rstrip() for change in urlopen(
-                'https://raw.githubusercontent.com/Acmpo6ou/PyQtAccounts/master/change.log'
+            change.decode().rstrip()
+            for change in urlopen(
+                "https://raw.githubusercontent.com/Acmpo6ou/PyQtAccounts/master/change.log"
             )
         ]
     except urllib.error.HTTPError:
@@ -88,6 +89,7 @@ class Updating(QObject):
     """
     This class represents process that gets changelog.
     """
+
     # this is a signal that instance emits when updating process ends.
     result = pyqtSignal(bool, list)
 
@@ -96,13 +98,14 @@ class Updating(QObject):
         This method does all updating work, such as getting changelog.
         """
         import git
-        repo = git.Repo('.')
+
+        repo = git.Repo(".")
         origin = repo.remote()
         origin.fetch()
 
         # we fetch all changes and if there new ones then changes list wouldn't be empty
         # also we get changelog which we will show at the updating dialog if there are updates
-        changes = list(repo.iter_commits('master..origin/master'))
+        changes = list(repo.iter_commits("master..origin/master"))
 
         # here we obtain changelog only if necessary, when there are changes,
         # because if we will obtain it always then OS will cache it and user may
@@ -117,6 +120,7 @@ class UpdatesAvailable(QWidget):
     """
     This class is a window that PyQtAccounts shows when there are updates available.
     """
+
     def __init__(self, parent, log):
         """
         This constructor creates dialog with changelog and buttons: `Apply` and `Later`
@@ -127,37 +131,39 @@ class UpdatesAvailable(QWidget):
         """
         super().__init__()
         self.setParent(parent)
-        self.setWindowTitle('Доступно нове оновлення')
+        self.setWindowTitle("Доступно нове оновлення")
         self.setWindowFlags(Qt.Dialog)
         self.resize(1000, 500)
         self.show()
 
         # Here are title of the dialog with icon created and aligned
-        self.title = Title('<h3>Доступно нове оновлення</h3>')
+        self.title = Title("<h3>Доступно нове оновлення</h3>")
         self.title.setMinimumWidth(800)
         self.icon = QLabel()
-        self.icon.setPixmap(QPixmap('img/update-available.svg'))
+        self.icon.setPixmap(QPixmap("img/update-available.svg"))
 
         header = QHBoxLayout()
         header.addWidget(self.icon)
         header.addWidget(self.title)
 
         # tip about restart after update
-        tip = "Доступно нове оновлення PyQtAccounts.\n" \
-              "Після оновлення програма перезапуститься.\n" \
-              "Переконайтеся що ви зберігли всі зміни до ваших баз данних перед оновленням.\n"
+        tip = (
+            "Доступно нове оновлення PyQtAccounts.\n"
+            "Після оновлення програма перезапуститься.\n"
+            "Переконайтеся що ви зберігли всі зміни до ваших баз данних перед оновленням.\n"
+        )
         self.text = QLabel(tip)
 
         # here we parse changelog and set its text to changelog label
-        changelog = '<h4>Що нового:</h4><ul>'
+        changelog = "<h4>Що нового:</h4><ul>"
         for change in log:
-            changelog += '<li>{}</li>\n'.format(change)
-        changelog += '</ul>'
+            changelog += "<li>{}</li>\n".format(change)
+        changelog += "</ul>"
         self.changelogLabel = QLabel(changelog)
         self.changelogLabel.setWordWrap(True)
 
-        self.laterButton = GTKButton(DELETE_BUTTON, 'Пізніше')
-        self.updateButton = GTKButton(APPLY_BUTTON, 'Оновити')
+        self.laterButton = GTKButton(DELETE_BUTTON, "Пізніше")
+        self.updateButton = GTKButton(APPLY_BUTTON, "Оновити")
         self.laterButton.clicked.connect(self.hide)
         self.updateButton.clicked.connect(self.applyUpdate)
 
@@ -180,14 +186,12 @@ class UpdatesAvailable(QWidget):
         self.hide()
 
         # download all changes
-        repo = git.Repo('.')
+        repo = git.Repo(".")
         origin = repo.remote()
         origin.pull()
 
         # start new instance of the program in daemon
-        t = threading.Thread(target=os.system,
-                             args=('./run.sh', ),
-                             daemon=True)
+        t = threading.Thread(target=os.system, args=("./run.sh",), daemon=True)
         t.start()
 
         # and close the old one
@@ -198,6 +202,7 @@ class ShowChangelog(QDialog):
     """
     This class is a window for changelog that user sees through menu: Updates -> View changelog
     """
+
     def __init__(self, parent):
         """
         Constructor of the dialog.
@@ -210,10 +215,10 @@ class ShowChangelog(QDialog):
         # here we get current version of PyQtAccounts, parse changelog and set all this as
         # labels text
         version = getVersion()
-        changelog = '<h4>PyQtAccounts {}:</h4><ul>'.format(version)
-        for change in open('change.log'):
-            changelog += '<li>{}</li>\n'.format(change)
-        changelog += '</ul>'
+        changelog = "<h4>PyQtAccounts {}:</h4><ul>".format(version)
+        for change in open("change.log"):
+            changelog += "<li>{}</li>\n".format(change)
+        changelog += "</ul>"
         self.changelogLabel = QLabel(changelog)
         self.changelogLabel.setWordWrap(True)
 

@@ -70,6 +70,7 @@ class Window(QMainWindow):
     """
     This class is a main window.
     """
+
     def __init__(self):
         """
         This constructor creates everything that application needs.
@@ -81,8 +82,8 @@ class Window(QMainWindow):
         self.show()
 
         # main window doesn't have a name, this way we can differ it in between other windows.
-        self.name = ''
-        self.setWindowIcon(QIcon('img/icon.svg'))
+        self.name = ""
+        self.setWindowIcon(QIcon("img/icon.svg"))
 
         # main window is always the first window
         windows = [self]
@@ -96,18 +97,19 @@ class Window(QMainWindow):
         helpTip.show()
 
         # and warnings
-        alreadyOpen = HelpTip('Базу данних вже відкрито')
-        editTip = WarningTip('Ви повинні відкрити базу данних перед тим як '
-                             'редагувати її!')
+        alreadyOpen = HelpTip("Базу данних вже відкрито")
+        editTip = WarningTip(
+            "Ви повинні відкрити базу данних перед тим як " "редагувати її!"
+        )
         exportTip = WarningTip("Виберіть базу данних яку хочете експортувати.")
         deleteTip = WarningTip("Виберіть базу данних яку хочете видалити.")
 
         tips = {
-            'help': helpTip,
-            'already-open': alreadyOpen,
-            'edit-w': editTip,
-            'export': exportTip,
-            'delete': deleteTip
+            "help": helpTip,
+            "already-open": alreadyOpen,
+            "edit-w": editTip,
+            "export": exportTip,
+            "delete": deleteTip,
         }
 
         # and here we create all forms
@@ -115,18 +117,14 @@ class Window(QMainWindow):
         open_db_form = OpenDbForm(helpTip, windows, parent=self)
         edit_db_form = EditDbForm(tips, windows, parent=self)
 
-        forms = {
-            'create': create_db_form,
-            'edit': edit_db_form,
-            'open': open_db_form
-        }
+        forms = {"create": create_db_form, "edit": edit_db_form, "open": open_db_form}
 
         # settings
-        sets = QSettings(f'{os.getenv("HOME")}/PyTools', 'PyQtAccounts')
+        sets = QSettings(f'{os.getenv("HOME")}/PyTools', "PyQtAccounts")
 
         # here we instantiate Dbs class and add it to splitter which will split Dbs and forms
         dbs = Dbs(forms, windows, tips)
-        list_width = sets.value('advanced/list_width', 200, type=int)
+        list_width = sets.value("advanced/list_width", 200, type=int)
         dbs.setMaximumWidth(list_width)
 
         splitter = QSplitter()
@@ -140,8 +138,8 @@ class Window(QMainWindow):
         self.dbs = dbs
 
         # here we obtain the main database feature settings
-        is_main_db = sets.value('advanced/is_main_db', False, type=bool)
-        main_db = sets.value('advanced/main_db', '', type=str)
+        is_main_db = sets.value("advanced/is_main_db", False, type=bool)
+        main_db = sets.value("advanced/main_db", "", type=str)
 
         # if user has main database feature turned on we auto select main database
         if is_main_db and main_db in getDbList():
@@ -184,8 +182,7 @@ class Window(QMainWindow):
             return
 
         # here we show confirm message
-        action = QMessageBox.question(self, 'Увага!',
-                                      'Ви певні що хочете вийти?')
+        action = QMessageBox.question(self, "Увага!", "Ви певні що хочете вийти?")
 
         if action == QMessageBox.No:
             # if user answered no we do nothing (i.e ignore close event)
@@ -204,11 +201,12 @@ class ErrorWindow(QMessageBox):
     """
     This class is a window that we show if program caused some errors.
     """
+
     def __init__(self, text, err):
         super().__init__()
         # here we set window title, icon and text. We also have detailed description which
         # contains error message.
-        self.setWindowTitle('Помилка!')
+        self.setWindowTitle("Помилка!")
         self.setIcon(super().Critical)
         self.setDetailedText(str(err))
         self.setText(text)
@@ -219,10 +217,11 @@ class WarningWindow(QMessageBox):
     """
     This class is a window that we show if we want to warn user about something.
     """
+
     def __init__(self, text):
         super().__init__()
         # here we set window title, icon and text.
-        self.setWindowTitle('Увага!')
+        self.setWindowTitle("Увага!")
         self.setIcon(super().Warning)
         self.setText(text)
         self.exec()
@@ -239,30 +238,37 @@ def main():
 
     # here we check whether program is initialized by checking does .git dir exists in program
     # folder, if it doesn't we show initialization warning
-    if '.git' not in os.listdir('.'):
-        return WarningWindow('''
+    if ".git" not in os.listdir("."):
+        return WarningWindow(
+            """
             <h3>Програму не ініціалізовано!</h3>
             <p>Завантажте файл <b><i>setup.py</i></b> з нашого github репозиторія.</p>
             <p>Запустіть його і пройдіть всі кроки інсталяції.</p>
             <p>Ініціалізація потрібна, аби система оновлення PyQtAccounts працювала.</p>
             <p>Система оновлення автоматично перевіряє, завантажує і встановлює оновлення.</p>
-            ''')
+            """
+        )
 
     # here we check whether all dependencies are installed, if not we show warning
     for req in sys_reqs:
-        if os.system(f'which {req}'):
-            return WarningWindow('''
+        if os.system(f"which {req}"):
+            return WarningWindow(
+                """
                 <h3>Не всі пакети встановлено!</h3>
                 <p>Пакет {0} не встановлено, без певних пакетів PyQtAccounts буде працювати 
                 некоректно!</p>
                 <p>Встановіть {0} такою командою:</p>
                 <p>sudo apt install {0}</p>
-                '''.format(req))
+                """.format(
+                    req
+                )
+            )
 
     try:
         # here we create application window, if any errors occur during lifetime of the program
         # we will catch them below
         import git
+
         window = Window()
     except ImportError as err:
         # if we caught import error it means that not all dependencies are satisfied
@@ -272,20 +278,21 @@ def main():
             if req in err.msg:
                 req = req
                 mess = (
-                    '<p>Здається не всі бібліотеки встановлені.</p>'
-                    f'<p>Переконайтеся що ви встановили бібліотеку {req}.</p>'
-                    '<p>Якщо ні, спробуйте ввести в термінал цю кофманду:</p>'
-                    f'<p><b>pip3 install {req}</b></p>')
+                    "<p>Здається не всі бібліотеки встановлені.</p>"
+                    f"<p>Переконайтеся що ви встановили бібліотеку {req}.</p>"
+                    "<p>Якщо ні, спробуйте ввести в термінал цю кофманду:</p>"
+                    f"<p><b>pip3 install {req}</b></p>"
+                )
                 return ErrorWindow(mess, err)
     except RecursionError:  # to prevent fatal python error
         raise
     except Exception as err:
         # if there are any other errors we show error message.
-        mess = 'Вибачте програма повинна припинити роботу через помилку.'
+        mess = "Вибачте програма повинна припинити роботу через помилку."
         win = ErrorWindow(mess, err)
 
         # during testing we want to return error window (to test it), so if TESTING is true we do so
-        if os.getenv('TESTING'):
+        if os.getenv("TESTING"):
             return win
         else:
             raise
@@ -293,7 +300,8 @@ def main():
 
 # here we create application instance and set proper font size, because by default it might be small
 app = QApplication(sys.argv)
-app.setStyleSheet('''
+app.setStyleSheet(
+    """
 *{
     font-size: 24px;
 }
@@ -301,23 +309,26 @@ app.setStyleSheet('''
 QLineEdit, QLabel, QLineEdit{
     font-family: Ubuntu Mono, Ubuntu;
 }
-''')
+"""
+)
 # also above we set monospace font for all line edit fields, so user could read passwords from them
 # easily
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # here we check whether user runs PyQtAccounts under sudo
     if os.getuid() == 0:
         # if yes, then we show appropriate warning, because launched with sudo
         # PyQtAccounts will create and edit databases, but owner of them is root
         # and normal user wont be able to edit or open those databases
         QMessageBox.warning(
-            None, 'Увага!',
+            None,
+            "Увага!",
             "PyQtAccounts запущено з адміністративними привілеями, не "
             "рекомендовано робити це, адже PyQtAccounts буде створювати і "
             "редагувати бази данних, але їх власник буде root і нормальний "
             "користувач вже не зможе відкривати і редагувати такі бази данних "
-            "без рут приівлеїв.")
+            "без рут приівлеїв.",
+        )
 
     main()
     sys.exit(app.exec_())

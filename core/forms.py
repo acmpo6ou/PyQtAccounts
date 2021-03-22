@@ -57,9 +57,10 @@ class CreateForm(QWidget):
     It provides all same functionality that you need while creating or editing something whether
     it is database or account.
     """
-    def __init__(self, title, namePlaceholder, nameError, nameTip, passTip,
-                 helpTip,
-                 parent=None):
+
+    def __init__(
+        self, title, namePlaceholder, nameError, nameTip, passTip, helpTip, parent=None
+    ):
         """
         This constructor creates the form adding all needed widgets to it.
         :param title:
@@ -94,23 +95,23 @@ class CreateForm(QWidget):
         self.nameInput.textChanged.connect(self.validateName)
 
         # Here we create passwords label and input
-        self.passLabel = QLabel('Пароль:')
-        self.passField = widgets.PasswordField('введіть пароль')
+        self.passLabel = QLabel("Пароль:")
+        self.passField = widgets.PasswordField("введіть пароль")
         self.passField.passInput.textChanged.connect(self.validatePass)
 
-        self.passRepeatLabel = QLabel('Повторіть пароль:')
-        self.passRepeatField = widgets.PasswordField('повторно введіть пароль')
+        self.passRepeatLabel = QLabel("Повторіть пароль:")
+        self.passRepeatField = widgets.PasswordField("повторно введіть пароль")
         self.passRepeatField.passInput.textChanged.connect(self.validatePass)
 
         self.nameTip = widgets.Tip(nameTip)
         self.passTip = widgets.Tip(passTip)
 
         # This is for name and password validation
-        self.validate = {'pass': False, 'name': False}
+        self.validate = {"pass": False, "name": False}
 
-        self.passEqError = widgets.Error('Паролі не співпадають!')
+        self.passEqError = widgets.Error("Паролі не співпадають!")
         self.passEqError.hide()
-        self.passFilledError = widgets.Error('Введіть пароль!')
+        self.passFilledError = widgets.Error("Введіть пароль!")
         self.passFilledError.hide()
 
         self.nameError = widgets.Error(nameError)
@@ -127,11 +128,11 @@ class CreateForm(QWidget):
         self.errors.layout().addWidget(self.nameFilledError)
 
         # Here are buttons of the form
-        self.createButton = widgets.GTKButton(widgets.APPLY_BUTTON, 'Створити')
+        self.createButton = widgets.GTKButton(widgets.APPLY_BUTTON, "Створити")
         self.createButton.setEnabled(False)
         self.createButton.setStyleSheet(widgets.APPLY_BUTTON_DISABLED)
-        self.generateButton = widgets.GTKButton(widgets.INFO_BUTTON, 'Згенерувати')
-        self.cancelButton = QPushButton('Скасувати')
+        self.generateButton = widgets.GTKButton(widgets.INFO_BUTTON, "Згенерувати")
+        self.cancelButton = QPushButton("Скасувати")
         self.createButton.clicked.connect(self.create)
         self.generateButton.clicked.connect(self.generate)
         self.cancelButton.clicked.connect(self.clear)
@@ -167,18 +168,18 @@ class CreateForm(QWidget):
             self.passEqError.show()
             self.createButton.setEnabled(False)
             self.createButton.setStyleSheet(widgets.APPLY_BUTTON_DISABLED)
-            self.validate['pass'] = False
-        elif passInput == '' or passRepeatInput == '':
+            self.validate["pass"] = False
+        elif passInput == "" or passRepeatInput == "":
             self.passFilledError.show()
             self.createButton.setEnabled(False)
             self.createButton.setStyleSheet(widgets.APPLY_BUTTON_DISABLED)
-            self.validate['pass'] = False
+            self.validate["pass"] = False
         else:
-            self.validate['pass'] = True
+            self.validate["pass"] = True
             self.passEqError.hide()
             self.passFilledError.hide()
 
-        if self.validate['pass'] and self.validate['name']:
+        if self.validate["pass"] and self.validate["name"]:
             self.createButton.setEnabled(True)
             self.createButton.setStyleSheet(widgets.APPLY_BUTTON)
 

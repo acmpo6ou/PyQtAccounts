@@ -56,12 +56,13 @@ class CreateDbTest(DbsTest):
     """
     This test class provides all functional tests about creating databases.
     """
+
     def setUp(self):
         """
-        Here we reassign some widely used variables. 
+        Here we reassign some widely used variables.
         """
         super().setUp()
-        self.form = self.dbs.forms['create']
+        self.form = self.dbs.forms["create"]
         self.name = self.form.nameInput
         self.nameError = self.form.nameError
         self.nameFilledError = self.form.nameFilledError
@@ -93,53 +94,58 @@ class CreateDbTest(DbsTest):
         self.dbs.panel.addButton.click()
 
         # He starts typing `cry` at the name input.
-        QTest.keyClicks(self.name, 'cry')
+        QTest.keyClicks(self.name, "cry")
 
         # There is now errors appearing
         self.assertFalse(
             self.nameError.visibility,
-            'The error message appears when name field of'
-            'create database form does not contains name of database that'
-            'already exists!')
+            "The error message appears when name field of"
+            "create database form does not contains name of database that"
+            "already exists!",
+        )
 
         # He then types `pt` at the name input, so the name in the input (`crypt`)
         # is the same as the name of database he already has
-        QTest.keyClicks(self.name, 'pt')
+        QTest.keyClicks(self.name, "pt")
 
         # The error message appears saying that the database with such name already exists.
         self.assertTrue(
             self.nameError.visibility,
-            'The error message does not appears when name field of'
-            'create database form contains name of database that'
-            'already exists!')
+            "The error message does not appears when name field of"
+            "create database form contains name of database that"
+            "already exists!",
+        )
 
         # Then Bob types `2` to change name from `crypt` to `crypt2`
-        QTest.keyClick(self.name, '2')
+        QTest.keyClick(self.name, "2")
 
         # The error message disappears
         self.assertFalse(
             self.nameError.visibility,
-            'The error message does not disappear when name field '
-            'no longer contains name of the database that already'
-            'exists!')
+            "The error message does not disappear when name field "
+            "no longer contains name of the database that already"
+            "exists!",
+        )
 
         # He then erases the name input
-        self.name.setText('')
+        self.name.setText("")
 
         # Another error appears saying that he needs to fill name field
         self.assertTrue(
             self.nameFilledError.visibility,
-            'The error message does not appear when name field of'
-            'create database form is erased!')
+            "The error message does not appear when name field of"
+            "create database form is erased!",
+        )
 
         # Bob then fills it with `somedatabase`
-        self.name.setText('somedatabase')
+        self.name.setText("somedatabase")
 
         # The error message disappears
         self.assertFalse(
             self.nameFilledError.visibility,
-            'The error message does not disappear when name field'
-            'is no longer empty!')
+            "The error message does not disappear when name field"
+            "is no longer empty!",
+        )
 
     def test_name_symbols_validation(self):
         """
@@ -150,19 +156,19 @@ class CreateDbTest(DbsTest):
         self.dbs.panel.addButton.click()
 
         # He then types `my data/base@!&%` to the name field
-        self.name.setText('my data/base@!&%')
+        self.name.setText("my data/base@!&%")
 
         # Also Toon types password and presses create button
-        self.pass_input.setText('something')
-        self.pass_repeat_input.setText('something')
+        self.pass_input.setText("something")
+        self.pass_repeat_input.setText("something")
         self.createButton.click()
 
         # `mydatabase` appears at the database list, cleaned name without any unallowed
         # symbols
-        self.checkDbInList('mydatabase')
+        self.checkDbInList("mydatabase")
 
         # And it actually on disk at the `src` folder
-        self.checkDbOnDisk('mydatabase')
+        self.checkDbOnDisk("mydatabase")
 
     def test_valid_password(self):
         """
@@ -172,48 +178,52 @@ class CreateDbTest(DbsTest):
         self.dbs.panel.addButton.click()
 
         # First he types name
-        QTest.keyClicks(self.name, 'somedb')
+        QTest.keyClicks(self.name, "somedb")
 
         # Then he types password to first password input
-        QTest.keyClicks(self.pass_input, 'password123')
+        QTest.keyClicks(self.pass_input, "password123")
 
         # The error message appears saying that both passwords aren't equal,
         # because first input is filled and the second is not
         self.assertTrue(
             self.passEqError.visibility,
-            'The error message does not appear when one of password'
-            'fields is filled but another is not!')
+            "The error message does not appear when one of password"
+            "fields is filled but another is not!",
+        )
 
         # Tom then fills second password field with the same password
-        QTest.keyClicks(self.pass_repeat_input, 'password123')
+        QTest.keyClicks(self.pass_repeat_input, "password123")
 
         # The error disappears
         self.assertFalse(
             self.passEqError.visibility,
-            'The error message does not disappear when all '
-            'password fields are filled!')
+            "The error message does not disappear when all "
+            "password fields are filled!",
+        )
 
         # He then erase both password fields
-        self.pass_input.setText('')
-        self.pass_repeat_input.setText('')
+        self.pass_input.setText("")
+        self.pass_repeat_input.setText("")
 
         # Another error appears saying that he needs to fill password fields
         self.assertTrue(
             self.passFilledError.visibility,
-            'The error message does not appear when password fields'
-            'are erased!')
+            "The error message does not appear when password fields" "are erased!",
+        )
 
         # Tom fills them again
-        QTest.keyClicks(self.pass_input, 'password123')
-        QTest.keyClicks(self.pass_repeat_input, 'password123')
+        QTest.keyClicks(self.pass_input, "password123")
+        QTest.keyClicks(self.pass_repeat_input, "password123")
 
         # End there is no errors
         self.assertFalse(
             self.passEqError.visibility,
-            'Password error appears when both passwords are equal!')
+            "Password error appears when both passwords are equal!",
+        )
         self.assertFalse(
             self.passFilledError.visibility,
-            'Password filled error appears when both passwords are filled!')
+            "Password filled error appears when both passwords are filled!",
+        )
 
     def test_generate_pass(self):
         """
@@ -231,25 +241,29 @@ class CreateDbTest(DbsTest):
         dialog = self.form.dialog
         self.assertTrue(
             dialog.visibility,
-            'The generate password dialog does not appear when user'
-            'presses generate button!')
+            "The generate password dialog does not appear when user"
+            "presses generate button!",
+        )
 
         # He lefts everything as it is and press the `generate` button of the dialog
         dialog.buttonGenerate.click()
 
         # Randomly generated password appears in both password fields of create database form
         self.assertIsNot(
-            self.pass_input.text(), '',
-            'First password field is empty but must contain '
-            'generated password!')
+            self.pass_input.text(),
+            "",
+            "First password field is empty but must contain " "generated password!",
+        )
         self.assertIsNot(
             self.pass_repeat_input.text(),
-            'Second password field is empty but must contain '
-            'generated password!')
+            "Second password field is empty but must contain " "generated password!",
+        )
         self.assertEqual(
-            self.pass_input.text(), self.pass_repeat_input.text(),
-            'Second and first password fields must be equal after '
-            'password generation!')
+            self.pass_input.text(),
+            self.pass_repeat_input.text(),
+            "Second and first password fields must be equal after "
+            "password generation!",
+        )
 
     def test_create_button_enabled(self):
         """
@@ -264,17 +278,19 @@ class CreateDbTest(DbsTest):
         create = self.createButton
         self.assertFalse(
             create.isEnabled(),
-            'Create button of create database form does not '
-            'disabled when form is just showed!')
+            "Create button of create database form does not "
+            "disabled when form is just showed!",
+        )
 
         # She types database name in the name input
-        QTest.keyClicks(self.name, 'somedb')
+        QTest.keyClicks(self.name, "somedb")
 
         # The `create` button is still disabled
         self.assertFalse(
             create.isEnabled(),
-            'Create button of create database form does not '
-            'disabled when password fields are empty!')
+            "Create button of create database form does not "
+            "disabled when password fields are empty!",
+        )
 
         # She then generates password via `generate` button
         gen = self.form.generateButton
@@ -285,67 +301,74 @@ class CreateDbTest(DbsTest):
         # `create` button enables now
         self.assertTrue(
             create.isEnabled(),
-            'Create button of create database form does not '
-            'enabled when name and password fields are filled'
-            'correctly!')
+            "Create button of create database form does not "
+            "enabled when name and password fields are filled"
+            "correctly!",
+        )
 
         # Lea then changes name of the database to `main` which is already taken
-        self.name.setText('main')
+        self.name.setText("main")
 
         # `create` button disables
         self.assertFalse(
             create.isEnabled(),
-            'Create button of create database form does not '
-            'disabled when name field contains name of database'
-            'that already exists!')
+            "Create button of create database form does not "
+            "disabled when name field contains name of database"
+            "that already exists!",
+        )
 
         # She then erases name input
-        self.name.setText('')
+        self.name.setText("")
 
         # `create` button is still disabled
         self.assertFalse(
             create.isEnabled(),
-            'Create button of create database form does not '
-            'disabled when name field is empty!')
+            "Create button of create database form does not "
+            "disabled when name field is empty!",
+        )
 
         # Lea types old name again
-        self.name.setText('somedb')
+        self.name.setText("somedb")
 
         # `create` button enables now
         self.assertTrue(
             create.isEnabled(),
-            'Create button of create database form does not '
-            'enabled when name field is no longer empty!')
+            "Create button of create database form does not "
+            "enabled when name field is no longer empty!",
+        )
 
         # She changes password in the first field to something else
         # so both passwords aren't equal
-        self.pass_input.setText('some_password')
+        self.pass_input.setText("some_password")
 
         # `create` button disables again
         self.assertFalse(
             create.isEnabled(),
-            'Create button of create database form does not '
-            'disabled when password fields aren\'t equal!')
+            "Create button of create database form does not "
+            "disabled when password fields aren't equal!",
+        )
 
         # Lea then erases all password fields
-        self.pass_input.setText('')
-        self.pass_repeat_input.setText('')
+        self.pass_input.setText("")
+        self.pass_repeat_input.setText("")
 
         # `create` button is still disabled
         self.assertFalse(
             create.isEnabled(),
-            'Create button of create database form does not '
-            'disabled when password fields are empty!')
+            "Create button of create database form does not "
+            "disabled when password fields are empty!",
+        )
 
         # and she generates password again
-        self.pass_input.setText('some_password')
-        self.pass_repeat_input.setText('some_password')
+        self.pass_input.setText("some_password")
+        self.pass_repeat_input.setText("some_password")
 
         # `create` button enables
         self.assertTrue(
             create.isEnabled(),
-            'Create button of create database form does not '
-            'enabled when password fields are no longer empty!')
+            "Create button of create database form does not "
+            "enabled when password fields are no longer empty!",
+        )
 
     def test_cancel_button(self):
         """
@@ -356,10 +379,10 @@ class CreateDbTest(DbsTest):
         dbs.panel.addButton.click()
 
         # She didn't want it so she just presses `cancel` button to hide the create form
-        dbs.forms['create'].cancelButton.click()
+        dbs.forms["create"].cancelButton.click()
 
         # End the form disappears
-        tip = dbs.tips['help']
+        tip = dbs.tips["help"]
         self.checkOnlyVisible(tip)
 
     def test_create_button(self):
@@ -370,18 +393,18 @@ class CreateDbTest(DbsTest):
         self.dbs.panel.addButton.click()
 
         # He fills name and password fields
-        QTest.keyClicks(self.name, 'somedb')
-        QTest.keyClicks(self.pass_input, 'some_password')
-        QTest.keyClicks(self.pass_repeat_input, 'some_password')
+        QTest.keyClicks(self.name, "somedb")
+        QTest.keyClicks(self.pass_input, "some_password")
+        QTest.keyClicks(self.pass_repeat_input, "some_password")
 
         # Everything is fine so he presses `create` button
         self.createButton.click()
 
         # The create form disappears
-        self.checkOnlyVisible(self.dbs.tips['help'])
+        self.checkOnlyVisible(self.dbs.tips["help"])
 
         # `somedb` appears at the database list
-        self.checkDbInList('somedb')
+        self.checkDbInList("somedb")
 
         # And it actually on disk at the `src` folder
-        self.checkDbOnDisk('somedb')
+        self.checkDbOnDisk("somedb")

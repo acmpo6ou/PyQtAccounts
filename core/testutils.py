@@ -74,7 +74,7 @@ def patched_show(self, *args, **kwargs):
     # because it will waste our computation resources and will slow down our tests.
     # However sometimes we need to build and show our window during testing, so
     # in that case those tests that need this must set TESTING to `Func`.
-    if not os.getenv('TESTING') or os.getenv('TESTING') == 'Func':
+    if not os.getenv("TESTING") or os.getenv("TESTING") == "Func":
         real_show(self, *args, **kwargs)
 
 
@@ -91,7 +91,7 @@ def patched_hide(self, *args, **kwargs):
     # because it will waste our computation resources and will slow down our tests.
     # However sometimes we need to build, show and hide our window during testing, so
     # in that case those tests that need this must set TESTING to `Func`.
-    if not os.getenv('TESTING') or os.getenv('TESTING') == 'Func':
+    if not os.getenv("TESTING") or os.getenv("TESTING") == "Func":
         real_hide(self)
 
 

@@ -64,6 +64,7 @@ class CreateDbForm(CreateForm):
     """
     This is a superclass which specifies CreateForm class for create database form needs.
     """
+
     def __init__(self, helpTip, parent=None):
         """
         This constructor creates the form specifying all widgets parameters.
@@ -72,17 +73,21 @@ class CreateDbForm(CreateForm):
         :param parent:
         The parent of the form.
         """
-        title = 'Створити базу данних'
+        title = "Створити базу данних"
         namePlaceholder = "ім'я бази данних"
         nameTip = (
             "Для імені бази данних підтримуються \n"
             "лише великі та малі англійські символи, а також ці: .()-_\n"
-            "Усі неправильні символи видаляються автоматично.")
-        passTip = ("Якщо ви не хочете придумувати пароль ви можете\n"
-                   "натиснути кнопку 'Згенерувати', аби згенерувати його.")
-        nameError = 'База даних з таким іменем вже існує!'
-        CreateForm.__init__(self, title, namePlaceholder, nameError, nameTip, passTip, \
-                            helpTip, parent)
+            "Усі неправильні символи видаляються автоматично."
+        )
+        passTip = (
+            "Якщо ви не хочете придумувати пароль ви можете\n"
+            "натиснути кнопку 'Згенерувати', аби згенерувати його."
+        )
+        nameError = "База даних з таким іменем вже існує!"
+        CreateForm.__init__(
+            self, title, namePlaceholder, nameError, nameTip, passTip, helpTip, parent
+        )
 
     def create(self, event):
         """
@@ -99,7 +104,7 @@ class CreateDbForm(CreateForm):
 
         # here we update database list and help tip
         self.add_item(name)
-        self.tips['help'].setText("Виберіть базу данних")
+        self.tips["help"].setText("Виберіть базу данних")
 
     def validateName(self, event):
         """
@@ -112,18 +117,18 @@ class CreateDbForm(CreateForm):
             self.createButton.setStyleSheet(APPLY_BUTTON_DISABLED)
             self.createButton.setStyleSheet(APPLY_BUTTON_DISABLED)
 
-            self.validate['name'] = False
-        elif name == '':
+            self.validate["name"] = False
+        elif name == "":
             self.nameFilledError.show()
             self.createButton.setEnabled(False)
             self.createButton.setStyleSheet(APPLY_BUTTON_DISABLED)
-            self.validate['name'] = False
+            self.validate["name"] = False
         else:
-            self.validate['name'] = True
+            self.validate["name"] = True
             self.nameError.hide()
             self.nameFilledError.hide()
 
-        if self.validate['pass'] and self.validate['name']:
+        if self.validate["pass"] and self.validate["name"]:
             self.createButton.setEnabled(True)
             self.createButton.setStyleSheet(APPLY_BUTTON)
 
@@ -132,6 +137,7 @@ class EditDbForm(CreateForm):
     """
     This is a superclass which specifies CreateForm class for edit database form needs.
     """
+
     def __init__(self, tips, windows, parent=None):
         """
         This constructor creates the form specifying all widgets parameters appropriately to
@@ -143,23 +149,34 @@ class EditDbForm(CreateForm):
         :param parent:
         parent of the form
         """
-        title = 'Редагувати базу данних'
+        title = "Редагувати базу данних"
         namePlaceholder = "ім'я бази данних"
         nameTip = (
             "Для імені бази данних підтримуються \n"
             "лише великі та малі англійські символи, а також ці: .()-_\n"
-            "Усі неправильні символи видаляються автоматично.")
-        passTip = ("Якщо ви не хочете придумувати пароль ви можете\n"
-                   "натиснути кнопку 'Згенерувати', аби згенерувати його.")
-        nameError = 'База даних з таким іменем вже існує!'
-        CreateForm.__init__(self, title, namePlaceholder, nameError, nameTip, passTip,
-                            tips['help'], parent)
+            "Усі неправильні символи видаляються автоматично."
+        )
+        passTip = (
+            "Якщо ви не хочете придумувати пароль ви можете\n"
+            "натиснути кнопку 'Згенерувати', аби згенерувати його."
+        )
+        nameError = "База даних з таким іменем вже існує!"
+        CreateForm.__init__(
+            self,
+            title,
+            namePlaceholder,
+            nameError,
+            nameTip,
+            passTip,
+            tips["help"],
+            parent,
+        )
         self.windows = windows
         self.hide()
         self.tips = tips
 
-        self.createButton.setText('Зберегти')
-        self.deleteButton = GTKButton(DELETE_BUTTON, 'Видалити')
+        self.createButton.setText("Зберегти")
+        self.deleteButton = GTKButton(DELETE_BUTTON, "Видалити")
         self.deleteButton.clicked.connect(self.delete)
         self.buttonsLayout.insertWidget(1, self.deleteButton)
 
@@ -183,7 +200,7 @@ class EditDbForm(CreateForm):
 
         # if no window for given database exist (i.e. it isn't opened yet) we show edit warning
         hide(self.forms, self.tips)
-        self.tips['edit-w'].show()
+        self.tips["edit-w"].show()
 
     def validateName(self, event):
         """
@@ -195,18 +212,18 @@ class EditDbForm(CreateForm):
             self.nameError.show()
             self.createButton.setEnabled(False)
             self.createButton.setStyleSheet(APPLY_BUTTON_DISABLED)
-            self.validate['name'] = False
-        elif name == '':
+            self.validate["name"] = False
+        elif name == "":
             self.nameFilledError.show()
             self.createButton.setEnabled(False)
             self.createButton.setStyleSheet(APPLY_BUTTON_DISABLED)
-            self.validate['name'] = False
+            self.validate["name"] = False
         else:
-            self.validate['name'] = True
+            self.validate["name"] = True
             self.nameError.hide()
             self.nameFilledError.hide()
 
-        if self.validate['pass'] and self.validate['name']:
+        if self.validate["pass"] and self.validate["name"]:
             self.createButton.setEnabled(True)
             self.createButton.setStyleSheet(APPLY_BUTTON)
 
@@ -216,17 +233,18 @@ class EditDbForm(CreateForm):
         """
         name = self.db.name
         # first is the main window
-        action = QMessageBox.warning(self.windows[0],
-                                     'Увага!',
-                                     'Ви певні що хочете видалити базу данних '
-                                     '<i><b>{}</b></i>'.format(name),
-                                     buttons=QMessageBox.No | QMessageBox.Yes,
-                                     defaultButton=QMessageBox.No)
+        action = QMessageBox.warning(
+            self.windows[0],
+            "Увага!",
+            "Ви певні що хочете видалити базу данних " "<i><b>{}</b></i>".format(name),
+            buttons=QMessageBox.No | QMessageBox.Yes,
+            defaultButton=QMessageBox.No,
+        )
 
         # If users answer is `Yes` we delete database
         if action == QMessageBox.Yes:
-            os.remove(f'{core.const.SRC_DIR}/{name}.db')
-            os.remove(f'{core.const.SRC_DIR}/{name}.bin')
+            os.remove(f"{core.const.SRC_DIR}/{name}.db")
+            os.remove(f"{core.const.SRC_DIR}/{name}.bin")
 
             # and we update database list
             self.remove_item(name)
@@ -242,7 +260,7 @@ class EditDbForm(CreateForm):
 
             # if there is no databases left we show appropriate tip
             if not getDbList():
-                self.tips['help'].setText(HELP_TIP_DB)
+                self.tips["help"].setText(HELP_TIP_DB)
 
     def create(self):
         """
@@ -258,8 +276,8 @@ class EditDbForm(CreateForm):
         password = self.passField.passInput.text().encode()
 
         # Then we remove old database
-        os.remove(f'{core.const.SRC_DIR}/{self.old_name}.db')
-        os.remove(f'{core.const.SRC_DIR}/{self.old_name}.bin')
+        os.remove(f"{core.const.SRC_DIR}/{self.old_name}.db")
+        os.remove(f"{core.const.SRC_DIR}/{self.old_name}.bin")
 
         # And we create new database based on the data of the form
         newDatabase(name, password)
@@ -267,7 +285,7 @@ class EditDbForm(CreateForm):
 
         # then we save encrypted database to freshly created database
         token = encryptDatabase(name, self.db.db, password)
-        with open(f'{core.const.SRC_DIR}/{name}.db', 'wb') as dbfile:
+        with open(f"{core.const.SRC_DIR}/{name}.db", "wb") as dbfile:
             dbfile.write(token)
 
         # Here we delete old database name from list and add new name to it
@@ -286,6 +304,7 @@ class OpenDbForm(QWidget):
     """
     This class represents form that we use to open databases
     """
+
     def __init__(self, helpTip, windows, parent=None):
         """
         This is constructor of the form, it creates all widgets.
@@ -304,15 +323,15 @@ class OpenDbForm(QWidget):
 
         # Here we define title, password label and field of the form
         self.title = Title()
-        self.passLabel = QLabel('Пароль:')
-        self.passField = PasswordField('введіть пароль')
+        self.passLabel = QLabel("Пароль:")
+        self.passField = PasswordField("введіть пароль")
         self.passField.passInput.returnPressed.connect(self.open)
 
         # This is error that we show when password is incorrect
-        self.incorrectPass = Error('Неправильний пароль!')
+        self.incorrectPass = Error("Неправильний пароль!")
         self.incorrectPass.hide()
 
-        self.openButton = QPushButton('Відкрити')
+        self.openButton = QPushButton("Відкрити")
         self.openButton.clicked.connect(self.open)
 
         layout = QVBoxLayout()
@@ -331,8 +350,7 @@ class OpenDbForm(QWidget):
         """
         # Here we set title according to the name of database being chosen
         self.name = index.data()
-        self.title.setText('Відкрити базу данних <i><b>{}</b></i>'.format(
-            self.name))
+        self.title.setText("Відкрити базу данних <i><b>{}</b></i>".format(self.name))
 
     def open(self):
         """

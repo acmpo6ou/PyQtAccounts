@@ -57,6 +57,7 @@ class SettingsTest(SettingsMixin, DbsTest):
     """
     This test class provides all functional tests for PyQtAccounts settings.
     """
+
     def setUp(self):
         """
         Here we setup DbsTest because this is a functional test about main
@@ -79,8 +80,8 @@ class SettingsTest(SettingsMixin, DbsTest):
         pref.trigger()
         self.assertTrue(
             window.settings.visibility,
-            "Settings aren't showed when user goes to "
-            "menu: Edit -> Preferences!")
+            "Settings aren't showed when user goes to " "menu: Edit -> Preferences!",
+        )
 
     def test_is_main_db_True(self):
         """
@@ -88,60 +89,70 @@ class SettingsTest(SettingsMixin, DbsTest):
         """
         # Bob uses main database feature of PyQtAccounts, he has it turned on
         # and `main` is the main database.
-        self.settings.setValue('advanced/is_main_db', True)
-        self.settings.setValue('advanced/main_db', 'main')
+        self.settings.setValue("advanced/is_main_db", True)
+        self.settings.setValue("advanced/main_db", "main")
 
         # He opens PyQtAccounts and see form for opening his `main` database.
         # And the title of this form says `Відкрити базу данних main`
         window = Window()
         self.assertIn(
-            'main', window.dbs.forms['open'].title.text(),
+            "main",
+            window.dbs.forms["open"].title.text(),
             "The title of open database form is incorrect when user has main database"
             "feature turned on and he launches PyQtAccounts, it doesn't "
-            "contain name of main database!")
+            "contain name of main database!",
+        )
 
         # Checkbox in settings is also checked
         self.assertTrue(
             window.settings.mainDbLayout.checkbox.isChecked(),
             "The checkbox in settings that represents main database feature"
-            "isn't checked when user has this feature turned on!")
+            "isn't checked when user has this feature turned on!",
+        )
 
         # And combobox have `main` as current database
         self.assertEqual(
-            'main', window.settings.mainDbLayout.dbs.currentText(),
-            "Main database in combobox is incorrect - must be `main`!")
+            "main",
+            window.settings.mainDbLayout.dbs.currentText(),
+            "Main database in combobox is incorrect - must be `main`!",
+        )
 
     def test_is_main_db_not_set(self):
         """
         Here we test main database feature of PyQtAccounts when it isn't set
-        (i.e. we test its default settings). 
+        (i.e. we test its default settings).
         """
         # Tom doesn't know about main database feature of PyQtAccounts yet.
         # He has it turned off by default.
-        self.settings.remove('advanced/is_main_db')
-        self.settings.remove('advanced/main_db')
+        self.settings.remove("advanced/is_main_db")
+        self.settings.remove("advanced/main_db")
 
         # He opens PyQtAccounts and there is no form for opening any database.
         # Title of open database form is empty.
         window = Window()
         self.assertEqual(
-            '<b></b>', window.dbs.forms['open'].title.text(),
+            "<b></b>",
+            window.dbs.forms["open"].title.text(),
             "The title of open database form is incorrect when user has main database"
             "feature unset (i.e. by default turned off), title contains name "
-            "of main database!")
+            "of main database!",
+        )
 
         # Checkbox in settings is also unchecked
         self.assertFalse(
             window.settings.mainDbLayout.checkbox.isChecked(),
             "The checkbox in settings that represents main database feature"
             " is checked when user has main database feature unset"
-            "(i.e. turned off).")
+            "(i.e. turned off).",
+        )
 
         # And combobox have `main` as current database
         self.assertEqual(
-            'main', window.settings.mainDbLayout.dbs.currentText(),
+            "main",
+            window.settings.mainDbLayout.dbs.currentText(),
             "Combobox must have `main` as main database when user"
-            "hasn't defined main database feature.")
+            "hasn't defined main database feature.",
+        )
 
     def test_is_main_db_False(self):
         """
@@ -151,26 +162,30 @@ class SettingsTest(SettingsMixin, DbsTest):
         # Ross doesn't use main database feature of PyQtAccounts.
         # He turned it off by himself.
         # also it was time when he used it with `crypt` as main database
-        self.settings.setValue('advanced/is_main_db', False)
-        self.settings.setValue('advanced/main_db', 'crypt')
+        self.settings.setValue("advanced/is_main_db", False)
+        self.settings.setValue("advanced/main_db", "crypt")
 
         # He opens PyQtAccounts and there is no form for opening any database.
         # Title of open database form is empty.
         window = Window()
         self.assertEqual(
-            '<b></b>', window.dbs.forms['open'].title.text(),
+            "<b></b>",
+            window.dbs.forms["open"].title.text(),
             "The title of open database form is incorrect when user has main"
-            " database feature turned off, title must be empty!")
+            " database feature turned off, title must be empty!",
+        )
 
         # Checkbox in settings is also unchecked
         self.assertFalse(
             window.settings.mainDbLayout.checkbox.isChecked(),
             "The checkbox in settings that represents main database feature"
-            " is checked when user has this feature turned off!")
+            " is checked when user has this feature turned off!",
+        )
 
         # And combobox have `crypt` as current database
         self.assertEqual(
-            'crypt', window.settings.mainDbLayout.dbs.currentText(),
+            "crypt",
+            window.settings.mainDbLayout.dbs.currentText(),
             "Combobox must have `crypt` as main database even when user"
-            " has this feature turned off but used it with `crypt` in the past!"
+            " has this feature turned off but used it with `crypt` in the past!",
         )

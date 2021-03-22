@@ -50,22 +50,25 @@ import json
 import base64
 
 # NOTE: this separator is now obsolete because we use json to serialize our databases
-SEPARATOR = 's' + '-=' * 30 + 'e'  # this is a separator between accounts in .db file.
+SEPARATOR = "s" + "-=" * 30 + "e"  # this is a separator between accounts in .db file.
 
 
 class Account:
     """
     This class stores data about account.
     """
-    def __init__(self,
-                 account,
-                 name,
-                 email,
-                 password,
-                 date,
-                 comment,
-                 copy_email=True,
-                 attach_files=None):
+
+    def __init__(
+        self,
+        account,
+        name,
+        email,
+        password,
+        date,
+        comment,
+        copy_email=True,
+        attach_files=None,
+    ):
         """
         This constructor saves all account data.
         """
@@ -87,8 +90,16 @@ class Account:
         """
         This method compares attributes of two accounts and returns True if all of them are equal.
         """
-        attrs = ('account', 'name', 'email', 'password', 'date', 'comment',
-                 'copy_email', 'attached_files')
+        attrs = (
+            "account",
+            "name",
+            "email",
+            "password",
+            "date",
+            "comment",
+            "copy_email",
+            "attached_files",
+        )
 
         for a in attrs:
             my = getattr(self, a)
@@ -109,17 +120,17 @@ class Account:
         attach = {}
         for file in self.attached_files:
             encoded = base64.b64encode(self.attached_files[file])
-            attach[file] = encoded.decode('ascii')
+            attach[file] = encoded.decode("ascii")
 
         return {
-            'account': self.account,
-            'name': self.name,
-            'email': self.email,
-            'password': self.password.decode(),
-            'date': self.date,
-            'comment': self.comment,
-            'copy_email': self.copy_email,
-            'attach_files': attach
+            "account": self.account,
+            "name": self.name,
+            "email": self.email,
+            "password": self.password.decode(),
+            "date": self.date,
+            "comment": self.comment,
+            "copy_email": self.copy_email,
+            "attach_files": attach,
         }
 
 
@@ -158,8 +169,7 @@ def loads_old(data):
 
     res = {}
     for accountname, name, email, password, date, comment in formated_data:
-        account = Account(accountname, name, email, password.encode(), date,
-                          comment)
+        account = Account(accountname, name, email, password.encode(), date, comment)
         res[accountname] = account
     return res
 
@@ -178,17 +188,17 @@ def loads_json(data):
     for account in db:
         # here we first encode password value of account dict to byte string,
         # because password in Account class must be a byte string
-        password = db[account]['password'].encode()
-        db[account]['password'] = password
+        password = db[account]["password"].encode()
+        db[account]["password"] = password
 
         # here we also recode attached files from ascii base64 to byte string if
         # account have any
-        attached_files = db[account].get('attach_files')
+        attached_files = db[account].get("attach_files")
         if attached_files:
             for file in attached_files:
                 data = attached_files[file].encode()
                 recoded = base64.b64decode(data)
-                db[account]['attach_files'][file] = recoded
+                db[account]["attach_files"][file] = recoded
 
         # then we unpack account dict as arguments for Account constructor to
         # create Account instance from account dict, then we save freshly

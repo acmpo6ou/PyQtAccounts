@@ -59,50 +59,68 @@ class ShowAccountTest(AccsTest):
     """
     This test class provides all functional tests for show account form.
     """
+
     def setUp(self):
         """
         Here we reassign some widely used variables and initialize fake file
         system.
         """
-        super().setUp(name='database2')
-        self.form = self.accs.forms['show']
+        super().setUp(name="database2")
+        self.form = self.accs.forms["show"]
         self.list = self.accs.list
         self.attached_files = self.form.attached_files
 
         # here we initialize fake file system and copy `database` database in
         # there which we will use during tests
         init_src_folder(self.monkeypatch)
-        self.copyDatabase('database2')
+        self.copyDatabase("database2")
 
     def test_show_account(self):
         """
         Here we test show account form.
         """
         # Lea wants to take a look at her account, so she clicks on it in the list
-        self.list.selected(Index('habr'))
+        self.list.selected(Index("habr"))
 
         # Show form appears
         self.checkOnlyVisible(self.form)
 
         # And it has all information about account
-        self.assertEqual('Акаунт: habr', self.form.account.text(),
-                         "Account-name in show account form is incorrect!")
-        self.assertEqual("Ім'я: Lea", self.form.name.text(),
-                         "Name in show account form is incorrect!")
-        self.assertEqual('E-mail: spheromancer@habr.com',
-                         self.form.email.text(),
-                         "Email in show account form is incorrect!")
-        self.assertEqual('Пароль: habr_password', self.form.password.text(),
-                         "Password in show account form is incorrect!")
-        self.assertEqual('Дата: 19.05.1990', self.form.date.text(),
-                         "Date in show account form is incorrect!")
-        self.assertEqual('Коментарій: Habr account.',
-                         self.form.comment.toPlainText(),
-                         "Comment in show account form is incorrect!")
         self.assertEqual(
-            f'До мишиного буферу копіюється: e-mail',
+            "Акаунт: habr",
+            self.form.account.text(),
+            "Account-name in show account form is incorrect!",
+        )
+        self.assertEqual(
+            "Ім'я: Lea",
+            self.form.name.text(),
+            "Name in show account form is incorrect!",
+        )
+        self.assertEqual(
+            "E-mail: spheromancer@habr.com",
+            self.form.email.text(),
+            "Email in show account form is incorrect!",
+        )
+        self.assertEqual(
+            "Пароль: habr_password",
+            self.form.password.text(),
+            "Password in show account form is incorrect!",
+        )
+        self.assertEqual(
+            "Дата: 19.05.1990",
+            self.form.date.text(),
+            "Date in show account form is incorrect!",
+        )
+        self.assertEqual(
+            "Коментарій: Habr account.",
+            self.form.comment.toPlainText(),
+            "Comment in show account form is incorrect!",
+        )
+        self.assertEqual(
+            f"До мишиного буферу копіюється: e-mail",
             self.form.mouse_copy.text(),
-            "Mouse-copy label of show account form is incorrect!")
+            "Mouse-copy label of show account form is incorrect!",
+        )
 
     def test_copy_email_and_password(self):
         """
@@ -110,7 +128,7 @@ class ShowAccountTest(AccsTest):
         works, when e-mail is chosen to be copied to mouseboard.
         """
         # Bob wants to copy e-mail and password of his account, so he chose one in the list
-        self.list.selected(Index('gmail'))
+        self.list.selected(Index("gmail"))
 
         # Note: he has e-mail chosen to be copied to mouseboard
 
@@ -121,17 +139,20 @@ class ShowAccountTest(AccsTest):
         clipboard = QGuiApplication.clipboard()
         self.assertEqual(
             clipboard.text(),
-            '$z#5G_UG~K;I9U9$',  # those symbols are password
+            "$z#5G_UG~K;I9U9$",  # those symbols are password
             "Password isn't copied to clipboard when performed "
-            "copy operation in show account form!")
+            "copy operation in show account form!",
+        )
 
         # E-mail is copied to mouse clipboard by xclip tool
-        xclip = Popen(['xclip', '-o'], stdout=PIPE, stderr=STDOUT)
+        xclip = Popen(["xclip", "-o"], stdout=PIPE, stderr=STDOUT)
         mouseboard = xclip.communicate()[0].decode()
         self.assertEqual(
-            mouseboard, 'bobgreen@gmail.com\n',
+            mouseboard,
+            "bobgreen@gmail.com\n",
             "Email isn't copied to mouse clipboard when performed"
-            " copy operation in show account form!")
+            " copy operation in show account form!",
+        )
 
     def test_copy_usename_and_password(self):
         """
@@ -140,7 +161,7 @@ class ShowAccountTest(AccsTest):
         """
         # Chris wants to copy username and password of his account, so he chose one in the
         # list
-        self.list.selected(Index('stackoverflow'))
+        self.list.selected(Index("stackoverflow"))
 
         # Note: he has username chosen to be copied to mouseboard
 
@@ -151,17 +172,20 @@ class ShowAccountTest(AccsTest):
         clipboard = QGuiApplication.clipboard()
         self.assertEqual(
             clipboard.text(),
-            '930bU~1j.;nLS<Ga',  # those symbols are password
+            "930bU~1j.;nLS<Ga",  # those symbols are password
             "Password isn't copied to clipboard when performed "
-            "copy operation in show account form!")
+            "copy operation in show account form!",
+        )
 
         # Username is copied to mouse clipboard by xclip tool
-        xclip = Popen(['xclip', '-o'], stdout=PIPE, stderr=STDOUT)
+        xclip = Popen(["xclip", "-o"], stdout=PIPE, stderr=STDOUT)
         mouseboard = xclip.communicate()[0].decode()
         self.assertEqual(
-            mouseboard, 'Chris Kirkman\n',
+            mouseboard,
+            "Chris Kirkman\n",
             "Username isn't copied to mouse clipboard when performed"
-            " copy operation in show account form!")
+            " copy operation in show account form!",
+        )
 
     def test_attach_files(self):
         """
@@ -169,20 +193,21 @@ class ShowAccountTest(AccsTest):
         """
         # Tom has `python account` with attached files and he wants to download
         # them, so he chose his account in the list
-        self.list.selected(Index('python'))
+        self.list.selected(Index("python"))
 
         # there is a list with attached files of his account
         model = self.attached_files.model()
         self.assertTrue(
-            model.findItems('pyqt5.py'),
-            "`pyqt5.py` is not in the attached files list of show account "
-            "form!")
+            model.findItems("pyqt5.py"),
+            "`pyqt5.py` is not in the attached files list of show account " "form!",
+        )
         self.assertTrue(
-            model.findItems('somefile.txt'),
-            "`somefile.txt` is not in the attached files list of show account "
-            "form!")
-        self.assertEqual(2, model.rowCount(),
-                         "Attached files list must contain only 2 items!")
+            model.findItems("somefile.txt"),
+            "`somefile.txt` is not in the attached files list of show account " "form!",
+        )
+        self.assertEqual(
+            2, model.rowCount(), "Attached files list must contain only 2 items!"
+        )
 
         # So Tom just clicks on attached file to download it and save file
         # dialog appears where Tom chose his directory to save the file
@@ -191,56 +216,63 @@ class ShowAccountTest(AccsTest):
             This function creates test double of getSaveFileName using
             `filename` which is name of attached file that we want to download.
             """
+
             def wrap(parent, caption, path):
                 """
                 This function is a test double for getSaveFileName, using it we will
                 simulate that user chose folder where he will save attached file.
                 """
-                assert caption == "Зберегти закріплений файл", \
-                        "Title of save attached file dialog is incorrect!"
-                assert path == f'/home/accounts/{filename}'
-                return (f'/home/accounts/{filename}', )
+                assert (
+                    caption == "Зберегти закріплений файл"
+                ), "Title of save attached file dialog is incorrect!"
+                assert path == f"/home/accounts/{filename}"
+                return (f"/home/accounts/{filename}",)
 
             return wrap
 
         # download operation will be successful
-        self.monkeypatch.setattr(QMessageBox, 'information',
-                                 self.mess('Успіх!', 'Операція успішна!'))
+        self.monkeypatch.setattr(
+            QMessageBox, "information", self.mess("Успіх!", "Операція успішна!")
+        )
 
-        self.monkeypatch.setattr(QFileDialog, 'getSaveFileName',
-                                 mock_browse('pyqt5.py'))
-        self.form.download_file(Index('pyqt5.py'))
+        self.monkeypatch.setattr(
+            QFileDialog, "getSaveFileName", mock_browse("pyqt5.py")
+        )
+        self.form.download_file(Index("pyqt5.py"))
 
         # then Toon saves another file
-        self.monkeypatch.setattr(QFileDialog, 'getSaveFileName',
-                                 mock_browse('somefile.txt'))
-        self.form.download_file(Index('somefile.txt'))
+        self.monkeypatch.setattr(
+            QFileDialog, "getSaveFileName", mock_browse("somefile.txt")
+        )
+        self.form.download_file(Index("somefile.txt"))
 
         # both files are on the disk
         self.assertTrue(
-            os.path.exists('/home/accounts/pyqt5.py'),
-            "Attached file `pyqt5.py` doesn't created when user downloaded it!"
+            os.path.exists("/home/accounts/pyqt5.py"),
+            "Attached file `pyqt5.py` doesn't created when user downloaded it!",
         )
         self.assertTrue(
-            os.path.exists('/home/accounts/somefile.txt'),
-            "Attached file `somefile.txt` doesn't created when user downloaded it!"
+            os.path.exists("/home/accounts/somefile.txt"),
+            "Attached file `somefile.txt` doesn't created when user downloaded it!",
         )
 
         # and they have appropriate content
         self.assertEqual(
-            open('/home/accounts/somefile.txt').read(),
-            'This is a simple file.\nTo test PyQtAccounts.\nHello World!\n',
-            "Content of downloaded file `somefile.txt` is incorrect!")
+            open("/home/accounts/somefile.txt").read(),
+            "This is a simple file.\nTo test PyQtAccounts.\nHello World!\n",
+            "Content of downloaded file `somefile.txt` is incorrect!",
+        )
         self.assertEqual(
-            open('/home/accounts/pyqt5.py').read(),
+            open("/home/accounts/pyqt5.py").read(),
             "#!/usr/bin/env python3\nimport sys\n",
-            "Content of downloaded file `pyqt5.py` is incorrect!")
+            "Content of downloaded file `pyqt5.py` is incorrect!",
+        )
 
         # finally Tom tries to save file to directory where he has no
         # permissions to write
-        self.monkeypatch.setattr(QFileDialog, 'getSaveFileName', lambda *args:
-                                 ('/', ))
+        self.monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda *args: ("/",))
 
         # the error message appears
-        self.monkeypatch.setattr(QMessageBox, 'information',
-                                 self.mess('Помилка!', 'Операція не успішна!'))
+        self.monkeypatch.setattr(
+            QMessageBox, "information", self.mess("Помилка!", "Операція не успішна!")
+        )

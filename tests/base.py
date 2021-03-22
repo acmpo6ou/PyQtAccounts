@@ -66,6 +66,7 @@ class BaseTest(unittest.TestCase):
     """
     Base test superclass almost all tests are inherit from it.
     """
+
     def setUp(self):
         """
         This method setts up environment for every test, here we set TESTING environment
@@ -74,10 +75,10 @@ class BaseTest(unittest.TestCase):
         variable is like a signal for program that it is running under test, this strategy
         very helpful.
         """
-        os.environ['TESTING'] = 'True'
+        os.environ["TESTING"] = "True"
 
         # we must use real home pass for some tests
-        self.home = f'/home/{os.getlogin()}'
+        self.home = f"/home/{os.getlogin()}"
 
     @pytest.fixture(autouse=True)
     def monkeypatching(self, monkeypatch):
@@ -124,6 +125,7 @@ class BaseTest(unittest.TestCase):
         :return:
         mock function that will mock import database dialog.
         """
+
         def file_dialog(caption, filter, directory):
             """
             This is a mock function itself, it checks whether arguments being passed are right,
@@ -132,12 +134,15 @@ class BaseTest(unittest.TestCase):
             :return:
             tuple first element of which is path to file that fake user is chose
             """
-            assert caption == 'Імпортувати базу данних', \
-                "Title of import database dialog is incorrect!"
-            assert filter == 'Tarball (*.tar)', \
-                "Filter of import database dialog is incorrect!"
-            assert directory == os.getenv('HOME'), \
-                "Default directory of import database dialog must be a home folder!"
+            assert (
+                caption == "Імпортувати базу данних"
+            ), "Title of import database dialog is incorrect!"
+            assert (
+                filter == "Tarball (*.tar)"
+            ), "Filter of import database dialog is incorrect!"
+            assert directory == os.getenv(
+                "HOME"
+            ), "Default directory of import database dialog must be a home folder!"
             return result
 
         return file_dialog
@@ -155,6 +160,7 @@ class BaseTest(unittest.TestCase):
         :return:
         mock function that will mock export database dialog.
         """
+
         def export_database_dialog(caption, filter, directory):
             """
             This is a mock function itself, it checks whether arguments being passed are right,
@@ -163,13 +169,16 @@ class BaseTest(unittest.TestCase):
             :return:
             tuple first element of which is path to folder that fake user is chose
             """
-            home = os.getenv('HOME')
-            assert caption == 'Експортувати базу данних', \
-                "Title of export database dialog is incorrect!"
-            assert filter == 'Tarball (*.tar)', \
-                "Filter of export database dialog is incorrect!"
-            assert directory == f'{home}/{name}.tar', \
-                '`directory` must be <home folder>/<database name>.tar !'
+            home = os.getenv("HOME")
+            assert (
+                caption == "Експортувати базу данних"
+            ), "Title of export database dialog is incorrect!"
+            assert (
+                filter == "Tarball (*.tar)"
+            ), "Filter of export database dialog is incorrect!"
+            assert (
+                directory == f"{home}/{name}.tar"
+            ), "`directory` must be <home folder>/<database name>.tar !"
             return result
 
         return export_database_dialog
@@ -187,6 +196,7 @@ class BaseTest(unittest.TestCase):
         :return:
         mock function that will mock some function from QMessageBox.
         """
+
         def mess(parent, this_head, this_text, *args, **kwargs):
             """
             This is a mock function itself, it checks whether arguments being passed are right,
@@ -207,9 +217,11 @@ class BaseTest(unittest.TestCase):
         This is a mock function that mocks dialogs that shouldn't be showed, if this dialogs are
         showed something isn't right and we throw exception.
         """
-        raise AssertionError(f"The message showed, but it shouldn't be!\n"
-                             f"Args: {args}\n"
-                             f"Kwargs: {kwargs}")
+        raise AssertionError(
+            f"The message showed, but it shouldn't be!\n"
+            f"Args: {args}\n"
+            f"Kwargs: {kwargs}"
+        )
 
     @staticmethod
     def critical(parent, head, text):
@@ -218,7 +230,7 @@ class BaseTest(unittest.TestCase):
         checks whether title is right (we don't check error message itself) and returns `Ok`
         button code to emulate dialog. close.
         """
-        assert head == 'Помилка!', 'Message title is incorrect, must be `Помилка!`!'
+        assert head == "Помилка!", "Message title is incorrect, must be `Помилка!`!"
         return QMessageBox.Ok
 
     @staticmethod
@@ -230,8 +242,8 @@ class BaseTest(unittest.TestCase):
         name of the database which files we want to copy.
         """
         # here we copy database .db and .bin files to fake src directory in fake filesystem
-        shutil.copy(f'tests/src/{name}.db', '/home/accounts/test/src')
-        shutil.copy(f'tests/src/{name}.bin', '/home/accounts/test/src')
+        shutil.copy(f"tests/src/{name}.db", "/home/accounts/test/src")
+        shutil.copy(f"tests/src/{name}.bin", "/home/accounts/test/src")
 
 
 class UnitTest(BaseTest):
@@ -239,15 +251,18 @@ class UnitTest(BaseTest):
     This class is a test case for unit tests, it contains all methods that are specific to
     them.
     """
+
     def patchVersion(self):
         """
         This function is used to mock some classes from git module which getVersion function
         uses to identify which version of PyQtAccounts is installed.
         """
+
         class Tag:
             """
             This is a double of Tag class from git module.
             """
+
             def __init__(self, name, date):
                 """
                 In this constructor we save tags name and fake date of its creation.
@@ -274,19 +289,20 @@ class UnitTest(BaseTest):
             This is a mock for Repo class from git module, we use it create fake tags for
             repository.
             """
+
             def __init__(self, *args):
                 """
                 In constructor we simply create fake tags using Tag mock class.
                 """
                 self.tags = []
-                for i, name in enumerate(['v1.0.0', 'v1.0.2', 'v2.0.6']):
+                for i, name in enumerate(["v1.0.0", "v1.0.2", "v2.0.6"]):
                     # tag will have its name from the list and `i` variable will represent
                     # its date of creation. getVersion sorts tags by its date but its actually
                     # doesn't matter will it be real date or just number.
                     self.tags.append(Tag(name, i))
 
         # here we monkeypatch Repo class
-        self.monkeypatch.setattr(git, 'Repo', Repo)
+        self.monkeypatch.setattr(git, "Repo", Repo)
 
 
 class FuncTest(BaseTest):
@@ -294,6 +310,7 @@ class FuncTest(BaseTest):
     This class is a test case for functional tests, it contains all methods that are specific to
     them. It is a superclass for DbsTest and AccsTest.
     """
+
     def setUp(self):
         """
         This method sets up everything specific for functional tests.
@@ -308,11 +325,11 @@ class FuncTest(BaseTest):
         init_src_folder(self.monkeypatch)
 
         # here we copy all test databases into test src folder.
-        self.copyDatabase('main')
-        self.copyDatabase('crypt')
-        self.copyDatabase('a')
-        self.copyDatabase('database')
-        self.copyDatabase('import_database')
+        self.copyDatabase("main")
+        self.copyDatabase("crypt")
+        self.copyDatabase("a")
+        self.copyDatabase("database")
+        self.copyDatabase("import_database")
 
     def check_only_visible(self, elem, parent):
         """
@@ -330,24 +347,28 @@ class FuncTest(BaseTest):
         # if form isn't elem we check whether it is hidden
         for form in parent.forms:
             if parent.forms[form] == elem:
-                self.assertTrue(parent.forms[form].visibility,
-                                f'Form {elem} is not visible!')
+                self.assertTrue(
+                    parent.forms[form].visibility, f"Form {elem} is not visible!"
+                )
                 continue
             self.assertFalse(
                 parent.forms[form].visibility,
-                f"Form {parent.forms[form]} is visible, but it should not be!")
+                f"Form {parent.forms[form]} is visible, but it should not be!",
+            )
 
         # here we check every tip of parent:
         # if this tip is elem we check whether it is visible
         # if tip isn't elem we check whether it is hidden
         for tip in parent.tips:
             if parent.tips[tip] == elem:
-                self.assertTrue(parent.tips[tip].visibility,
-                                f'Tip {elem} is not visible!')
+                self.assertTrue(
+                    parent.tips[tip].visibility, f"Tip {elem} is not visible!"
+                )
                 continue
             self.assertFalse(
                 parent.tips[tip].visibility,
-                f"Tip {parent.forms[form]} is visible, but it should not be!")
+                f"Tip {parent.forms[form]} is visible, but it should not be!",
+            )
 
     @staticmethod
     def check_in_list(name, parent):
@@ -370,7 +391,7 @@ class FuncTest(BaseTest):
             if index.text() == name:
                 break
         else:
-            raise AssertionError(f'{name} not in the list of {parent}!')
+            raise AssertionError(f"{name} not in the list of {parent}!")
 
     def check_not_in_list(self, name, parent):
         """
@@ -393,13 +414,15 @@ class FuncTest(BaseTest):
             # and if there is no exceptions then element IS in the list and it is not right,
             # so we throw AssertionError with appropriate message
             raise AssertionError(
-                f"{name} is IN the list of {parent}, but it shouldn't be!")
+                f"{name} is IN the list of {parent}, but it shouldn't be!"
+            )
 
 
 class DbsTest(FuncTest):
     """
     This class is a test case for everything that about databases.
     """
+
     def checkOnlyVisible(self, elem):
         """
         This method is used to check that `elem` parameter is the only visible widget in Dbs
@@ -435,10 +458,14 @@ class DbsTest(FuncTest):
         name of the database
         """
         # here we check existence of database file and saltfile in the test src directory.
-        self.assertTrue(os.path.exists(f'/home/accounts/test/src/{name}.bin'),
-                        f'{name}.bin does not exist!')
-        self.assertTrue(os.path.exists(f'/home/accounts/test/src/{name}.db'),
-                        f'{name}.db does not exist!')
+        self.assertTrue(
+            os.path.exists(f"/home/accounts/test/src/{name}.bin"),
+            f"{name}.bin does not exist!",
+        )
+        self.assertTrue(
+            os.path.exists(f"/home/accounts/test/src/{name}.db"),
+            f"{name}.db does not exist!",
+        )
 
     def checkDbNotOnDisk(self, name):
         """
@@ -448,17 +475,22 @@ class DbsTest(FuncTest):
         name of the database
         """
         # here we check inexistence of database file and saltfile in the test src directory.
-        self.assertFalse(os.path.exists(f'/home/accounts/test/src/{name}.bin'),
-                         f'{name}.bin does exist!')
-        self.assertFalse(os.path.exists(f'/home/accounts/test/src/{name}.db'),
-                         f'{name}.db does exist!')
+        self.assertFalse(
+            os.path.exists(f"/home/accounts/test/src/{name}.bin"),
+            f"{name}.bin does exist!",
+        )
+        self.assertFalse(
+            os.path.exists(f"/home/accounts/test/src/{name}.db"),
+            f"{name}.db does exist!",
+        )
 
 
 class AccsTest(FuncTest):
     """
     This class is a test case for everything that about accounts.
     """
-    def setUp(self, name='database', password='some_password'):
+
+    def setUp(self, name="database", password="some_password"):
         """
         This method is called before each accounts test, it opens test database because in
         account tests we need to test accounts and accounts are stored in database.
@@ -477,7 +509,7 @@ class AccsTest(FuncTest):
         self.copyDatabase(name)
 
         # here we open database
-        form = self.dbs.forms['open']
+        form = self.dbs.forms["open"]
         self.list = self.dbs.list
         self.pass_input = form.passField.passInput
         self.list.selected(Index(name))
@@ -536,16 +568,19 @@ class AccsTest(FuncTest):
         This function constructs test double of getOpenFileName so it will
         simulate that user chose file in open file dialog.
         """
+
         def wrap(parrent, caption, folder):
             """
             We use this function to monkeypatch getOpenFileName and check
             arguments that are passed to it.
             """
-            assert caption == "Виберіть файл для закріплення",\
-                    "Title of attach file dialog is incorrect!"
-            assert folder == os.getenv('HOME'),\
-                   "Default folder of attach file dialog must be a home folder!"
-            return (path, )
+            assert (
+                caption == "Виберіть файл для закріплення"
+            ), "Title of attach file dialog is incorrect!"
+            assert folder == os.getenv(
+                "HOME"
+            ), "Default folder of attach file dialog must be a home folder!"
+            return (path,)
 
         return wrap
 
@@ -555,6 +590,7 @@ class SetupMixin:
     This mixin is provides some helpful methods that are about setup.py module (i.e. installation
     wizard).
     """
+
     def patchReqs(self, to_install=[], cant_install=[]):
         """
         This method is used to monkeypatch Reqs class from setup.py module. Reqs is class that
@@ -580,7 +616,7 @@ class SetupMixin:
             reqs.installed.remove(req)
 
         # finally we monkey patch Reqs class to always return our fake reqs instance
-        self.monkeypatch.setattr('setup.Reqs', lambda: reqs)
+        self.monkeypatch.setattr("setup.Reqs", lambda: reqs)
 
     @staticmethod
     def mock_system(res):
@@ -591,6 +627,7 @@ class SetupMixin:
         :return:
         fake function for monkeypatching os.system library function
         """
+
         def wrap(command):
             """
             This function is a test double for os.system. It simulates work and returns exit
@@ -620,15 +657,15 @@ def init_accounts_folder():
     # NOTE: that /home/accounts must be symbolic link to /dev/shm/accounts, so all write
     # operations will be redirected from /home/accounts to /dev/shm/accounts folder which is
     # located in memory filesystem.
-    os.environ['HOME'] = '/home/accounts'
+    os.environ["HOME"] = "/home/accounts"
 
     # here we check whether /dev/shm/accounts already exists, if so we delete it to clean up
     # files that are created by previous test
-    if os.path.exists('/dev/shm/accounts'):
-        shutil.rmtree('/dev/shm/accounts')
+    if os.path.exists("/dev/shm/accounts"):
+        shutil.rmtree("/dev/shm/accounts")
 
     # then we create fresh `accounts` folder in /dev/shm/
-    os.mkdir('/dev/shm/accounts')
+    os.mkdir("/dev/shm/accounts")
 
 
 def init_src_folder(monkeypatch):
@@ -645,28 +682,28 @@ def init_src_folder(monkeypatch):
 
     # then we create `src` directory in the `test` directory which we create in the `accounts`
     # folder
-    os.makedirs('/home/accounts/test/src')
+    os.makedirs("/home/accounts/test/src")
 
     # here using monkeypatching we change constants from core.const module which represent
     # path of `src` directory and path of where it stored to appropriate test paths
-    monkeypatch.setattr('core.const.SRC_DIR', '/home/accounts/test/src')
-    monkeypatch.setattr('core.const.SRC_PATH', '/home/accounts/test')
+    monkeypatch.setattr("core.const.SRC_DIR", "/home/accounts/test/src")
+    monkeypatch.setattr("core.const.SRC_PATH", "/home/accounts/test")
 
 
 class SettingsMixin:
     """
     This mixin provides setUp method which creates fake settings file for PyQtAccounts.
     """
+
     def setUp(self):
         """
         This method creates fake settings file for PyQtAccounts.
         """
         # this env variable is to ensure that we in testing mode
-        os.environ['TESTING'] = 'True'
+        os.environ["TESTING"] = "True"
 
         # here we create fake .config directory where will be fake settings file.
-        os.mkdir('/home/accounts/.config')
+        os.mkdir("/home/accounts/.config")
 
         # and here we create settings instance that points to fake settings file
-        self.settings = QSettings(f'{os.getenv("HOME")}/PyTools',
-                                  'PyQtAccounts')
+        self.settings = QSettings(f'{os.getenv("HOME")}/PyTools', "PyQtAccounts")

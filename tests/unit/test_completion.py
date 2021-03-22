@@ -61,7 +61,7 @@ class CompletionTest(AccsTest):
         """
         super().setUp()
 
-        self.form = self.accs.forms['create']
+        self.form = self.accs.forms["create"]
         self.list = self.accs.list
         self.addButton = self.accs.panel.addButton
         self.createButton = self.form.createButton
@@ -73,11 +73,11 @@ class CompletionTest(AccsTest):
         self.pass_repeat_input = self.form.passRepeatField.passInput
 
         self.editButton = self.accs.panel.editButton
-        self.saveButton = self.accs.forms['edit'].createButton
+        self.saveButton = self.accs.forms["edit"].createButton
 
-        self.edit_account_name = self.accs.forms['edit'].accountInput
-        self.edit_name = self.accs.forms['edit'].nameInput
-        self.edit_email = self.accs.forms['edit'].emailInput
+        self.edit_account_name = self.accs.forms["edit"].accountInput
+        self.edit_name = self.accs.forms["edit"].nameInput
+        self.edit_email = self.accs.forms["edit"].emailInput
 
     def test_completion(self):
         """
@@ -96,11 +96,15 @@ class CompletionTest(AccsTest):
 
         # and it has all emails of database
         expected_emails = {
-            'bobgreen@gmail.com', 'spheromancer@habr.com', 'tom@gmail.com'
+            "bobgreen@gmail.com",
+            "spheromancer@habr.com",
+            "tom@gmail.com",
         }
         self.assertEqual(
-            expected_emails, set(c.model().stringList()),
-            "Email completer of create account form is incorrect!")
+            expected_emails,
+            set(c.model().stringList()),
+            "Email completer of create account form is incorrect!",
+        )
 
         # and name field has a name completion
         c = self.name.completer()
@@ -108,22 +112,25 @@ class CompletionTest(AccsTest):
         print(c.model().stringList())
 
         # and it has all names of database
-        expected_names = {'Bob', 'Lea', 'Tom'}
+        expected_names = {"Bob", "Lea", "Tom"}
         self.assertEqual(
-            expected_names, set(c.model().stringList()),
-            "Name completer of create account form is incorrect!")
+            expected_names,
+            set(c.model().stringList()),
+            "Name completer of create account form is incorrect!",
+        )
 
         # and accountname field has an account name completion
         c = self.account_name.completer()
-        self.assertIsNotNone(c,
-                             "Account name field doesn't has its completer!")
+        self.assertIsNotNone(c, "Account name field doesn't has its completer!")
         print(c.model().stringList())
 
         # and it has all accountnames of database
-        expected_accountnames = {'gmail', 'mega', 'habr'}
+        expected_accountnames = {"gmail", "mega", "habr"}
         self.assertEqual(
-            expected_accountnames, set(c.model().stringList()),
-            "Account name completer of create account form is incorrect!")
+            expected_accountnames,
+            set(c.model().stringList()),
+            "Account name completer of create account form is incorrect!",
+        )
 
     def test_completion_updates_on_creation_of_new_account(self):
         """
@@ -134,11 +141,11 @@ class CompletionTest(AccsTest):
         self.addButton.click()
 
         # so he inputs name, password, email and account name
-        self.name.setText('Tony Stark')
-        self.account_name.setText('google')
-        self.email.setText('google@gmail.com')
-        self.pass_input.setText('core')
-        self.pass_repeat_input.setText('core')
+        self.name.setText("Tony Stark")
+        self.account_name.setText("google")
+        self.email.setText("google@gmail.com")
+        self.pass_input.setText("core")
+        self.pass_repeat_input.setText("core")
 
         # and presses create button
         self.createButton.click()
@@ -150,45 +157,53 @@ class CompletionTest(AccsTest):
         # emails
         c = self.email.completer()
         expected_emails = {
-            'bobgreen@gmail.com', 'spheromancer@habr.com', 'tom@gmail.com',
-            'google@gmail.com'
+            "bobgreen@gmail.com",
+            "spheromancer@habr.com",
+            "tom@gmail.com",
+            "google@gmail.com",
         }
         self.assertEqual(
-            expected_emails, set(c.model().stringList()),
+            expected_emails,
+            set(c.model().stringList()),
             "Email completer of create account form isn't updated after "
-            "creating new account!")
+            "creating new account!",
+        )
 
         # names
         c = self.name.completer()
-        expected_names = {'Bob', 'Lea', 'Tom', 'Tony Stark'}
+        expected_names = {"Bob", "Lea", "Tom", "Tony Stark"}
         self.assertEqual(
-            expected_names, set(c.model().stringList()),
+            expected_names,
+            set(c.model().stringList()),
             "Name completer of create account form isn't updated after "
-            "creating new account!")
+            "creating new account!",
+        )
 
         # account names
         c = self.account_name.completer()
-        expected_accountnames = {'gmail', 'mega', 'habr', 'google'}
+        expected_accountnames = {"gmail", "mega", "habr", "google"}
         self.assertEqual(
-            expected_accountnames, set(c.model().stringList()),
+            expected_accountnames,
+            set(c.model().stringList()),
             "Account name completer of create account form isn't updated after "
-            "creating new account!")
+            "creating new account!",
+        )
 
     def test_completion_updates_on_edition_of_account(self):
         """
         Here we test that completion updates when user edits new account.
         """
         # Tony has some accounts in his database and he want to edit one
-        self.list.selected(Index('habr'))
+        self.list.selected(Index("habr"))
         self.editButton.click()
 
         # Edit form appears
-        self.checkOnlyVisible(self.form.forms['edit'])
+        self.checkOnlyVisible(self.form.forms["edit"])
 
         # so he inputs name, password, email and account name
-        self.edit_name.setText('Tony Stark')
-        self.edit_account_name.setText('google')
-        self.edit_email.setText('google@gmail.com')
+        self.edit_name.setText("Tony Stark")
+        self.edit_account_name.setText("google")
+        self.edit_email.setText("google@gmail.com")
 
         # and presses save button
         self.saveButton.click()
@@ -200,26 +215,30 @@ class CompletionTest(AccsTest):
         # emails
         print(self.form.db)
         c = self.edit_email.completer()
-        expected_emails = {
-            'bobgreen@gmail.com', 'google@gmail.com', 'tom@gmail.com'
-        }
+        expected_emails = {"bobgreen@gmail.com", "google@gmail.com", "tom@gmail.com"}
         self.assertEqual(
-            expected_emails, set(c.model().stringList()),
+            expected_emails,
+            set(c.model().stringList()),
             "Email completer of create account form isn't updated after "
-            "editing account!")
+            "editing account!",
+        )
 
         # names
         c = self.name.completer()
-        expected_names = {'Bob', 'Tom', 'Tony Stark'}
+        expected_names = {"Bob", "Tom", "Tony Stark"}
         self.assertEqual(
-            expected_names, set(c.model().stringList()),
+            expected_names,
+            set(c.model().stringList()),
             "Name completer of create account form isn't updated after "
-            "editing account!")
+            "editing account!",
+        )
 
         # account names
         c = self.account_name.completer()
-        expected_accountnames = {'gmail', 'mega', 'google'}
+        expected_accountnames = {"gmail", "mega", "google"}
         self.assertEqual(
-            expected_accountnames, set(c.model().stringList()),
+            expected_accountnames,
+            set(c.model().stringList()),
             "Account name completer of create account form isn't updated after "
-            "editing account!")
+            "editing account!",
+        )

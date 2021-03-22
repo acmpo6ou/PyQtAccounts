@@ -59,11 +59,12 @@ class Tip(QLabel):
     """
     This class is a label that customized for tip, it has its own green color and font.
     """
-    def __init__(self, text=''):
+
+    def __init__(self, text=""):
         QLabel.__init__(self, text)
 
-        font = QFont('Ubuntu Mono', 18)
-        self.setStyleSheet('color: #37FF91;')
+        font = QFont("Ubuntu Mono", 18)
+        self.setStyleSheet("color: #37FF91;")
         self.setFont(font)
 
 
@@ -71,10 +72,11 @@ class HelpTip(QLabel):
     """
     This class is a label that customized for help tip, it has its own font and centered text.
     """
-    def __init__(self, text=''):
+
+    def __init__(self, text=""):
         QLabel.__init__(self, text)
         self.setAlignment(Qt.AlignCenter)
-        font = QFont('Ubuntu Mono', 18, QFont.StyleItalic)
+        font = QFont("Ubuntu Mono", 18, QFont.StyleItalic)
         self.setFont(font)
         self.hide()
 
@@ -83,9 +85,10 @@ class WarningTip(HelpTip):
     """
     This class is a label that customized for warning, it has its own yellow color.
     """
-    def __init__(self, text=''):
+
+    def __init__(self, text=""):
         HelpTip.__init__(self, text)
-        self.setStyleSheet('color: #be9117;')
+        self.setStyleSheet("color: #be9117;")
         self.hide()
 
 
@@ -93,8 +96,9 @@ class Title(QLabel):
     """
     This class is a label that customized as title, it makes it text bold and centered.
     """
-    def __init__(self, text=''):
-        text = '<b>{}</b>'.format(text)
+
+    def __init__(self, text=""):
+        text = "<b>{}</b>".format(text)
         QLabel.__init__(self, text)
         self.setAlignment(Qt.AlignHCenter)
 
@@ -103,11 +107,12 @@ class Error(QLabel):
     """
     This class is a label that customized for error, it has its own red color and font.
     """
-    def __init__(self, text=''):
+
+    def __init__(self, text=""):
         QLabel.__init__(self, text)
 
-        font = QFont('Ubuntu Mono', 18)
-        self.setStyleSheet('color: #f26666;')
+        font = QFont("Ubuntu Mono", 18)
+        self.setStyleSheet("color: #f26666;")
         self.setFont(font)
 
 
@@ -115,7 +120,8 @@ class PasswordField(QHBoxLayout):
     """
     This class is a password field that has button which shows and hides password.
     """
-    def __init__(self, placeholder=''):
+
+    def __init__(self, placeholder=""):
         QHBoxLayout.__init__(self)
 
         # the input itself
@@ -125,7 +131,7 @@ class PasswordField(QHBoxLayout):
 
         # button that shows and hides password
         self.showButton = QPushButton()
-        self.showButton.setIcon(QIcon('img/show.svg'))
+        self.showButton.setIcon(QIcon("img/show.svg"))
         self.showButton.setIconSize(QSize(25, 25))
         self.showButton.clicked.connect(self.toggleShow)
 
@@ -139,16 +145,17 @@ class PasswordField(QHBoxLayout):
         """
         if self.passInput.echoMode() == QLineEdit.Password:
             self.passInput.setEchoMode(QLineEdit.Normal)
-            self.showButton.setIcon(QIcon('img/hide.svg'))
+            self.showButton.setIcon(QIcon("img/hide.svg"))
         else:
             self.passInput.setEchoMode(QLineEdit.Password)
-            self.showButton.setIcon(QIcon('img/show.svg'))
+            self.showButton.setIcon(QIcon("img/show.svg"))
 
 
 class GenPassDialog(QDialog):
     """
     This class is a dialog for password generation.
     """
+
     def __init__(self, form):
         """
         This is constructor of dialog.
@@ -159,11 +166,11 @@ class GenPassDialog(QDialog):
         self.form = form
         self.setModal(True)
         self.setSizeGripEnabled(True)
-        self.setWindowTitle('Згенерувати пароль')
+        self.setWindowTitle("Згенерувати пароль")
         self.resize(700, 300)
 
         # This is label, tip and spinbox that are define password length
-        self.symLabel = QLabel('Довжина пароля: ')
+        self.symLabel = QLabel("Довжина пароля: ")
         self.symNum = QSpinBox()
         self.symNum.setMinimum(8)
         self.symNum.setValue(16)
@@ -175,28 +182,28 @@ class GenPassDialog(QDialog):
 
         # There are 4 sections that create 4 flags and labels, that define what symbols to use
         # in password
-        self.digitsLabel = QLabel('Цифри')
+        self.digitsLabel = QLabel("Цифри")
         self.digitsFlag = QCheckBox()
         self.digitsFlag.setChecked(True)
-        self.digitsFlag.name = 'd'
+        self.digitsFlag.name = "d"
         self.digitsLabel.setBuddy(self.digitsFlag)
 
-        self.lowerLabel = QLabel('Малі англійські букви')
+        self.lowerLabel = QLabel("Малі англійські букви")
         self.lowerFlag = QCheckBox()
         self.lowerFlag.setChecked(True)
-        self.lowerFlag.name = 'l'
+        self.lowerFlag.name = "l"
         self.lowerLabel.setBuddy(self.lowerFlag)
 
-        self.upperLabel = QLabel('Великі англійські букви')
+        self.upperLabel = QLabel("Великі англійські букви")
         self.upperFlag = QCheckBox()
         self.upperFlag.setChecked(True)
-        self.upperFlag.name = 'u'
+        self.upperFlag.name = "u"
         self.upperLabel.setBuddy(self.upperFlag)
 
-        self.punctuationLabel = QLabel('Знаки пунктуації')
+        self.punctuationLabel = QLabel("Знаки пунктуації")
         self.punctuationFlag = QCheckBox()
         self.punctuationFlag.setChecked(True)
-        self.punctuationFlag.name = 'p'
+        self.punctuationFlag.name = "p"
         self.punctuationLabel.setBuddy(self.punctuationFlag)
 
         self.checkGrid = QGridLayout()
@@ -209,11 +216,13 @@ class GenPassDialog(QDialog):
         self.checkGrid.addWidget(self.punctuationFlag, 3, 0)
         self.checkGrid.addWidget(self.punctuationLabel, 3, 1, 1, 10)
 
-        self.includeTip = Tip("Не рекомендуємо змінювати ці параметри,\n"
-                              "адже вони можуть вплинути на силу пароля.")
+        self.includeTip = Tip(
+            "Не рекомендуємо змінювати ці параметри,\n"
+            "адже вони можуть вплинути на силу пароля."
+        )
 
-        self.buttonCancel = GTKButton(DELETE_BUTTON, 'Скасувати')
-        self.buttonGenerate = GTKButton(APPLY_BUTTON, 'Згенерувати')
+        self.buttonCancel = GTKButton(DELETE_BUTTON, "Скасувати")
+        self.buttonGenerate = GTKButton(APPLY_BUTTON, "Згенерувати")
         self.buttonCancel.clicked.connect(self.hide)
         self.buttonGenerate.clicked.connect(self.generate)
 
@@ -234,8 +243,13 @@ class GenPassDialog(QDialog):
         This method called when user presses `Generate` button, it fills forms password fields
         with generated password.
         """
-        symbs = ''
-        for box in self.digitsFlag, self.upperFlag, self.lowerFlag, self.punctuationFlag:
+        symbs = ""
+        for box in (
+            self.digitsFlag,
+            self.upperFlag,
+            self.lowerFlag,
+            self.punctuationFlag,
+        ):
             flag = box.isChecked()
             if flag:
                 symbs += box.name
@@ -276,6 +290,7 @@ class GTKButton(QPushButton):
     """
     This is a gtk styled button.
     """
+
     def __init__(self, button_type, *args, **kwargs):
         """
         :param button_type:

@@ -60,7 +60,7 @@ def test_wizard_pages_order():
     """
     # here we define environment variable TESTING because it is a simple test
     # (i.e. it not inherit this behavior from parent).
-    os.environ['TESTING'] = 'True'
+    os.environ["TESTING"] = "True"
 
     # here we create InstallationWizard and specify order of its pages in pages
     # variable
@@ -71,5 +71,6 @@ def test_wizard_pages_order():
     # correct order
     for page_id in wizard.pageIds():
         page = wizard.page(page_id)
-        assert isinstance(page, pages[page_id]), \
-            'Order of pages in InstallationWizard is incorrect!'
+        assert isinstance(
+            page, pages[page_id]
+        ), "Order of pages in InstallationWizard is incorrect!"

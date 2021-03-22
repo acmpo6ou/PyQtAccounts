@@ -58,6 +58,7 @@ class ReqsTest(UnitTest):
     """
     This class provides all unit tests for Reqs class.
     """
+
     def test_all_reqs_installed(self):
         """
         This test tests Reqs when all requirements are satisfied.
@@ -71,7 +72,7 @@ class ReqsTest(UnitTest):
         This test tests Reqs when some pip requirements are not satisfied.
         """
         # these requirements aren't installed
-        to_install = ['setuptools', 'cryptography']
+        to_install = ["setuptools", "cryptography"]
 
         def mock_testing(req):
             """
@@ -89,24 +90,33 @@ class ReqsTest(UnitTest):
                 raise ImportError
 
         # here we patch `testing` function
-        self.monkeypatch.setattr('setup.testing', mock_testing)
+        self.monkeypatch.setattr("setup.testing", mock_testing)
 
         # and here we create Reqs instance and check its lists on correctness
         reqs = Reqs()
-        self.assertEqual(reqs.to_install, to_install,
-                         'to_install list of Reqs is incorrect, must contain `setuptools` and '
-                         '`cryptography`!')
-        self.assertNotIn('setuptools', reqs.installed,
-                         'installed list of Reqs is incorrect, must not contain `setuptools`!')
-        self.assertNotIn('cryptography', reqs.installed,
-                         'installed list of Reqs is incorrect, must not contain `cryptography`!')
+        self.assertEqual(
+            reqs.to_install,
+            to_install,
+            "to_install list of Reqs is incorrect, must contain `setuptools` and "
+            "`cryptography`!",
+        )
+        self.assertNotIn(
+            "setuptools",
+            reqs.installed,
+            "installed list of Reqs is incorrect, must not contain `setuptools`!",
+        )
+        self.assertNotIn(
+            "cryptography",
+            reqs.installed,
+            "installed list of Reqs is incorrect, must not contain `cryptography`!",
+        )
 
     def test_sys_req_not_installed(self):
         """
         This test tests Reqs when some system reqs are not installed.
         """
         # these requirements aren't installed
-        cant_install = ['git', 'xclip']
+        cant_install = ["git", "xclip"]
 
         def mock_system(command):
             """
@@ -118,7 +128,7 @@ class ReqsTest(UnitTest):
             which <requirement name>
             """
             # here we extract requirement name from command by deleting `which ` part:
-            req = command.replace('which ', '')
+            req = command.replace("which ", "")
 
             # here we check if requirement is in the list of requirements that are not
             # satisfied (created above) if yes, then we return nonzero code to simulate that
@@ -130,14 +140,22 @@ class ReqsTest(UnitTest):
                 return False
 
         # here we patch `os.system` function
-        self.monkeypatch.setattr('os.system', mock_system)
+        self.monkeypatch.setattr("os.system", mock_system)
 
         # and here we create Reqs instance and check its lists on correctness
         reqs = Reqs()
-        self.assertEqual(reqs.cant_install, cant_install,
-                         'to_install list of Reqs is incorrect, must contain `git` and '
-                         '`xclip`!')
-        self.assertNotIn('git', reqs.installed,
-                         'installed list of Reqs is incorrect, must not contain `git`!')
-        self.assertNotIn('xclip', reqs.installed,
-                         'installed list of Reqs is incorrect, must not contain `xclip`!')
+        self.assertEqual(
+            reqs.cant_install,
+            cant_install,
+            "to_install list of Reqs is incorrect, must contain `git` and " "`xclip`!",
+        )
+        self.assertNotIn(
+            "git",
+            reqs.installed,
+            "installed list of Reqs is incorrect, must not contain `git`!",
+        )
+        self.assertNotIn(
+            "xclip",
+            reqs.installed,
+            "installed list of Reqs is incorrect, must not contain `xclip`!",
+        )

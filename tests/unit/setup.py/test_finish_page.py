@@ -58,21 +58,21 @@ from setup import *
 
 # this constant represents text of run.sh file that PyQtAccounts installation wizard must generate.
 EXPECTED_RUN_SH_TEXT = (
-    '#!/bin/bash\n\n'
-    'cd /home/accounts/PyQtAccounts/\n'
+    "#!/bin/bash\n\n"
+    "cd /home/accounts/PyQtAccounts/\n"
     'export PYTHONPATH="$PYTHONPATH:/home/accounts/PyQtAccounts/"\n'
-    'python3 PyQtAccounts.py'
+    "python3 PyQtAccounts.py"
 )
 
 # this constant represents text of shortcut of either menu or desktop.
 EXPECTED_SHORTCUT_TEXT = (
-    '[Desktop Entry]\n'
-    'Name=PyQtAccounts\n'
-    'Type=Application\n'
-    'Comment=Simple account database manager.\n'
-    'Terminal=false\n'
-    'Icon=/home/accounts/PyQtAccounts/img/icon.svg\n'
-    'Exec=/bin/bash /home/accounts/PyQtAccounts/run.sh \n'
+    "[Desktop Entry]\n"
+    "Name=PyQtAccounts\n"
+    "Type=Application\n"
+    "Comment=Simple account database manager.\n"
+    "Terminal=false\n"
+    "Icon=/home/accounts/PyQtAccounts/img/icon.svg\n"
+    "Exec=/bin/bash /home/accounts/PyQtAccounts/run.sh \n"
 )
 
 
@@ -80,6 +80,7 @@ class FinishPageTest(UnitTest):
     """
     This class provides all tests for FinishPage class of installation wizard.
     """
+
     def setUp(self):
         # here we create FinishPage instance and fake parent which will contain InitPage instance.
         self.page = FinishPage()
@@ -89,28 +90,33 @@ class FinishPageTest(UnitTest):
         # here we assign in-memory folder `/home/accounts` to folder attribute which represents
         # folder where installation wizard will clone PyQtAccounts.
         self.initPage = self.page._parent.initPage
-        self.initPage.folder = '/home/accounts'
+        self.initPage.folder = "/home/accounts"
 
         # here we initialize in-memory filesystem and create some folders in it such as:
         # folder of program itself, Desktop folder and folder where menu shortcut will be created
         init_accounts_folder()
-        os.mkdir('/home/accounts/PyQtAccounts')
-        os.mkdir('/home/accounts/Desktop')
-        os.makedirs('/home/accounts/.local/share/applications/', exist_ok=True)
+        os.mkdir("/home/accounts/PyQtAccounts")
+        os.mkdir("/home/accounts/Desktop")
+        os.makedirs("/home/accounts/.local/share/applications/", exist_ok=True)
 
     def tearDown(self):
         # here we clean up our in-memory filesystem by deleting accounts folder entirely.
-        if os.path.exists('/dev/shm/accounts'):
-            shutil.rmtree('/dev/shm/accounts')
+        if os.path.exists("/dev/shm/accounts"):
+            shutil.rmtree("/dev/shm/accounts")
 
     def test_content(self):
         """
         Here we test content of FinishPage: title and success label.
         """
         page = FinishPage()
-        self.assertEqual(page.title.text(), '<h4>Finish</h4>', 'Finish page title is incorrect!')
-        self.assertEqual(page.text.text(), 'Успішно установлено PyQtAccounts!', 
-                         'Finish page message is incorrect!')
+        self.assertEqual(
+            page.title.text(), "<h4>Finish</h4>", "Finish page title is incorrect!"
+        )
+        self.assertEqual(
+            page.text.text(),
+            "Успішно установлено PyQtAccounts!",
+            "Finish page message is incorrect!",
+        )
 
     def test_init_page_menu_and_desktop(self):
         # Checkboxes of init page for menu and desktop shortcuts are checked by default
@@ -120,16 +126,22 @@ class FinishPageTest(UnitTest):
         # page has created
         self.assertEqual(
             EXPECTED_RUN_SH_TEXT,
-            open('/home/accounts/PyQtAccounts/run.sh').read(),
-            'run.sh file is incorrect!'
+            open("/home/accounts/PyQtAccounts/run.sh").read(),
+            "run.sh file is incorrect!",
         )
 
-        self.assertEqual(EXPECTED_SHORTCUT_TEXT,
-                         open('/home/accounts/Desktop/PyQtAccounts.desktop').read(),
-                         'Shortcut is incorrect!')
-        self.assertEqual(EXPECTED_SHORTCUT_TEXT, open(
-            '/home/accounts/.local/share/applications/PyQtAccounts.desktop').read(),
-        'Shortcut is incorrect!')
+        self.assertEqual(
+            EXPECTED_SHORTCUT_TEXT,
+            open("/home/accounts/Desktop/PyQtAccounts.desktop").read(),
+            "Shortcut is incorrect!",
+        )
+        self.assertEqual(
+            EXPECTED_SHORTCUT_TEXT,
+            open(
+                "/home/accounts/.local/share/applications/PyQtAccounts.desktop"
+            ).read(),
+            "Shortcut is incorrect!",
+        )
 
     def test_init_page_menu_no_desktop(self):
         # Checkboxes of init page for menu and desktop shortcuts are checked by default
@@ -138,17 +150,24 @@ class FinishPageTest(UnitTest):
 
         # here we check contents of run.sh and shortcuts (either menu or desktop) that finish
         # page has created
-        self.assertEqual(EXPECTED_RUN_SH_TEXT,
-                         open('/home/accounts/PyQtAccounts/run.sh').read(),
-                         'run.sh file is incorrect!')
+        self.assertEqual(
+            EXPECTED_RUN_SH_TEXT,
+            open("/home/accounts/PyQtAccounts/run.sh").read(),
+            "run.sh file is incorrect!",
+        )
 
-        self.assertFalse(os.path.exists('/home/accounts/Desktop/PyQtAccounts.desktop'),
-                         'Desktop shortcut exists but should not be!')
+        self.assertFalse(
+            os.path.exists("/home/accounts/Desktop/PyQtAccounts.desktop"),
+            "Desktop shortcut exists but should not be!",
+        )
 
-        self.assertEqual(EXPECTED_SHORTCUT_TEXT, open(
-            '/home/accounts/.local/share/applications/PyQtAccounts.desktop').read(),
-            'Shortcut is incorrect!')
-
+        self.assertEqual(
+            EXPECTED_SHORTCUT_TEXT,
+            open(
+                "/home/accounts/.local/share/applications/PyQtAccounts.desktop"
+            ).read(),
+            "Shortcut is incorrect!",
+        )
 
     def test_init_page_desktop_no_menu(self):
         # Checkboxes of init page for menu and desktop shortcuts are checked by default
@@ -157,15 +176,21 @@ class FinishPageTest(UnitTest):
 
         # here we check contents of run.sh and shortcuts (either menu or desktop) that finish
         # page has created
-        self.assertEqual(EXPECTED_RUN_SH_TEXT,
-                         open('/home/accounts/PyQtAccounts/run.sh').read(),
-                         'run.sh file is incorrect!')
+        self.assertEqual(
+            EXPECTED_RUN_SH_TEXT,
+            open("/home/accounts/PyQtAccounts/run.sh").read(),
+            "run.sh file is incorrect!",
+        )
 
-        self.assertEqual(EXPECTED_SHORTCUT_TEXT,
-                         open('/home/accounts/Desktop/PyQtAccounts.desktop').read(),
-                        'Shortcut is incorrect!')
+        self.assertEqual(
+            EXPECTED_SHORTCUT_TEXT,
+            open("/home/accounts/Desktop/PyQtAccounts.desktop").read(),
+            "Shortcut is incorrect!",
+        )
 
-        self.assertFalse(os.path.exists(
-            '/home/accounts/.local/share/applications/PyQtAccounts.desktop'),
-            'Menu shortcut exists but should not be!'
+        self.assertFalse(
+            os.path.exists(
+                "/home/accounts/.local/share/applications/PyQtAccounts.desktop"
+            ),
+            "Menu shortcut exists but should not be!",
         )

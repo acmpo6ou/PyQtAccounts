@@ -58,8 +58,8 @@ class TitleTest(UnitTest):
         """
         This test tests title.
         """
-        title = Title('Title text!')
-        self.assertEqual('<h4>Title text!</h4>', title.text(),
-                         'Title text is incorrect!')
-        self.assertEqual(Qt.AlignHCenter, title.alignment(),
-                         'Title is not centered!')
+        title = Title("Title text!")
+        self.assertEqual(
+            "<h4>Title text!</h4>", title.text(), "Title text is incorrect!"
+        )
+        self.assertEqual(Qt.AlignHCenter, title.alignment(), "Title is not centered!")

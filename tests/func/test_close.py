@@ -57,6 +57,7 @@ class CloseWhenDatabaseOpenedTest(AccsTest):
     """
     This test class provides all tests for close event of database window.
     """
+
     def test_close_when_database_opened_Yes(self):
         """
         This test tests close event of main window when database window is
@@ -66,17 +67,19 @@ class CloseWhenDatabaseOpenedTest(AccsTest):
         # confirmation dialog appears asking does he
         # realy wants to close window, Tom answers `No`.
         self.monkeypatch.setattr(
-            QMessageBox, 'question',
-            self.mess('Увага!',
-                      'Ви певні що хочете вийти?',
-                      button=QMessageBox.Yes))
+            QMessageBox,
+            "question",
+            self.mess("Увага!", "Ви певні що хочете вийти?", button=QMessageBox.Yes),
+        )
         self.window.close()
 
         # and database window disappears
         self.assertEqual(
-            len(self.window.windows), 1,
-            'Database window is not closed when user chose `Yes` in'
-            'confirmation dialog!')
+            len(self.window.windows),
+            1,
+            "Database window is not closed when user chose `Yes` in"
+            "confirmation dialog!",
+        )
 
     def test_close_when_database_opened_No(self):
         """
@@ -87,31 +90,32 @@ class CloseWhenDatabaseOpenedTest(AccsTest):
         # confirmation dialog appears asking does he
         # realy wants to close window, Tom answers `No`.
         self.monkeypatch.setattr(
-            QMessageBox, 'question',
-            self.mess('Увага!',
-                      'Ви певні що хочете вийти?',
-                      button=QMessageBox.No))
+            QMessageBox,
+            "question",
+            self.mess("Увага!", "Ви певні що хочете вийти?", button=QMessageBox.No),
+        )
         self.window.close()
 
         # and database window is still opened
         self.assertEqual(
-            len(self.window.windows), 2,
-            'Database window is closed when user chose `No` in'
-            'confirmation dialog!')
+            len(self.window.windows),
+            2,
+            "Database window is closed when user chose `No` in" "confirmation dialog!",
+        )
 
     def test_close_when_no_database_opened(self):
         """
         This test tests close event of main window when there is no database
-        window opened. 
+        window opened.
         """
         # Lea closes PyQtAccounts window when there is no database opened, when
         # she does this no confirmation popup is appearing.
-        self.monkeypatch.setattr(QMessageBox, 'question', self.mess_showed)
+        self.monkeypatch.setattr(QMessageBox, "question", self.mess_showed)
         del self.window.windows[1:]  # we have only 1 window - main window
         self.window.close()
 
         # window simply closes
-        self.assertFalse(self.window.visibility, 'Main window isn\'t closed!')
+        self.assertFalse(self.window.visibility, "Main window isn't closed!")
 
     def close_from_menu(self):
         """
@@ -120,8 +124,8 @@ class CloseWhenDatabaseOpenedTest(AccsTest):
         """
         # Emily closes PyQtAccounts through menu:
         # First is `File` submenu, last is `Quit` action
-        self.monkeypatch.setattr(QMessageBox, 'question', self.mess_showed)
+        self.monkeypatch.setattr(QMessageBox, "question", self.mess_showed)
         self.menu(0, -1).trigger()
 
         # window is closed now
-        self.assertFalse(self.window.visibility, 'Main window isn\'t closed!')
+        self.assertFalse(self.window.visibility, "Main window isn't closed!")

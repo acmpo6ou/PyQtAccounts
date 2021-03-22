@@ -59,19 +59,21 @@ class HelpTipTest(AccsTest):
     """
     This class provides all functional tests for accounts HelpTip.
     """
+
     def test_no_accs(self):
         """
         This test tests HelpTip when there is no accounts yet.
         """
         # Ross opens his database, he has no accounts yet
-        super().setUp('a', 'a')
+        super().setUp("a", "a")
 
         # There is help tip saying how he can create new account
-        tip = self.win.accs.tips['help']
+        tip = self.win.accs.tips["help"]
         self.assertEqual(
-            tip.text(), HELP_TIP_ACCS,
-            'Accounts help tip message when there are no'
-            'accounts is incorrect!')
+            tip.text(),
+            HELP_TIP_ACCS,
+            "Accounts help tip message when there are no" "accounts is incorrect!",
+        )
 
     def test_has_accs(self):
         """
@@ -81,8 +83,9 @@ class HelpTipTest(AccsTest):
         super().setUp()
 
         # There is help tip saying that she need to chose account
-        tip = self.accs.tips['help']
+        tip = self.accs.tips["help"]
         self.assertEqual(
-            tip.text(), "Виберіть акаунт",
-            'Accounts help tip message when there are '
-            'accounts is incorrect!')
+            tip.text(),
+            "Виберіть акаунт",
+            "Accounts help tip message when there are " "accounts is incorrect!",
+        )

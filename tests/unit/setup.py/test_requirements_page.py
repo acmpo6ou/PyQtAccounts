@@ -57,6 +57,7 @@ class RequirementsPageTest(UnitTest):
     """
     This test provides all unit tests for RequirementsPage.
     """
+
     def setUp(self):
         """
         Here we simply create RequirementsPage.
@@ -70,27 +71,28 @@ class RequirementsPageTest(UnitTest):
         """
         # There is title that says `requirements`
         title = self.page.title.text()
-        expected_title = '<h4>Залежності</h4>'
-        self.assertEqual(title, expected_title,
-                         'RequirementsPage title is incorrect!')
+        expected_title = "<h4>Залежності</h4>"
+        self.assertEqual(title, expected_title, "RequirementsPage title is incorrect!")
 
         # There is also text that describes requirements
         text = self.page.text.text()
-        expected_text = ('<pre>PyQtAccounts вимагає наявності\n'
-                         'певних пакетів. Ось перелік тих які\n'
-                         'встановлені, або не встановленні у вас:</pre>')
-        self.assertEqual(text, expected_text,
-                         'RequirementsPage message is incorrect!')
+        expected_text = (
+            "<pre>PyQtAccounts вимагає наявності\n"
+            "певних пакетів. Ось перелік тих які\n"
+            "встановлені, або не встановленні у вас:</pre>"
+        )
+        self.assertEqual(text, expected_text, "RequirementsPage message is incorrect!")
 
         # There is no installation label and progressbar
         self.assertFalse(
             self.page.installLabel.visibility,
-            'Install label is visible when no installation process'
-            'is started yet!')
+            "Install label is visible when no installation process" "is started yet!",
+        )
         self.assertFalse(
             self.page.installProgress.visibility,
-            'Install progressbar is visible when no installation process'
-            'is started yet!')
+            "Install progressbar is visible when no installation process"
+            "is started yet!",
+        )
 
     def test_install_button_enabled(self):
         """
@@ -100,17 +102,17 @@ class RequirementsPageTest(UnitTest):
         # When every pip dependency is satisfied install button is disabled
         self.assertFalse(
             self.page.installButton.isEnabled(),
-            'Install button is enabled when all dependencies are'
-            'satisfied!')
+            "Install button is enabled when all dependencies are" "satisfied!",
+        )
 
         # When some are not installed install button is enabled
         reqs = Reqs()
-        reqs.to_install = ['gitpython', 'pyshortcuts']
-        reqs.installed.remove('gitpython')
-        reqs.installed.remove('pyshortcuts')
+        reqs.to_install = ["gitpython", "pyshortcuts"]
+        reqs.installed.remove("gitpython")
+        reqs.installed.remove("pyshortcuts")
 
         page = RequirementsPage(reqs=reqs)
         self.assertTrue(
             page.installButton.isEnabled(),
-            'Install button is disabled when some dependencies are not satisfied!'
+            "Install button is disabled when some dependencies are not satisfied!",
         )

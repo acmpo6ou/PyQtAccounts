@@ -57,12 +57,15 @@ class ErrorsTest(UnitTest):
     """
     This class tests Errors class from setup.py module.
     """
+
     def test_errors(self):
         """
         This test tests color, mode, content and visibility of freshly created Errors widget.
         """
         errors = Errors()
-        self.assertEqual(errors.toPlainText(), '', 'Errors content must be empty!')
-        self.assertEqual(errors.textColor(), QColor('#f26666'), 'Errors must have red color!')
-        self.assertTrue(errors.isReadOnly(), 'Errors must be read only!')
-        self.assertFalse(errors.visibility, 'Errors must be hidden when created!')
+        self.assertEqual(errors.toPlainText(), "", "Errors content must be empty!")
+        self.assertEqual(
+            errors.textColor(), QColor("#f26666"), "Errors must have red color!"
+        )
+        self.assertTrue(errors.isReadOnly(), "Errors must be read only!")
+        self.assertFalse(errors.visibility, "Errors must be hidden when created!")

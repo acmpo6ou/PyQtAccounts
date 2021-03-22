@@ -58,8 +58,9 @@ from PyQtAccounts import *
 class CheckForUpdatesTest(DbsTest):
     """
     This class provides all tests that will test PyQtAccounts checking for
-    updates. 
+    updates.
     """
+
     def setUp(self):
         """
         Here we go to menu: Updates -> Check for updates at the begining of
@@ -79,9 +80,10 @@ class CheckForUpdatesTest(DbsTest):
         def mock_run(self):
             self.result.emit(False, [])
 
-        self.monkeypatch.setattr(Updating, 'run', mock_run)
-        self.monkeypatch.setattr(QMessageBox, 'information',
-                                 self.mess('Оновлення', "Немає оновленнь."))
+        self.monkeypatch.setattr(Updating, "run", mock_run)
+        self.monkeypatch.setattr(
+            QMessageBox, "information", self.mess("Оновлення", "Немає оновленнь.")
+        )
         self.check.trigger()
 
     def test_check_for_updates_available_menu(self):
@@ -92,29 +94,33 @@ class CheckForUpdatesTest(DbsTest):
         # Emily wants to check for updates
         def mock_run(self):
             self.result.emit(
-                True,
-                ['Fixed issues.', 'Changelog tested now.', 'Other updates.'])
+                True, ["Fixed issues.", "Changelog tested now.", "Other updates."]
+            )
 
-        self.monkeypatch.setattr(Updating, 'run', mock_run)
+        self.monkeypatch.setattr(Updating, "run", mock_run)
 
         # Dialog window appears saying that there are updates available
         self.check.trigger()
 
         # We don't actually want to update anything during the tests
         def window_show():
-            assert self.window.res, 'No update available window was created!'
+            assert self.window.res, "No update available window was created!"
 
         self.qbot.waitUntil(window_show)
         self.window.res.laterButton.click()
 
         # There is changelog in that dialog
-        right_text = '<h4>Що нового:</h4><ul><li>Fixed issues.</li>\n' \
-                     '<li>Changelog tested now.</li>\n' \
-                     '<li>Other updates.</li>\n' \
-                     '</ul>'
+        right_text = (
+            "<h4>Що нового:</h4><ul><li>Fixed issues.</li>\n"
+            "<li>Changelog tested now.</li>\n"
+            "<li>Other updates.</li>\n"
+            "</ul>"
+        )
         self.assertEqual(
-            right_text, self.window.res.changelogLabel.text(),
-            'Changelog text of UpdatesAvailable window is incorrect!')
+            right_text,
+            self.window.res.changelogLabel.text(),
+            "Changelog text of UpdatesAvailable window is incorrect!",
+        )
 
     def test_check_for_updates_available_at_startup(self):
         """
@@ -125,29 +131,32 @@ class CheckForUpdatesTest(DbsTest):
         # There are some updates available
         def mock_run(self):
             self.result.emit(
-                True,
-                ['Fixed issues.', 'Changelog tested now.', 'Other updates.'])
+                True, ["Fixed issues.", "Changelog tested now.", "Other updates."]
+            )
 
-        self.monkeypatch.setattr(Updating, 'run', mock_run)
+        self.monkeypatch.setattr(Updating, "run", mock_run)
 
         # So Ross launches PyQtAccounts to check for them
         window = Window()
 
         # A few seconds passes and dialog appears saying that there are updates available
         QTest.qWait(200)
-        self.assertIsNotNone(window.res,
-                             'No update available window was created!')
+        self.assertIsNotNone(window.res, "No update available window was created!")
         # We don't actually want to update anything during the tests
         window.res.laterButton.click()
 
         # There is changelog in that dialog
-        right_text = '<h4>Що нового:</h4><ul><li>Fixed issues.</li>\n' \
-                     '<li>Changelog tested now.</li>\n' \
-                     '<li>Other updates.</li>\n' \
-                     '</ul>'
+        right_text = (
+            "<h4>Що нового:</h4><ul><li>Fixed issues.</li>\n"
+            "<li>Changelog tested now.</li>\n"
+            "<li>Other updates.</li>\n"
+            "</ul>"
+        )
         self.assertEqual(
-            right_text, window.res.changelogLabel.text(),
-            'Changelog text of UpdatesAvailable window is incorrect!')
+            right_text,
+            window.res.changelogLabel.text(),
+            "Changelog text of UpdatesAvailable window is incorrect!",
+        )
 
     def test_check_for_updates_unavailable_at_startup(self):
         """
@@ -159,7 +168,7 @@ class CheckForUpdatesTest(DbsTest):
         def mock_run(self):
             self.result.emit(False, [])
 
-        self.monkeypatch.setattr(Updating, 'run', mock_run)
+        self.monkeypatch.setattr(Updating, "run", mock_run)
 
         # So he launches PyQtAccounts to check for them
         window = Window()
@@ -167,5 +176,7 @@ class CheckForUpdatesTest(DbsTest):
         # A few seconds passes and there is no updates available dialog
         QTest.qWait(100)
         self.assertIsNone(
-            window.res, 'UpdatesAvailable window was created when there are no'
-            'updates available!')
+            window.res,
+            "UpdatesAvailable window was created when there are no"
+            "updates available!",
+        )

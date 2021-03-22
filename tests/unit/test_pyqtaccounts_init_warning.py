@@ -59,6 +59,7 @@ class InitWarningTest(UnitTest):
     PyQtAccounts. In that case program will crash on startup, so we first show
     appropriate warning to inform user.
     """
+
     def test_init_warning(self):
         """
         This test tests whether warning appears when user hasn't initialized
@@ -66,7 +67,7 @@ class InitWarningTest(UnitTest):
         """
         # Bob doesn't know about initialization of PyQtAccounts yet.
         # He has download zip file from github and there is no .git directory in that archive
-        self.monkeypatch.setattr('os.listdir', lambda path: [])
+        self.monkeypatch.setattr("os.listdir", lambda path: [])
 
         # Bob launches PyQtAccounts
         WarningWindow.exec = lambda *args: QMessageBox.Ok
@@ -74,17 +75,20 @@ class InitWarningTest(UnitTest):
 
         # Warning message appears saying that he need to initialize program
         # by downloading setup.py installation wizard from github repository
-        self.assertEqual(msg.windowTitle(), 'Увага!',
-                         'Warning message title is incorrect!')
+        self.assertEqual(
+            msg.windowTitle(), "Увага!", "Warning message title is incorrect!"
+        )
         self.assertEqual(
             msg.text(),
-            '''
+            """
             <h3>Програму не ініціалізовано!</h3>
             <p>Завантажте файл <b><i>setup.py</i></b> з нашого github репозиторія.</p>
             <p>Запустіть його і пройдіть всі кроки інсталяції.</p>
             <p>Ініціалізація потрібна, аби система оновлення PyQtAccounts працювала.</p>
             <p>Система оновлення автоматично перевіряє, завантажує і встановлює оновлення.</p>
-            ''', 'Warning message is incorrect!')
+            """,
+            "Warning message is incorrect!",
+        )
 
     def test_no_init_warning(self):
         """
@@ -93,11 +97,12 @@ class InitWarningTest(UnitTest):
         """
         # Tom has installed PyQtAccounts using setup.py installation wizard
         # So there is .git directory in program directory
-        self.monkeypatch.setattr('os.listdir', lambda path: ['.git'])
+        self.monkeypatch.setattr("os.listdir", lambda path: [".git"])
 
         # Tom launches PyQtAccounts
         msg = main()
 
         # There is no messages about initialization
-        self.assertIsNone(msg, 'Initialization message is shown but should not'
-                               ' appear!')
+        self.assertIsNone(
+            msg, "Initialization message is shown but should not" " appear!"
+        )

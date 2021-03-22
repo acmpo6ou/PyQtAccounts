@@ -63,6 +63,7 @@ class AboutTest(UnitTest):
     """
     This class contains all unit tests for `about` dialog of PyQtAccounts.
     """
+
     def setUp(self):
         """
         In this method we simply pre-saving built in open function, because we will replace it
@@ -77,7 +78,7 @@ class AboutTest(UnitTest):
         pre-save it.
         """
         super().tearDown()
-        __builtins__['open'] = self.open
+        __builtins__["open"] = self.open
 
     def test_about_version(self):
         """
@@ -88,13 +89,16 @@ class AboutTest(UnitTest):
 
         # he opens about dialog and sees correct version number `Version 2.0.6` in about section
         about = About()
-        self.assertIn('Version 2.0.6', about.about, 'Version number in about dialog is incorrect!')
+        self.assertIn(
+            "Version 2.0.6", about.about, "Version number in about dialog is incorrect!"
+        )
 
     def test_license_credits(self):
         """
         This method tests does license and credits loads correctly from their files.
         :return:
         """
+
         def mock_open(path, *args, **kwargs):
             """
             This function is a test double for open built in function.
@@ -108,10 +112,10 @@ class AboutTest(UnitTest):
             file = Mock()
             # if it was we check what file does about dialog wants to load LICENSE or CREDITS and
             # return him appropriate fake file descriptor
-            if path == 'COPYING':
-                file.read.return_value = 'This is a License.'
-            elif path == 'CREDITS':
-                file.read.return_value = 'Here are credits.'
+            if path == "COPYING":
+                file.read.return_value = "This is a License."
+            elif path == "CREDITS":
+                file.read.return_value = "Here are credits."
             else:
                 # if function was called by another code (i.e. not about dialogs) we return real
                 # file descriptor
@@ -119,11 +123,17 @@ class AboutTest(UnitTest):
             return file
 
         # here we patch open function with our fake one and create about dialog
-        __builtins__['open'] = mock_open
+        __builtins__["open"] = mock_open
         about = About()
 
         # then we check license and credits sections of about dialog
-        self.assertEqual(about.licenseText.toPlainText(), 'This is a License.',
-                         'License text is incorrectly loaded!')
-        self.assertEqual(about.creditsText.text(), '<pre>Here are credits.</pre>',
-                         'Credits text is incorrectly loaded!')
+        self.assertEqual(
+            about.licenseText.toPlainText(),
+            "This is a License.",
+            "License text is incorrectly loaded!",
+        )
+        self.assertEqual(
+            about.creditsText.text(),
+            "<pre>Here are credits.</pre>",
+            "Credits text is incorrectly loaded!",
+        )

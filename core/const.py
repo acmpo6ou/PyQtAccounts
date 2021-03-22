@@ -48,30 +48,34 @@ This module provides helper constants for PyQtAccounts.
 
 # This constants provide information about requirements
 # either system (i.e. that we can install only with root privileges) or pip.
-sys_reqs = ('git', 'pip3', 'xclip')
-reqs_pip = ('setuptools', 'cryptography', 'gitpython', 'pyshortcuts')
+sys_reqs = ("git", "pip3", "xclip")
+reqs_pip = ("setuptools", "cryptography", "gitpython", "pyshortcuts")
 
 # This constants provide information about folder that stores databases
 # First constant provides name of folder
 # Second provides path where the folder is
 # Both constants were designed for testing
-SRC_DIR = 'src'
-SRC_PATH = '.'
+SRC_DIR = "src"
+SRC_PATH = "."
 
 # This constant stores information message that PyQtAccounts shows when you have no databases
 # created yet.
-HELP_TIP_DB = ("<pre>Поки що у вас немає жодної бази данних.\n" +
-               '{0:<39}\n'.format("Спробуйте:") +
-               '{0:<39}\n'.format("Натиснути +") +
-               '{0:<39}\n'.format("Гарячі клавіші Ctl+N") +
-               '{0:<39}\n'.format("Меню: File -> New database...") +
-               "</pre>")
+HELP_TIP_DB = (
+    "<pre>Поки що у вас немає жодної бази данних.\n"
+    + "{0:<39}\n".format("Спробуйте:")
+    + "{0:<39}\n".format("Натиснути +")
+    + "{0:<39}\n".format("Гарячі клавіші Ctl+N")
+    + "{0:<39}\n".format("Меню: File -> New database...")
+    + "</pre>"
+)
 
 # This constant stores information message that PyQtAccounts shows when you have no accounts
 # created yet.
-HELP_TIP_ACCS = ("<pre>Поки що у вас немає жодного акаунта.\n" +
-                          '{0:<36}\n'.format("Спробуйте:") +
-                          '{0:<36}\n'.format("Натиснути +") +
-                          '{0:<36}\n'.format("Гарячі клавіші Ctl+N") +
-                          '{0:<36}\n'.format("Меню: File -> New account...") +
-                          "</pre>")
+HELP_TIP_ACCS = (
+    "<pre>Поки що у вас немає жодного акаунта.\n"
+    + "{0:<36}\n".format("Спробуйте:")
+    + "{0:<36}\n".format("Натиснути +")
+    + "{0:<36}\n".format("Гарячі клавіші Ctl+N")
+    + "{0:<36}\n".format("Меню: File -> New account...")
+    + "</pre>"
+)
