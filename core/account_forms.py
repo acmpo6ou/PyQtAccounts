@@ -689,7 +689,7 @@ class ShowAccountForm(QWidget):
         clipboard.setText(account.password.decode())
 
         # to copy e-mail or username
-        mouse_copy = account.email if account.copy_email else account.username
+        mouse_copy = account.email if account.copy_email else account.name
         p1 = Popen(["echo", mouse_copy], stdout=PIPE)
         Popen(["xclip"], stdin=p1.stdout, stdout=PIPE)
 
