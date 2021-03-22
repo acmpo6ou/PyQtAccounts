@@ -44,6 +44,7 @@
 """
 This module provides classes for account forms.
 """
+from subprocess import PIPE, Popen
 
 import core.akidump as akidump
 import core.const
@@ -59,6 +60,7 @@ class CreateAccount(CreateForm):
     """
     This is a superclass which specifies CreateForm class to account forms needs.
     """
+
     def __init__(self, title, db, helpTip, parent=None):
         """
         This constructor creates the form specifying all widgets parameters.
@@ -73,12 +75,15 @@ class CreateAccount(CreateForm):
         The parent of the form.
         """
         namePlaceholder = "ім'я акаунта"
-        nameTip = ''  # there is no name characters validation for account names.
-        passTip = ("Якщо ви не хочете придумувати пароль ви можете\n"
-                   "натиснути кнопку 'Згенерувати', аби згенерувати його.")
-        nameError = 'Акаунт з таким іменем вже існує!'
-        CreateForm.__init__(self, title, namePlaceholder, nameError, nameTip, passTip, \
-                            helpTip, parent)
+        nameTip = ""  # there is no name characters validation for account names.
+        passTip = (
+            "Якщо ви не хочете придумувати пароль ви можете\n"
+            "натиснути кнопку 'Згенерувати', аби згенерувати його."
+        )
+        nameError = "Акаунт з таким іменем вже існує!"
+        CreateForm.__init__(
+            self, title, namePlaceholder, nameError, nameTip, passTip, helpTip, parent
+        )
         self.hide()
         self.db = db
 
@@ -86,25 +91,25 @@ class CreateAccount(CreateForm):
         # here we create label and field for
         # account name (account name and nickname aren't same things!), e-mail, date of birth
         # and comment to account.
-        self.accountLabel = QLabel('Акаунт:')
+        self.accountLabel = QLabel("Акаунт:")
         self.accountInput = QLineEdit()
-        self.accountInput.setPlaceholderText('назва акаунту')
+        self.accountInput.setPlaceholderText("назва акаунту")
         self.accountInput.textChanged.connect(self.validateName)
 
         self.nameInput.setPlaceholderText("ваше ім'я або нікнейм")
         self.nameInput.textChanged.disconnect()
 
-        self.emailLabel = QLabel('E-mail:')
+        self.emailLabel = QLabel("E-mail:")
         self.emailInput = QLineEdit()
-        self.emailInput.setPlaceholderText('введіть e-mail акаунта')
+        self.emailInput.setPlaceholderText("введіть e-mail акаунта")
 
         # here we have radio buttons that will define what will be copied to
         # mouseboard `email` or `username` when user performs copy operation
         self.copy_label = QLabel(
-            'Тут ви можете вибрати що буде копіюватися до\n'
-            'мишиного буферу:')
-        self.username_radio = QRadioButton('Username', self)
-        self.email_radio = QRadioButton('E-mail', self)
+            "Тут ви можете вибрати що буде копіюватися до\n" "мишиного буферу:"
+        )
+        self.username_radio = QRadioButton("Username", self)
+        self.email_radio = QRadioButton("E-mail", self)
 
         # e-mail will be copied to mouseboard by default
         self.email_radio.setChecked(True)
@@ -123,12 +128,12 @@ class CreateAccount(CreateForm):
 
         self.attach_file_button = QPushButton()
         self.attach_file_button.clicked.connect(self.attach_file)
-        self.attach_file_button.setIcon(QIcon('img/list-add.png'))
+        self.attach_file_button.setIcon(QIcon("img/list-add.png"))
         self.attach_file_button.setIconSize(QSize(22, 22))
 
         self.detach_button = QPushButton()
         self.detach_button.clicked.connect(self.detach_file)
-        self.detach_button.setIcon(QIcon('img/list-remove.svg'))
+        self.detach_button.setIcon(QIcon("img/list-remove.svg"))
         self.detach_button.setIconSize(QSize(22, 22))
 
         attachButtonsLayout = QVBoxLayout()
@@ -139,16 +144,16 @@ class CreateAccount(CreateForm):
         attachLayout.addWidget(self.attach_list)
         attachLayout.addLayout(attachButtonsLayout)
 
-        self.dateLabel = QLabel('Дата народження:')
+        self.dateLabel = QLabel("Дата народження:")
         self.dateInput = QDateEdit()
-        self.dateInput.setDisplayFormat('dd.MM.yyyy')
+        self.dateInput.setDisplayFormat("dd.MM.yyyy")
         dateLayout = QHBoxLayout()
         dateLayout.addWidget(self.dateLabel)
         dateLayout.addWidget(self.dateInput)
 
-        self.commentLabel = QLabel('Коментарій:')
+        self.commentLabel = QLabel("Коментарій:")
         self.commentInput = QTextEdit()
-        self.commentInput.setPlaceholderText('Введіть коментарій')
+        self.commentInput.setPlaceholderText("Введіть коментарій")
         self.commentInput.setMinimumHeight(200)
 
         self.layout.insertWidget(1, self.accountLabel)
@@ -207,10 +212,10 @@ class CreateAccount(CreateForm):
         This method is invoked when user presses on attache file button.
         """
         # here we get path of file to attach and then we obtain its name
-        home = os.getenv('HOME')
-        path = QFileDialog.getOpenFileName(self.parent(),
-                                           'Виберіть файл для закріплення',
-                                           home)[0]
+        home = os.getenv("HOME")
+        path = QFileDialog.getOpenFileName(
+            self.parent(), "Виберіть файл для закріплення", home
+        )[0]
         # if user presses `Cancel` in chose file dialog then path will be empty
         # string and in this case there is no need to create empty file name in
         # attach list neither to create mapping for it
@@ -230,15 +235,16 @@ class CreateAccount(CreateForm):
         if name in self.attach_list.pathmap:
             answer = QMessageBox.warning(
                 self.parent(),
-                'Увага!',
-                'Файл з таким іменем вже існує, замінити?',
-                buttons=QMessageBox.Yes | QMessageBox.No)
+                "Увага!",
+                "Файл з таким іменем вже існує, замінити?",
+                buttons=QMessageBox.Yes | QMessageBox.No,
+            )
 
         # there is no need to add another file name to list if it already
         # exists, so here we add it only when it isn't exist yet
         else:
             # here we add attached file to attach list
-            item = QStandardItem(QIcon('img/mail-attachment.svg'), name)
+            item = QStandardItem(QIcon("img/mail-attachment.svg"), name)
             self.attach_list.model().appendRow(item)
 
         # here we check `answer` variable if it is `Yes` then we create mapping
@@ -271,11 +277,12 @@ class CreateAccount(CreateForm):
 
         # here we show confirmation dialog in case if user pressed detach button
         # by accident
-        answer = QMessageBox.warning(self.parent(),
-                                     'Увага!',
-                                     'Ви впевнені що хочете відкріпити '
-                                     f'<b>{selected}</b>?',
-                                     buttons=QMessageBox.Yes | QMessageBox.No)
+        answer = QMessageBox.warning(
+            self.parent(),
+            "Увага!",
+            "Ви впевнені що хочете відкріпити " f"<b>{selected}</b>?",
+            buttons=QMessageBox.Yes | QMessageBox.No,
+        )
 
         if answer == QMessageBox.Yes:
             # if users answer is `Yes` then we delete appropriate file mapping
@@ -292,6 +299,7 @@ class CreateAccountForm(CreateAccount):
     This is a class which specifies CreateAccount superclass even more.
     We use this class for creating account.
     """
+
     def __init__(self, db, helpTip, parent=None):
         """
         This constructor creates the form specifying title parameter, everything else it
@@ -303,7 +311,7 @@ class CreateAccountForm(CreateAccount):
         :param parent:
         The parent of the form.
         """
-        title = 'Створити акаунт'
+        title = "Створити акаунт"
         CreateAccount.__init__(self, title, db, helpTip, parent)
 
     def validateName(self, event):
@@ -315,18 +323,18 @@ class CreateAccountForm(CreateAccount):
             self.nameError.show()
             self.createButton.setEnabled(False)
             self.createButton.setStyleSheet(APPLY_BUTTON_DISABLED)
-            self.validate['name'] = False
-        elif name == '':
+            self.validate["name"] = False
+        elif name == "":
             self.nameFilledError.show()
             self.createButton.setEnabled(False)
             self.createButton.setStyleSheet(APPLY_BUTTON_DISABLED)
-            self.validate['name'] = False
+            self.validate["name"] = False
         else:
-            self.validate['name'] = True
+            self.validate["name"] = True
             self.nameError.hide()
             self.nameFilledError.hide()
 
-        if self.validate['pass'] and self.validate['name']:
+        if self.validate["pass"] and self.validate["name"]:
             self.createButton.setEnabled(True)
             self.createButton.setStyleSheet(APPLY_BUTTON)
 
@@ -342,7 +350,7 @@ class CreateAccountForm(CreateAccount):
         email = self.emailInput.text()
         password = self.passField.passInput.text().encode()
         date = self.dateInput.text()
-        comment = self.commentInput.toPlainText().replace('\n', '\n\n')
+        comment = self.commentInput.toPlainText().replace("\n", "\n\n")
         copy_email = self.email_radio.isChecked()
 
         attached_files = {}
@@ -351,26 +359,34 @@ class CreateAccountForm(CreateAccount):
             # here we obtain file path
             path = self.attach_list.pathmap[name]
             # then we open and read the file using mapping associated with `name`
-            with open(path, 'rb') as f:
+            with open(path, "rb") as f:
                 file = f.read()
             # finally we save opened file content to dict and associate it with
             # appropriate file name
             attached_files[name] = file
 
-        account = akidump.Account(accountname, name, email, password, date,
-                                  comment, copy_email, attached_files)
+        account = akidump.Account(
+            accountname,
+            name,
+            email,
+            password,
+            date,
+            comment,
+            copy_email,
+            attached_files,
+        )
         self.db[accountname] = account
         self.clear()
 
         # Here we update accounts list, hide form and show help tip
         self.add_item(accountname)
         self.clear()
-        self.tips['help'].setText("Виберіть акаунт")
+        self.tips["help"].setText("Виберіть акаунт")
 
         # also here we update completion of the form because we created new
         # account
         set_form_completers(self, self.db)
-        set_form_completers(self.forms['edit'], self.db)
+        set_form_completers(self.forms["edit"], self.db)
 
 
 class EditAccountForm(CreateAccount):
@@ -378,6 +394,7 @@ class EditAccountForm(CreateAccount):
     This is a class which specifies CreateAccount superclass even more.
     We use this class for editing account.
     """
+
     def __init__(self, db, helpTip):
         """
         This constructor creates the form specifying title parameter, adds `Delete` button
@@ -388,10 +405,10 @@ class EditAccountForm(CreateAccount):
         :param helpTip:
         Tip that will be displayed when form is hidden.
         """
-        title = 'Редагувати акаунт'
+        title = "Редагувати акаунт"
         CreateAccount.__init__(self, title, db, helpTip)
-        self.createButton.setText('Зберегти')
-        self.deleteButton = GTKButton(DELETE_BUTTON, 'Видалити')
+        self.createButton.setText("Зберегти")
+        self.deleteButton = GTKButton(DELETE_BUTTON, "Видалити")
         self.deleteButton.clicked.connect(self.delete)
         self.buttonsLayout.insertWidget(1, self.deleteButton)
 
@@ -405,18 +422,18 @@ class EditAccountForm(CreateAccount):
             self.nameError.show()
             self.createButton.setEnabled(False)
             self.createButton.setStyleSheet(APPLY_BUTTON_DISABLED)
-            self.validate['name'] = False
-        elif name == '':
+            self.validate["name"] = False
+        elif name == "":
             self.nameFilledError.show()
             self.createButton.setEnabled(False)
             self.createButton.setStyleSheet(APPLY_BUTTON_DISABLED)
-            self.validate['name'] = False
+            self.validate["name"] = False
         else:
-            self.validate['name'] = True
+            self.validate["name"] = True
             self.nameError.hide()
             self.nameFilledError.hide()
 
-        if self.validate['pass'] and self.validate['name']:
+        if self.validate["pass"] and self.validate["name"]:
             self.createButton.setEnabled(True)
             self.createButton.setStyleSheet(APPLY_BUTTON)
 
@@ -431,13 +448,14 @@ class EditAccountForm(CreateAccount):
                 break
 
         # Then we show confirmation dialog.
-        action = QMessageBox.warning(win,
-                                     'Увага!',
-                                     'Ви певні що хочете видалити акаунт '
-                                     '<i><b>{}</b></i>'.format(
-                                         self.account.account),
-                                     buttons=QMessageBox.No | QMessageBox.Yes,
-                                     defaultButton=QMessageBox.No)
+        action = QMessageBox.warning(
+            win,
+            "Увага!",
+            "Ви певні що хочете видалити акаунт "
+            "<i><b>{}</b></i>".format(self.account.account),
+            buttons=QMessageBox.No | QMessageBox.Yes,
+            defaultButton=QMessageBox.No,
+        )
 
         # If users answer is `Yes` we delete account
         if action == QMessageBox.Yes:
@@ -449,7 +467,7 @@ class EditAccountForm(CreateAccount):
 
             # if database is empty now, we update help tip
             if not getAkiList(self.db):
-                self.tips['help'].setText(HELP_TIP_ACCS)
+                self.tips["help"].setText(HELP_TIP_ACCS)
 
     def set_account(self, index):
         """
@@ -473,7 +491,7 @@ class EditAccountForm(CreateAccount):
         self.passField.passInput.setText(password)
         self.passRepeatField.passInput.setText(password)
 
-        day, month, year = [int(d) for d in self.account.date.split('.')]
+        day, month, year = [int(d) for d in self.account.date.split(".")]
         self.dateInput.setDate(QDate(year, month, day))
 
         self.commentInput.setText(self.account.comment)
@@ -483,7 +501,7 @@ class EditAccountForm(CreateAccount):
 
         self.attach_model = QStandardItemModel()
         for file in self.account.attached_files:
-            item = QStandardItem(QIcon('img/mail-attachment.svg'), file)
+            item = QStandardItem(QIcon("img/mail-attachment.svg"), file)
             self.attach_model.appendRow(item)
 
             # all files that are already attached will map to None
@@ -521,11 +539,19 @@ class EditAccountForm(CreateAccount):
                 attached_files[file] = old_account.attached_files[file]
             else:
                 # else, file maps to path then we load file using this path
-                attached_files[file] = open(path, 'rb').read()
+                attached_files[file] = open(path, "rb").read()
 
         # and here we create new account and also delete the old one
-        account = akidump.Account(accountname, name, email, password, date,
-                                  comment, copy_email, attached_files)
+        account = akidump.Account(
+            accountname,
+            name,
+            email,
+            password,
+            date,
+            comment,
+            copy_email,
+            attached_files,
+        )
         del self.db[self.old_account]
         self.db[accountname] = account
         self.clear()
@@ -537,7 +563,7 @@ class EditAccountForm(CreateAccount):
 
         # also here we update completion of the form because we edited account
         set_form_completers(self, self.db)
-        set_form_completers(self.forms['create'], self.db)
+        set_form_completers(self.forms["create"], self.db)
 
 
 class ShowAccountForm(QWidget):
@@ -545,6 +571,7 @@ class ShowAccountForm(QWidget):
     This class is a form that shows account information,
     such as password, e-mail, date of birth etc.
     """
+
     def __init__(self, db, parent=None):
         """
         This is a constructor of the form, it creates all widgets (mostly labels).
@@ -562,7 +589,7 @@ class ShowAccountForm(QWidget):
         self.email = QLabel()
 
         # display password only when hovering over the password label
-        self.password = QLabel('Пароль: ' + '•' * 32)
+        self.password = QLabel("Пароль: " + "•" * 32)
         self.password.enterEvent = self.showPassword
         self.password.leaveEvent = self.hidePassword
 
@@ -579,14 +606,22 @@ class ShowAccountForm(QWidget):
 
         # Here we make all label selectable so user can select their text and copy it if he wants to
         # Also we set appropriate cursor for labels.
-        for label in (self.account, self.name, self.email, self.password,
-                      self.date, self.comment):
+        for label in (
+            self.account,
+            self.name,
+            self.email,
+            self.password,
+            self.date,
+            self.comment,
+        ):
             label.setTextInteractionFlags(Qt.TextSelectableByMouse)
             label.setCursor(QCursor(Qt.IBeamCursor))
 
         # Tip about fast copying feature
-        self.copyTip = Tip('Ви можете натиснути гарячі клавіші Ctrl+C\n'
-                           'аби скопіювати пароль і e-mail одразу.')
+        self.copyTip = Tip(
+            "Ви можете натиснути гарячі клавіші Ctrl+C\n"
+            "аби скопіювати пароль і e-mail одразу."
+        )
 
         # her we add every form widget to layout
         layout = QVBoxLayout()
@@ -606,14 +641,14 @@ class ShowAccountForm(QWidget):
         This method is called when user hovers over the password label.
         In such circumstances we should display password.
         """
-        self.password.setText('Пароль: ' + self._account.password.decode())
+        self.password.setText("Пароль: " + self._account.password.decode())
 
     def hidePassword(self, event):
         """
         This method is called when user hovers from the password label.
         In such circumstances we should hide password.
         """
-        self.password.setText('Пароль: ' + '•' * 32)
+        self.password.setText("Пароль: " + "•" * 32)
 
     def set_account(self, index):
         """
@@ -625,20 +660,20 @@ class ShowAccountForm(QWidget):
         account = self.db[accountname]
         self._account = account
 
-        self.account.setText('Акаунт: ' + account.account)
+        self.account.setText("Акаунт: " + account.account)
         self.name.setText("Ім'я: " + account.name)
-        self.email.setText('E-mail: ' + account.email)
-        self.date.setText('Дата: ' + account.date)
-        self.comment.setText('Коментарій: ' + account.comment)
+        self.email.setText("E-mail: " + account.email)
+        self.date.setText("Дата: " + account.date)
+        self.comment.setText("Коментарій: " + account.comment)
 
-        mouse_copy = 'e-mail' if account.copy_email else 'username'
-        self.mouse_copy.setText(f'До мишиного буферу копіюється: {mouse_copy}')
+        mouse_copy = "e-mail" if account.copy_email else "username"
+        self.mouse_copy.setText(f"До мишиного буферу копіюється: {mouse_copy}")
 
         # to clear the model
         self.attached_model = QStandardItemModel()
         self.attached_files.setModel(self.attached_model)
         for file in account.attached_files:
-            item = QStandardItem(QIcon('img/mail-attachment.svg'), file)
+            item = QStandardItem(QIcon("img/mail-attachment.svg"), file)
             self.attached_model.appendRow(item)
 
     def copy_account(self):
@@ -647,20 +682,16 @@ class ShowAccountForm(QWidget):
         It copies e-mail or username to mouse buffer, depending on `copy_email`
         setting of account, and password to clipboard.
         """
+        account = self._account
+
         # to copy password
         clipboard = QGuiApplication.clipboard()
-        clipboard.setText(self._account.password.decode())
+        clipboard.setText(account.password.decode())
 
-        # we need this to know what will be copied to mouseboard
-        mouse_copy = self.mouse_copy.text().replace(
-            "До мишиного буферу копіюється: ", '')
-
-        # and here we check if mouse_copy contains `e-mail` then we have to copy e-mail
-        if mouse_copy == 'e-mail':
-            os.system(f'echo {self._account.email} | xclip')
-        else:
-            # we copy username to mouseboard
-            os.system(f'echo {self._account.username} | xclip')
+        # to copy e-mail or username
+        mouse_copy = account.email if account.copy_email else account.username
+        p1 = Popen(["echo", mouse_copy], stdout=PIPE)
+        Popen(["xclip"], stdin=p1.stdout, stdout=PIPE)
 
     def download_file(self, file):
         """
@@ -669,10 +700,10 @@ class ShowAccountForm(QWidget):
         """
         # here we show save file dialog, so user can chose where to save
         # attached file
-        home = os.getenv('HOME')
-        path = QFileDialog.getSaveFileName(self.parent(),
-                                           'Зберегти закріплений файл',
-                                           f"{home}/{file.data()}")[0]
+        home = os.getenv("HOME")
+        path = QFileDialog.getSaveFileName(
+            self.parent(), "Зберегти закріплений файл", f"{home}/{file.data()}"
+        )[0]
 
         # if user presses `Cancel` in the dialog then we do nothing
         if not path:
@@ -680,18 +711,16 @@ class ShowAccountForm(QWidget):
 
         try:
             # then we open specified file to write
-            saved_file = open(path, 'wb')
+            saved_file = open(path, "wb")
 
             # and we write all data to it
             saved_file.write(self._account.attached_files[file.data()])
         except Exception:
             # if there are any errors then we show appropriate message
-            QMessageBox.critical(self.parent(), 'Помилка!',
-                                 'Операція не успішна!')
+            QMessageBox.critical(self.parent(), "Помилка!", "Операція не успішна!")
         else:
             # if there is no errors then we show successful message
-            QMessageBox.information(self.parent(), 'Успіх!',
-                                    'Операція успішна!')
+            QMessageBox.information(self.parent(), "Успіх!", "Операція успішна!")
         finally:
             # finally we close the file
             saved_file.close()
