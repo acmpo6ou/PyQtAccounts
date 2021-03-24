@@ -2,7 +2,7 @@
 ![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/Acmpo6ou/PyQtAccounts)
 ![Powered by PyQt5](https://img.shields.io/badge/powered%20by-pyqt5-success)
 # PyQtAccounts
-**PyQtAccounts** — is simple account database manager made using Python 3 and PyQt5.
+**PyQtAccounts** — is a simple account database manager made using Python 3 and PyQt5.
 You can easily manage your accounts and store them safely in encrypted databases.
 The interface of PyQtAccounts is common and easy to use.
 PyQtAccounts is completely free and open source project.

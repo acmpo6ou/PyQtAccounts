@@ -815,7 +815,7 @@ class About(QDialog):
 
             Author: Bohdan Kolvakh
             Version {}
-            <b>PyQtAccounts</b> — is simple account database manager made 
+            <b>PyQtAccounts</b> — is a simple account database manager made 
             using Python 3 and PyQt5.
             You can easily manage your accounts and store them safely in 
             encrypted databases.
@@ -824,9 +824,10 @@ class About(QDialog):
             Also here you can see PyQtAccounts source code <a 
             href='https://github.com/Acmpo6ou/PyQtAccounts' 
             style='color: #3791ff;'>GitHub</a>
-            <span style='color: #37FF91;'>According to our privacy policy you must know 
-            that we do not saving or sharing any private data such as your 
-            account passwords or databases.
+            <span style='color: #37FF91;'>
+            You must know that, according to our privacy policy, 
+            we do not saving nor do we sharing any of your
+            private data such as your account passwords or databases.
             </span>
             (c) Copyright 2020 Bohdan Kolvakh
             </pre>""".format(
