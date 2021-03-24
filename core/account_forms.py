@@ -690,7 +690,7 @@ class ShowAccountForm(QWidget):
 
         # to copy e-mail or username
         mouse_copy = account.email if account.copy_email else account.name
-        p1 = Popen(["echo", mouse_copy], stdout=PIPE)
+        p1 = Popen(["printf", mouse_copy], stdout=PIPE)
         Popen(["xclip"], stdin=p1.stdout, stdout=PIPE)
 
     def download_file(self, file):
