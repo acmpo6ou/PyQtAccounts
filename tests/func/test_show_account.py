@@ -149,7 +149,7 @@ class ShowAccountTest(AccsTest):
         mouseboard = xclip.communicate()[0].decode()
         self.assertEqual(
             mouseboard,
-            "bobgreen@gmail.com\n",
+            "bobgreen@gmail.com",
             "Email isn't copied to mouse clipboard when performed"
             " copy operation in show account form!",
         )
@@ -182,7 +182,7 @@ class ShowAccountTest(AccsTest):
         mouseboard = xclip.communicate()[0].decode()
         self.assertEqual(
             mouseboard,
-            "Chris Kirkman\n",
+            "Chris Kirkman",
             "Username isn't copied to mouse clipboard when performed"
             " copy operation in show account form!",
         )
