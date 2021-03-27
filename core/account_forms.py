@@ -41,13 +41,8 @@
 
 # You should have received a copy of the GNU General Public License
 # along with PyQtAccounts.  If not, see <https://www.gnu.org/licenses/>.
-"""
-This module provides classes for account forms.
-"""
-from subprocess import PIPE, Popen
 
 import core.akidump as akidump
-import core.const
 from core.const import *
 from core.forms import *
 from core.widgets import *
@@ -619,8 +614,7 @@ class ShowAccountForm(QWidget):
 
         # Tip about fast copying feature
         self.copyTip = Tip(
-            "Ви можете натиснути гарячі клавіші Ctrl+C\n"
-            "аби скопіювати пароль і e-mail одразу."
+            "Ви можете натиснути гарячі клавіші Ctrl+C\nаби скопіювати e-mail."
         )
 
         # her we add every form widget to layout
@@ -667,7 +661,7 @@ class ShowAccountForm(QWidget):
         self.comment.setText("Коментарій: " + account.comment)
 
         mouse_copy = "e-mail" if account.copy_email else "username"
-        self.mouse_copy.setText(f"До мишиного буферу копіюється: {mouse_copy}")
+        self.mouse_copy.setText(f"Копіюється: {mouse_copy}")
 
         # to clear the model
         self.attached_model = QStandardItemModel()
@@ -676,22 +670,15 @@ class ShowAccountForm(QWidget):
             item = QStandardItem(QIcon("img/mail-attachment.svg"), file)
             self.attached_model.appendRow(item)
 
-    def copy_account(self):
+    def copy_email(self):
         """
         This method is called when user presses Ctrl+C or through menu: File -> Copy.
-        It copies e-mail or username to mouse buffer, depending on `copy_email`
-        setting of account, and password to clipboard.
+        It copies e-mail or username depending on `copy_email` property of account.
         """
         account = self._account
-
-        # to copy password
+        data = account.email if account.copy_email else account.name
         clipboard = QGuiApplication.clipboard()
-        clipboard.setText(account.password.decode())
-
-        # to copy e-mail or username
-        mouse_copy = account.email if account.copy_email else account.name
-        p1 = Popen(["printf", mouse_copy], stdout=PIPE)
-        Popen(["xclip"], stdin=p1.stdout, stdout=PIPE)
+        clipboard.setText(data)
 
     def download_file(self, file):
         """
@@ -710,17 +697,11 @@ class ShowAccountForm(QWidget):
             return
 
         try:
-            # then we open specified file to write
             saved_file = open(path, "wb")
-
-            # and we write all data to it
             saved_file.write(self._account.attached_files[file.data()])
         except Exception:
-            # if there are any errors then we show appropriate message
             QMessageBox.critical(self.parent(), "Помилка!", "Операція не успішна!")
         else:
-            # if there is no errors then we show successful message
             QMessageBox.information(self.parent(), "Успіх!", "Операція успішна!")
         finally:
-            # finally we close the file
             saved_file.close()

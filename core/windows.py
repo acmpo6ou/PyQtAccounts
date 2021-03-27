@@ -643,7 +643,7 @@ class DbMenuBar(MenuBar):
         self.save.setShortcut(QKeySequence("Ctrl+S"))
 
         self.copy = QAction(QIcon("img/copy.png"), "&Copy")
-        self.copy.triggered.connect(parent.accs.forms["show"].copy_account)
+        self.copy.triggered.connect(parent.accs.forms["show"].copy_email)
         self.copy.setShortcut(QKeySequence("Ctrl+C"))
 
         self.File.insertAction(self.quit, self.new)
