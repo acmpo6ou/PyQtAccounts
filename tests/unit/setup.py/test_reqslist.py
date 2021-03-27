@@ -80,7 +80,7 @@ class ReqsListTest(UnitTest):
         """
         # here we create fake Reqs with fake lists of installed and not installed requirements
         reqs = Mock()
-        reqs.cant_install = ("git", "xclip")
+        reqs.cant_install = ("git",)
         reqs.to_install = ("gitpython",)
         reqs.installed = ("python3-pip", "cryptography")
 

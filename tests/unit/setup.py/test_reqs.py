@@ -116,7 +116,7 @@ class ReqsTest(UnitTest):
         This test tests Reqs when some system reqs are not installed.
         """
         # these requirements aren't installed
-        cant_install = ["git", "xclip"]
+        cant_install = ["git"]
 
         def mock_system(command):
             """

@@ -48,7 +48,7 @@ This module provides helper constants for PyQtAccounts.
 
 # This constants provide information about requirements
 # either system (i.e. that we can install only with root privileges) or pip.
-sys_reqs = ("git", "pip3", "xclip")
+sys_reqs = ("git", "pip3")
 reqs_pip = ("setuptools", "cryptography", "gitpython", "pyshortcuts")
 
 # This constants provide information about folder that stores databases

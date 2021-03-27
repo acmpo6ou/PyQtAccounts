@@ -17,11 +17,10 @@ These are some libraries that you should install in order to run `setup.py`:
 * python3-pip
 * pyqt5
 * git
-* xclip
 
 To install them use this command:
 ```bash
-sudo apt install xclip git python3-pip python3-pyqt5
+sudo apt install git python3-pip python3-pyqt5
 ```
 
 Copyright (c) 2020-2021 Bohdan Kolvakh

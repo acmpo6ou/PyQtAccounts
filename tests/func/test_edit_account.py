@@ -342,24 +342,13 @@ class EditAccountsTest(AccsTest):
         # He then goes to menu: File -> Copy
         self.account_menu(0, 2).trigger()
 
-        # when he performs copy operation username is copied to mouseboard and
-        # password to clipboard
+        # when he performs copy operation username is copied to clipboard
         clipboard = QGuiApplication.clipboard()
         self.assertEqual(
             clipboard.text(),
-            "mypass",  # those symbols are password
-            "Password isn't copied to clipboard when performed "
-            "copy operation in show account form!",
-        )
-
-        # Username is copied to mouse clipboard by xclip tool
-        xclip = Popen(["xclip", "-o"], stdout=PIPE, stderr=STDOUT)
-        mouseboard = xclip.communicate()[0].decode()
-        self.assertEqual(
-            mouseboard,
             "Tom",
-            "Username isn't copied to mouse clipboard when performed"
-            " copy operation in show account form!",
+            "Username isn't copied to clipboard when performed "
+            "copy operation in show account form!",
         )
 
     def test_no_changes(self):
@@ -434,23 +423,12 @@ class EditAccountsTest(AccsTest):
         # He then goes to menu: File -> Copy
         self.account_menu(0, 2).trigger()
 
-        # when he performs copy operation e-mail is copied to mouseboard and
-        # password to clipboard
+        # E-mail is copied to mouse clipboard by xclip tool
         clipboard = QGuiApplication.clipboard()
         self.assertEqual(
             clipboard.text(),
-            "tom",  # those symbols are password
-            "Password isn't copied to clipboard when performed "
-            "copy operation in show account form!",
-        )
-
-        # E-mail is copied to mouse clipboard by xclip tool
-        xclip = Popen(["xclip", "-o"], stdout=PIPE, stderr=STDOUT)
-        mouseboard = xclip.communicate()[0].decode()
-        self.assertEqual(
-            mouseboard,
             "tom@gmail.com",
-            "Email isn't copied to mouse clipboard when performed"
+            "Email isn't copied to clipboard when performed"
             " copy operation in show account form!",
         )
 
