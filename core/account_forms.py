@@ -583,10 +583,14 @@ class ShowAccountForm(QWidget):
         self.name = QLabel()
         self.email = QLabel()
 
-        # display password only when hovering over the password label
-        self.password = QLabel("Пароль: " + "•" * 32)
-        self.password.enterEvent = self.showPassword
-        self.password.leaveEvent = self.hidePassword
+        # display password only when checkbox is checked
+        self.password = QCheckBox("Пароль: " + "•" * 32)
+        self.password.setChecked(False)
+        self.password.toggled.connect(self.passwordChecked)
+        self.password.setStyleSheet("font-family: Ubuntu Mono, Ubuntu;"
+                                    "font-size: 24px;"
+                                    "outline: none;"
+                                    "border: none;")
 
         self.date = QLabel()
         self.mouse_copy = QLabel()
@@ -605,7 +609,6 @@ class ShowAccountForm(QWidget):
             self.account,
             self.name,
             self.email,
-            self.password,
             self.date,
             self.comment,
         ):
@@ -630,19 +633,14 @@ class ShowAccountForm(QWidget):
         layout.addWidget(self.comment)
         self.setLayout(layout)
 
-    def showPassword(self, event):
+    def passwordChecked(self, event):
         """
-        This method is called when user hovers over the password label.
-        In such circumstances we should display password.
+        Display password if password checkbox is checked and hide it if checkbox is unchecked.
         """
-        self.password.setText("Пароль: " + self._account.password.decode())
-
-    def hidePassword(self, event):
-        """
-        This method is called when user hovers from the password label.
-        In such circumstances we should hide password.
-        """
-        self.password.setText("Пароль: " + "•" * 32)
+        if self.password.isChecked():
+            self.password.setText("Пароль: " + self._account.password.decode())
+        else:
+            self.password.setText("Пароль: " + "•" * 32)
 
     def set_account(self, index):
         """
@@ -657,6 +655,7 @@ class ShowAccountForm(QWidget):
         self.account.setText("Акаунт: " + account.account)
         self.name.setText("Ім'я: " + account.name)
         self.email.setText("E-mail: " + account.email)
+        self.password.setChecked(False)
         self.date.setText("Дата: " + account.date)
         self.comment.setText("Коментарій: " + account.comment)
 
