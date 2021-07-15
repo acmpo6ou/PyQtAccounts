@@ -587,10 +587,12 @@ class ShowAccountForm(QWidget):
         self.password = QCheckBox("Пароль: " + "•" * 32)
         self.password.setChecked(False)
         self.password.toggled.connect(self.passwordChecked)
-        self.password.setStyleSheet("font-family: Ubuntu Mono, Ubuntu;"
-                                    "font-size: 24px;"
-                                    "outline: none;"
-                                    "border: none;")
+        self.password.setStyleSheet(
+            "font-family: Ubuntu Mono, Ubuntu;"
+            "font-size: 24px;"
+            "outline: none;"
+            "border: none;"
+        )
 
         self.date = QLabel()
         self.mouse_copy = QLabel()
@@ -638,7 +640,8 @@ class ShowAccountForm(QWidget):
         Display password if password checkbox is checked and hide it if checkbox is unchecked.
         """
         if self.password.isChecked():
-            self.password.setText("Пароль: " + self._account.password.decode())
+            password = self._account.password.decode().replace("&", "&&")  # escape &
+            self.password.setText(f"Пароль: {password}")
         else:
             self.password.setText("Пароль: " + "•" * 32)
 
