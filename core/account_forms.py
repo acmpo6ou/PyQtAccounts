@@ -682,6 +682,8 @@ class ShowAccountForm(QWidget):
         clipboard = QGuiApplication.clipboard()
         clipboard.setText(data)
 
+        self.window().windows[0].password = account.password.decode()
+
     def download_file(self, file):
         """
         This method is invoked when user chose file from attached files list to
