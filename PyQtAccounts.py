@@ -45,6 +45,7 @@
 This is the main module of the application, it connects everything into complete program -
 PyQtAccounts.
 """
+import signal
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
@@ -52,6 +53,9 @@ from PyQt5.QtGui import *
 from core.testutils import QWidget
 import sys
 import os
+import setproctitle
+import pyautogui
+import time
 
 from core.db_forms import *
 from core.account_forms import *
@@ -80,6 +84,12 @@ class Window(QMainWindow):
         self.setWindowTitle("PyQtAccounts - PyQt5")
         self.resize(1000, 500)
         self.show()
+
+        def paste(_, __):
+            time.sleep(0.1)
+            pyautogui.write(self.password)
+
+        signal.signal(signal.SIGUSR1, paste)
 
         # main window doesn't have a name, this way we can differ it in between other windows.
         self.name = ""
@@ -329,6 +339,12 @@ if __name__ == "__main__":
             "користувач вже не зможе відкривати і редагувати такі бази данних "
             "без рут приівлеїв.",
         )
+
+    setproctitle.setproctitle("PyQtAccounts")
+
+    timer = QTimer()
+    timer.start(100)
+    timer.timeout.connect(lambda: None)
 
     main()
     sys.exit(app.exec_())
