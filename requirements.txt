@@ -6,4 +6,4 @@ cryptography
 pyshortcuts
 setproctitle
 bash
-pyautogui
+python3-xlib

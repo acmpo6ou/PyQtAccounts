@@ -50,11 +50,12 @@ import signal
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
+
+from core import keyboard
 from core.testutils import QWidget
 import sys
 import os
 import setproctitle
-import pyautogui
 import time
 
 from core.db_forms import *
@@ -87,7 +88,7 @@ class Window(QMainWindow):
 
         def paste(_, __):
             time.sleep(0.1)
-            pyautogui.write(self.password)
+            keyboard.write(self.password)
 
         signal.signal(signal.SIGUSR1, paste)
 
