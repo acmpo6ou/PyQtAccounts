@@ -62,7 +62,7 @@ except ImportError:
 
 # this is a lists of program dependencies: system (that we can't install through pip) and pip.
 reqs_list = ("git", "pip3")
-reqs_pip = ("setuptools", "cryptography", "gitpython", "pyshortcuts")
+reqs_pip = ("setuptools", "cryptography", "gitpython", "pyshortcuts", "bash")
 
 # this function is only for testing
 testing = lambda *args: None
